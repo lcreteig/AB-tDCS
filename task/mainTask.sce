@@ -1,34 +1,32 @@
 #######################################################################################################
-#																																		#
-#	 TASK TRIALS																													#
-#   Attentional Blink task 																									#
-#	 Heleen Slagter & Katerina Georgopoulou																				#
-#	 Spring 2012                               																			#
+#																																		#																												#
+#  Attentional blink task
+#																									 																									#
+#	 Based on:
+#  Slagter, H.A. & Georgopoulou, K. (2013).
+#	 Distractor inhibition predicts individual differences in recovery from the attentional blink.
+#  PloS One, 8(5), e64681. doi:10.1371/journal.pone.0064681																				#                              																			#
 #                                 																							#
 #######################################################################################################
 
 #######################################################################################################
-#	Headers																								 							#
+#	Header																								 							#
 #######################################################################################################
 
-#screen_width = 1024;
-#screen_height = 768;
-#screen_bit_depth = 16;
-
-response_matching = simple_matching;
+response_matching = simple_matching; # use newest Presentation features for associating responses with stimuli
 active_buttons = 21;
 button_codes = 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21;
 event_code_delimiter = "\t";
-write_codes = true;
+write_codes = true; # write event codes to parallel port
 response_logging = log_all;
-response_port_output=false;
-pulse_width = 10;
+response_port_output=false; # don't write response events to parallel port
+pulse_width = 10; #standard short pulse width is 10
 
 default_font_size = 40;
 default_text_align = align_center;
 default_background_color = 50,50,50;
 default_font = "courier new";
-default_text_color = 128,128,128;					
+default_text_color = 128,128,128;
 
 ###################################################################################
 #  SDL																									 #
@@ -36,21 +34,21 @@ default_text_color = 128,128,128;
 
 begin;
 
-### stimulustime and totaltime (stimulus + ISI)
+# Stimulus durations
+array{
+$fixTime = 480; #fixation period before start of stream
+$stimTime = 87; #duration of one stimulus in the stream. LCR: should be 91.66 ms, not sure why it's set to 87. Minus half a frame?
+$totalTime = 87; #inter-stimulus interval (onset relative to preceding stimulus in the stream). LCR: as each should be presented for 91.66 ms ($stimTime) with no frames in between ($totalTime), not sure why there's 2 variables.
+} eventTimes;
 
-array{ 
-$fixtime = 480; # en deze wordt 500	
-$stimtime = 87; # can it be made 93.3?? --> with refresh rate = 120 Hz, 91.6667 is possible.
-$totaltime =87; # bij 82 is de timing 83/84 ms, bij 83 gaat deze over naar 100 ms (als RR 60Hz is..)
-} tijden;
+# Fixation cross
+picture{text { caption = "+"; font = "courier new"; font_size = 22;};x=0;y=0;}fixPic;
 
-
-picture{text { caption = "+"; font = "courier new"; font_size = 22;};x=0;y=0;}fix_pic;
-
-picture {	
+# Response prompts
+picture {
 	text { caption = "Which letter was red?"; font_size = 22;};
 	x = 0;
-	y = 0;	
+	y = 0;
 } question1;
 
 picture {
@@ -60,36 +58,37 @@ picture {
 } question2;
 
 
+# Participant instructions
+
 trial {
-  trial_duration = forever;                  # Instructie. 
+  trial_duration = forever;
   trial_type = first_response;
   stimulus_event{
-  picture { text { caption = "You can take a short break now! 
+  picture { text { caption = "You can take a short break now!
 
 
-Press Enter whenever you are ready to continue."; font_size = 22;}; 
+Press Enter whenever you are ready to continue."; font_size = 22;};
 	x = 0; y = 0;};
 	code = "99";
-   }break_stim;
- } break_trial;    
-  
-  
- trial {                                                                   
-  trial_duration = 15995;                    # Geeft een boodschap mee aan het einde van het blok
-  picture { text { caption = "Well done! 
-  You will now continue with a second task.
-  
-Please call the experiment leader."; font_size = 22;}; 
+   }breakStim;
+ } breakTrial;
+
+
+ trial {
+  trial_duration = 15995; #LCR: Not sure why this is set to this particular number (15 seconds and 995 ms)
+  picture { text { caption = "All done!
+
+Please wait for the experimenter."; font_size = 22;};
   x = 0; y = 0;};
   code = "99";
-} einde;     
+} expEnd;
 
 
 ###############################################################
 
-### letters: I, L, O, Q, U and V are not included.
+# letters: I, L, O, Q, U and V are not included.
 array {
-text { caption = "A"; font = "courier new";}D;
+text { caption = "A"; font = "courier new";}D; #name this one, to specify location below
 text { caption = "B"; font = "courier new";};
 text { caption = "C"; font = "courier new";};
 text { caption = "D"; font = "courier new";};
@@ -109,7 +108,7 @@ text { caption = "W"; font = "courier new";};
 text { caption = "X"; font = "courier new";};
 text { caption = "Y"; font = "courier new";};
 text { caption = "Z"; font = "courier new";};
-} stimletters;
+} stimLetters;
 
 picture {text D; x = 0; y = 0; } D1;
 picture {text D; x = 0; y = 0; } D2;
@@ -133,75 +132,74 @@ picture {text D; x = 0; y = 0; } D17;
  trial {
 	trial_duration = stimuli_length;
 	trial_type = fixed;
-  
-	stimulus_event {  picture fix_pic; time = 0; duration = $fixtime; code="prefix"; port_code = 32;} FixEventPrepS; 
-	stimulus_event {	picture D1; deltat = $fixtime; duration = $stimtime; code = "D1";} pic1;	 
-	stimulus_event {	picture D2; deltat = $totaltime; duration = $stimtime; code = "D2";} pic2;
-	stimulus_event {	picture D3; deltat = $totaltime; duration = $stimtime; code = "D3";} pic3;
-	stimulus_event {	picture D4; deltat = $totaltime; duration = $stimtime; code = "D4";} pic4;
-	stimulus_event {	picture D5; deltat = $totaltime; duration = $stimtime; code = "D5";} pic5;
-	stimulus_event {	picture D6; deltat = $totaltime; duration = $stimtime; code = "D6";} pic6;
-	stimulus_event {	picture D7; deltat = $totaltime; duration = $stimtime; code = "D7";} pic7;
-	stimulus_event {	picture D8; deltat = $totaltime; duration = $stimtime; code = "D8";} pic8;
-	stimulus_event {	picture D9; deltat = $totaltime; duration = $stimtime; code = "D9";} pic9;
-	stimulus_event {	picture D10; deltat = $totaltime; duration = $stimtime; code = "D10";} pic10;
-	stimulus_event {	picture D11; deltat = $totaltime; duration = $stimtime; code = "D11";} pic11;
-	stimulus_event {	picture D12; deltat = $totaltime; duration = $stimtime; code = "D12";} pic12;
-	stimulus_event {	picture D13; deltat = $totaltime; duration = $stimtime; code = "D13";} pic13;
-	stimulus_event {	picture D14; deltat = $totaltime; duration = $stimtime; code = "D14";} pic14;	
-	stimulus_event {	picture D15; deltat = $totaltime; duration = $stimtime; code = "D15";} pic15;
-	stimulus_event {	picture D16; deltat = $totaltime; duration = $stimtime; code = "D16";} pic16;	
-	stimulus_event {	picture D17; deltat = $totaltime; duration = $stimtime; code = "D17";} pic17;	
-	
- } ABRFL_trial;
- 
- 
-### T1 questions
- 
-trial {     
-  
+
+	stimulus_event {  picture fixPic; time = 0; duration = $fixTime; code="prefix"; port_code = 32;} fixEventPrepS;
+	stimulus_event {	picture D1; deltat = $fixTime; duration = $stimTime; code = "D1";} pic1;
+	stimulus_event {	picture D2; deltat = $totalTime; duration = $stimTime; code = "D2";} pic2;
+	stimulus_event {	picture D3; deltat = $totalTime; duration = $stimTime; code = "D3";} pic3;
+	stimulus_event {	picture D4; deltat = $totalTime; duration = $stimTime; code = "D4";} pic4;
+	stimulus_event {	picture D5; deltat = $totalTime; duration = $stimTime; code = "D5";} pic5;
+	stimulus_event {	picture D6; deltat = $totalTime; duration = $stimTime; code = "D6";} pic6;
+	stimulus_event {	picture D7; deltat = $totalTime; duration = $stimTime; code = "D7";} pic7;
+	stimulus_event {	picture D8; deltat = $totalTime; duration = $stimTime; code = "D8";} pic8;
+	stimulus_event {	picture D9; deltat = $totalTime; duration = $stimTime; code = "D9";} pic9;
+	stimulus_event {	picture D10; deltat = $totalTime; duration = $stimTime; code = "D10";} pic10;
+	stimulus_event {	picture D11; deltat = $totalTime; duration = $stimTime; code = "D11";} pic11;
+	stimulus_event {	picture D12; deltat = $totalTime; duration = $stimTime; code = "D12";} pic12;
+	stimulus_event {	picture D13; deltat = $totalTime; duration = $stimTime; code = "D13";} pic13;
+	stimulus_event {	picture D14; deltat = $totalTime; duration = $stimTime; code = "D14";} pic14;
+	stimulus_event {	picture D15; deltat = $totalTime; duration = $stimTime; code = "D15";} pic15;
+	stimulus_event {	picture D16; deltat = $totalTime; duration = $stimTime; code = "D16";} pic16;
+	stimulus_event {	picture D17; deltat = $totalTime; duration = $stimTime; code = "D17";} pic17;
+
+ } ABtrial;
+
+
+### T1 question
+
+trial {
+
    trial_duration = forever;
    trial_type = first_response;
-  
-   
+
+
 	stimulus_event {
 	picture question1;
 	time = 0;
 	duration = 15000;
-   target_button = 1; 
-   stimulus_time_in = 0;     
-   stimulus_time_out = never;  
+   target_button = 1;
+   stimulus_time_in = 0;
+   stimulus_time_out = never;
    response_active = true;
-   code = "Q1"; 
-	} target1; 
-	
-} report_t1;
+   code = "Q1";
+	} target1;
+
+} reportT1;
 
 #T2 question
-trial {     
-  
+trial {
+
    trial_duration = forever;
    trial_type = first_response;
-  
-   
+
 	stimulus_event {
 	picture question2;
 	time = 0;
 	duration = 1500000;
-   target_button = 1; 
-   stimulus_time_in = 0;     
-   stimulus_time_out = never;  
+   target_button = 1;
+   stimulus_time_in = 0;
+   stimulus_time_out = never;
    response_active = true;
    code = "Q2";
-	} target2; 
-	
-} report_t2;
+	} target2;
+
+} reportT2;
 
 
-text{caption=" ";}responseTxt ;
+text{caption=" ";}responseTxt ; #LCR: this doesn't appear to do anything; remove
 picture{
 	text responseTxt ;x=0;y=0;
-}picture_digit_response;
+}pictureDigitResponse;
 
 ###################################################################################
 #	PCL																									 #
@@ -209,126 +207,122 @@ picture{
 
 begin_pcl;
 
-array <int> alletrials[40]={
-21,22,31,32,40,21,22,31,32,40,21,22,31,32,40,21,22,31,32,40,
-21,22,31,32,40,21,22,31,32,40,21,22,31,32,40,21,22,31,32,40 };
- 
-array <int> alleletters[17]={1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17};
-
-
-
-int trialnumber;
-int blocknumber;
-int t1hit = 0;
-int t2hit = 0;
-int T1acc = 0;
-int T2acc = 0;
-int T1T2acc = 0;
-
-#################################################################################
-###################################PLAATJES MAKEN################################
-
-
-### data are also put in a separate logfile
-string presentatiefile = logfile.subject()+ "_ABRFL_output.txt";
-output_file out = new output_file;
-
-out.open(presentatiefile);
-
-# alletrials --> conditions
+# allTrials --> conditions
 # 21 = absent lag 4
 # 22 = absent lag 10
 # 31 = present lag 4
 # 32 = present lag 10
 # 40 = absent lag 2
 
-loop blocknumber = 1 until blocknumber > 5 begin
+array <int> allTrials[40]={
+21,22,31,32,40,21,22,31,32,40,21,22,31,32,40,21,22,31,32,40,
+21,22,31,32,40,21,22,31,32,40,21,22,31,32,40,21,22,31,32,40 };
 
-alletrials.shuffle();
+array <int> alleletters[17]={1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17}; #LCR: never used; remove
 
-	loop trialnumber = 1 until trialnumber > 40 begin
-		
-		# sets all letters back to gray font
-		stimletters[5].set_font_color(128,128,128);
-		stimletters[5].redraw();
-		stimletters[7].set_font_color(128,128,128);
-		stimletters[7].redraw();
-		stimletters[9].set_font_color(128,128,128);
-		stimletters[9].redraw();
-		stimletters[15].set_font_color(128,128,128);
-		stimletters[15].redraw();
-		
+int nTrial;
+int nBlock;
+int t1hit = 0; #LCR: never used; remove
+int t2hit = 0; #LCR: never used; remove
+int T1acc = 0;
+int T2acc = 0;
+int T1T2acc = 0;
+
+
+### data are also put in a separate logfile
+string outFile = logfile.subject()+ "_AB_output.txt";
+output_file out = new output_file;
+
+out.open(outFile);
+
+loop nBlock = 1 until nBlock > 5 begin
+
+allTrials.shuffle();
+
+	loop nTrial = 1 until nTrial > 40 begin
+
+		# sets all letters back to gray
+
+		stimLetters[5].set_font_color(128,128,128); # T1
+		stimLetters[5].redraw();
+		stimLetters[7].set_font_color(128,128,128); # lag 2
+		stimLetters[7].redraw();
+		stimLetters[9].set_font_color(128,128,128); # lag 4
+		stimLetters[9].redraw();
+		stimLetters[15].set_font_color(128,128,128); # lag 10
+		stimLetters[15].redraw();
+
 		# randomization
-		stimletters.shuffle();
-		
-		# sets the 5th letter to red color
-		stimletters[5].set_font_color(255,0,0);
-		stimletters[5].redraw();
-		string T1_letter = stimletters[5].caption();
-	
-		D1.set_part(1, stimletters[1]);
-		D2.set_part(1, stimletters[2]);
-		D3.set_part(1, stimletters[3]);
-		D4.set_part(1, stimletters[4]);
-		D5.set_part(1, stimletters[5]);
-		D6.set_part(1, stimletters[6]);
-		D7.set_part(1, stimletters[7]);
-		D8.set_part(1, stimletters[8]);
-		D9.set_part(1, stimletters[9]);
-		D10.set_part(1, stimletters[10]);
-		D11.set_part(1, stimletters[11]);
-		D12.set_part(1, stimletters[12]);
-		D13.set_part(1, stimletters[13]);
-		D14.set_part(1, stimletters[14]);
-		D15.set_part(1, stimletters[15]);
-		D16.set_part(1, stimletters[16]);
-		D17.set_part(1, stimletters[17]);
-		
-		
-		string T2_letter;
-	
-		# for prime absent
-		if alletrials[trialnumber] == 21 || alletrials[trialnumber] == 22 then
+		stimLetters.shuffle();
 
-		if  alletrials[trialnumber] == 21 then # lag 4 absent
-			stimletters[9].set_font_color(0,255,0);
-			stimletters[9].redraw();
-			T2_letter = stimletters[9].caption();
-			D9.set_part(1, stimletters[9]);
-			
-		elseif alletrials[trialnumber] == 22 then # lag 10 absent
-			stimletters[15].set_font_color(0,255,0);
-			stimletters[15].redraw();
-			T2_letter = stimletters[15].caption();
-			D15.set_part(1, stimletters[15]);
+		# sets T1 to red
+		stimLetters[5].set_font_color(255,0,0);
+		stimLetters[5].redraw();
+		string T1letter = stimLetters[5].caption();
+
+		D1.set_part(1, stimLetters[1]);
+		D2.set_part(1, stimLetters[2]);
+		D3.set_part(1, stimLetters[3]);
+		D4.set_part(1, stimLetters[4]);
+		D5.set_part(1, stimLetters[5]);
+		D6.set_part(1, stimLetters[6]);
+		D7.set_part(1, stimLetters[7]);
+		D8.set_part(1, stimLetters[8]);
+		D9.set_part(1, stimLetters[9]);
+		D10.set_part(1, stimLetters[10]);
+		D11.set_part(1, stimLetters[11]);
+		D12.set_part(1, stimLetters[12]);
+		D13.set_part(1, stimLetters[13]);
+		D14.set_part(1, stimLetters[14]);
+		D15.set_part(1, stimLetters[15]);
+		D16.set_part(1, stimLetters[16]);
+		D17.set_part(1, stimLetters[17]);
+
+
+		string T2letter;
+
+		# for prime absent
+		if allTrials[nTrial] == 21 || allTrials[nTrial] == 22 then #LCR: outer if statement seems redundant; remove
+
+		if  allTrials[nTrial] == 21 then # lag 4 absent #LCR: change to lag 2
+			stimLetters[9].set_font_color(0,255,0);
+			stimLetters[9].redraw();
+			T2letter = stimLetters[9].caption();
+			D9.set_part(1, stimLetters[9]);
+
+		elseif allTrials[nTrial] == 22 then # lag 10 absent
+			stimLetters[15].set_font_color(0,255,0);
+			stimLetters[15].redraw();
+			T2letter = stimLetters[15].caption();
+			D15.set_part(1, stimLetters[15]);
 		end;
-				
-				
-		# for prime present
-		elseif alletrials[trialnumber] == 31 || alletrials[trialnumber] == 32 then
-		
+
+
+		# for prime present #LCR: remove all of this
+		elseif allTrials[nTrial] == 31 || allTrials[nTrial] == 32 then
+
 		text current_T2  = new text();
-		current_T2.set_caption(stimletters[7].caption());
+		current_T2.set_caption(stimLetters[7].caption());
 		current_T2.set_font_color(0,255,0);
 		current_T2.redraw();
-		T2_letter = stimletters[7].caption();
-		
-						
+		T2letter = stimLetters[7].caption();
+
+
 		# 7 is the lag of the prime, the code sets T2 to the same letter as the prime, in green
-		if alletrials[trialnumber] == 31 then # lag 4 present
+		if allTrials[nTrial] == 31 then # lag 4 present
 			D9.set_part(1, current_T2);
-		elseif alletrials[trialnumber] == 32 then # lag 10 present
+		elseif allTrials[nTrial] == 32 then # lag 10 present
 			D15.set_part(1, current_T2);
 		end;
-		
-		elseif alletrials[trialnumber] == 40 then
-		stimletters[7].set_font_color(0,255,0);
-		stimletters[7].redraw();
-		D7.set_part(1, stimletters[7]);
-		T2_letter = stimletters[7].caption();
-			
-		end; #condition loop 
-		
+
+		elseif allTrials[nTrial] == 40 then
+		stimLetters[7].set_font_color(0,255,0);
+		stimLetters[7].redraw();
+		D7.set_part(1, stimLetters[7]);
+		T2letter = stimLetters[7].caption();
+
+		end;
+
 		pic1.set_stimulus(D1);
 		pic2.set_stimulus(D2);
 		pic3.set_stimulus(D3);
@@ -346,141 +340,142 @@ alletrials.shuffle();
 		pic15.set_stimulus(D15);
 		pic16.set_stimulus(D16);
 		pic17.set_stimulus(D17);
-		
-		
-		int pre_stimnr = stimulus_manager.stimulus_count();
-		
-		ABRFL_trial.present();
-		
-		term.print(pre_stimnr);
+
+
+		int preStimNr = stimulus_manager.stimulus_count();
+
+		ABtrial.present();
+
+		#LCR: decide whether to keep all these outputs to terminal
+		term.print(preStimNr);
 		term.print("# ");
-		
-		
-###### output: timing 
 
-		stimulus_data t1 = stimulus_manager.get_stimulus_data(pre_stimnr+6);
-		stimulus_data d1 = stimulus_manager.get_stimulus_data(pre_stimnr+7);
-		stimulus_data stim2 = stimulus_manager.get_stimulus_data(pre_stimnr+8);
-		stimulus_data fix = stimulus_manager.get_stimulus_data(pre_stimnr+1);
-		stimulus_data stim1 = stimulus_manager.get_stimulus_data(pre_stimnr+2);
-		int time_t1 = t1.time();
-		int time_d1 = d1.time();
-		int time_stim2 = stim2.time();
-		int time_fix = fix.time();
-		int time_stim1 = stim1.time();
 
-		#term.print(time_t1);
+###### output: timing
+
+		stimulus_data t1 = stimulus_manager.get_stimulus_data(preStimNr+6);
+		stimulus_data d1 = stimulus_manager.get_stimulus_data(preStimNr+7);
+		stimulus_data stim2 = stimulus_manager.get_stimulus_data(preStimNr+8);
+		stimulus_data fix = stimulus_manager.get_stimulus_data(preStimNr+1);
+		stimulus_data stim1 = stimulus_manager.get_stimulus_data(preStimNr+2);
+		int timeT1 = t1.time();
+		int timeD1 = d1.time();
+		int timeStim2 = stim2.time();
+		int timeFix = fix.time();
+		int timeStim1 = stim1.time();
+
+		#term.print(timeT1);
 		#term.print(" ");
-		#term.print(time_d1);
+		#term.print(timeD1);
 		#term.print(" | ");
-		term.print(time_d1 - time_t1);
+		term.print(timeD1 - timeT1);
 		term.print(" | ");
-		term.print(time_stim2 - time_d1);
+		term.print(timeStim2 - timeD1);
 		term.print(" | ");
-		term.print(time_stim1 - time_fix);
+		term.print(timeStim1 - timeFix);
 		term.print(" \n ");
-					
-###### output: letters
-		
-		array <string> button_to_key[20]={"W","E","R","T","Y","P","A","S","D","F","G","H","J","K","Z","X","C","B","N","M"};
-		
-		report_t1.present();
-		stimulus_data t1_response = stimulus_manager.last_stimulus_data();
-		int button_t1 = t1_response.button();
-		string button_letter_t1 = button_to_key[button_t1];
-	
-		report_t2.present();
-		stimulus_data t2_response  = stimulus_manager.last_stimulus_data();
-		int button_t2 = t2_response.button();
-		string button_letter_t2 = button_to_key[button_t2];
-	
-				
-		if T1_letter == button_letter_t1 then
+
+###### output: letters # LCR: not sure how these letters are mapped to numbers 1-20
+
+		array <string> button2key[20]={"W","E","R","T","Y","P","A","S","D","F","G","H","J","K","Z","X","C","B","N","M"};
+
+		reportT1.present();
+		stimulus_data T1resp = stimulus_manager.last_stimulus_data();
+		int T1button = T1resp.button();
+		string T1key = button2key[T1button];
+
+		reportT2.present();
+		stimulus_data T2resp  = stimulus_manager.last_stimulus_data();
+		int T2button = T2resp.button();
+		string T2key = button2key[T2button];
+
+
+		if T1letter == T1key then
 			T1acc = 1;
-		else 
+		else
 			T1acc = 0;
 		end;
-		if T2_letter == button_letter_t2 then
+		if T2letter == T2key then
 			T2acc = 1;
-		else 
+		else
 			T2acc = 0;
 		end;
-			
 
-		if T1_letter == button_letter_t1 && T2_letter == button_letter_t2 then			### 3 = both correct
+
+		if T1letter == T1key && T2letter == T2key then			### 3 = both correct
 			T1T2acc = 3;
-		elseif T1_letter != button_letter_t1 && T2_letter != button_letter_t2 then		### 0 = both incorrect
+		elseif T1letter != T1key && T2letter != T2key then		### 0 = both incorrect
 			T1T2acc = 0;
-		elseif T1_letter == button_letter_t1 && T2_letter != button_letter_t2 then		### 1 = only T1 correct (blink trial)
+		elseif T1letter == T1key && T2letter != T2key then		### 1 = only T1 correct (blink trial)
 			T1T2acc = 1;
-		elseif T1_letter != button_letter_t1 && T2_letter == button_letter_t2 then		### 2 = only T2 corrrect
+		elseif T1letter != T1key && T2letter == T2key then		### 2 = only T2 correct
 			T1T2acc = 2;
-		elseif T1_letter == button_letter_t2 && T2_letter == button_letter_t1 then		### 13 = T1/T2 swapped (both correct)
+		elseif T1letter == T2key && T2letter == T1key then		### 13 = T1/T2 swapped (both correct)
 			T1T2acc = 13;
-		elseif T1_letter == button_letter_t2 && T2_letter != button_letter_t1 then		### 11 = only T1 correct, but given as T2 answer
+		elseif T1letter == T2key && T2letter != T1key then		### 11 = only T1 correct, but given as T2 answer
 			T1T2acc = 11;
-		elseif T1_letter != button_letter_t2 && T2_letter == button_letter_t1 then		### 12 = only T2 correct, but given as T1 answer
+		elseif T1letter != T2key && T2letter == T1key then		### 12 = only T2 correct, but given as T1 answer
 			T1T2acc = 12;
 		end;
-				
-				
-		out.print(trialnumber);
+
+
+		out.print(nTrial);
 		out.print("\t");
-		out.print(alletrials[trialnumber]);
+		out.print(allTrials[nTrial]);
 		out.print("\t");
-		out.print(time_d1 - time_t1);
+		out.print(timeD1 - timeT1);
 		out.print("\t");
-		out.print(T1_letter);
+		out.print(T1letter);
 		out.print("\t");
-		out.print(button_letter_t1);
+		out.print(T1key);
 		out.print("\t");
-		out.print(T2_letter);
+		out.print(T2letter);
 		out.print("\t");
-		out.print(button_letter_t2);
+		out.print(T2key);
 		out.print("\t");
 		out.print(T1acc);
-		out.print("\t"); 
+		out.print("\t");
 		out.print(T2acc);
 		out.print("\t");
 		out.print(T1T2acc);
-		out.print("\n"); 
-		 /* 
-		 term.print(alletrials[trialnumber]);
+		out.print("\n");
+		 /* # LCR: does this mean all of this is commented out?
+		term.print(allTrials[nTrial]);
 		term.print("# ");
-		term.print(time_t1);
+		term.print(timeT1);
 		term.print(" ");
 		term.print(time_t2);
 		term.print(" | ");
-		int time_t1_t2 = time_t2 - time_t1; 
-		term.print(time_t1_t2);
+		int timeT1_t2 = time_t2 - timeT1; #LCR: time_t2 does not appear to exist...
+		term.print(timeT1_t2);
 		term.print(" // ");
-		 
-		
-		term.print(trialnumber);
+
+
+		term.print(nTrial);
 		term.print(" ");
-		term.print(alletrials[trialnumber]);
+		term.print(allTrials[nTrial]);
 		term.print(" ");
-		term.print(T1_letter);
+		term.print(T1letter);
 		term.print(" ");
-		term.print(button_letter_t1);
+		term.print(T1key);
 		term.print("=t1 | ");
-		term.print(T2_letter);
+		term.print(T2letter);
 		term.print(" ");
-		term.print(button_letter_t2);
+		term.print(T2key);
 		term.print("=t2 // ");
 		*/
-	
-trialnumber = trialnumber + 1;
-	
-end;   
 
-if blocknumber < 5 then
-break_trial.present();
-elseif blocknumber == 5 then
-einde.present();
+nTrial = nTrial + 1;
+
 end;
 
-blocknumber = blocknumber +1;
+if nBlock < 5 then
+breakTrial.present();
+elseif nBlock == 5 then
+expEnd.present();
+end;
+
+nBlock = nBlock +1;
 
 end;
 
@@ -488,10 +483,10 @@ out.close();
 
 
 
-/*
+/* #LCR: again I take it this is all non-functioning
 
 	out.print(T2acc);
-	out.print("\t");	
+	out.print("\t");
    if givenresponseT1 == responseT1 && givenresponseT2 == responseT2 then			### 3 = both correct
 		T1T2acc = 3;
 	elseif givenresponseT1 != responseT1 && givenresponseT2 != responseT2 && givenresponseT1 != responseT2 && givenresponseT2 != responseT1 then		### 0 = both incorrect
@@ -503,16 +498,16 @@ out.close();
 	elseif givenresponseT1 == responseT2 && givenresponseT2 == responseT1 then		### 10 = T1/T2 switched (wrong order)
 		T1T2acc = 10;
 		swapped_code.present();
-		
+
 	#elseif givenresponseT1 != responseT2 && givenresponseT2 == responseT1 then	### are we interested in this??
-	#	T2acc = 4;	
-		
+	#	T2acc = 4;
+
 	end;
 	out.print(T1T2acc);
-	out.print("\n");	
-     
-	trialnumber = trialnumber + 1;
-	
+	out.print("\n");
+
+	nTrial = nTrial + 1;
+
 	end;
 
 #Insert breaks
@@ -525,10 +520,8 @@ end;
 i = i + 1;
 
 
-end;   
+end;
 
 out.close();
 #report_scores();
-einde.present();
-
-
+expEnd.present();
