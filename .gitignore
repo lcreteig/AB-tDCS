@@ -1,2 +1,3 @@
-# ignore Presentation (Neurobehavioral Systems) experiment files
+# ignore Presentation (Neurobehavioral Systems) files
 *.exp
+/log/*
