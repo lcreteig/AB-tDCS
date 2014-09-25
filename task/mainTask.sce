@@ -207,18 +207,22 @@ picture{
 
 begin_pcl;
 
+# Experiment parameters
+int nBlocks = 5;
+int nTrials = 40;
+
 # allTrials --> conditions
 # 2 = lag 2
 # 8 = lag 8
 
-array <int> allTrials[40];
-allTrials.fill(1,20,2,0);
-allTrials.fill(21,40,8,0);
+array <int> allTrials[nTrials];
+allTrials.fill(1,nTrials/2,2,0);
+allTrials.fill((nTrials/2)+1),nTrials,8,0);
 
 array <int> alleletters[17]={1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17}; #LCR: never used; remove
 
-int nTrial;
-int nBlock;
+int t;
+int b;
 int t1hit = 0; #LCR: never used; remove
 int t2hit = 0; #LCR: never used; remove
 int T1acc = 0;
@@ -232,11 +236,11 @@ output_file out = new output_file;
 
 out.open(outFile);
 
-loop nBlock = 1 until nBlock > 5 begin
+loop b = 1 until b > nBlocks begin
 
 allTrials.shuffle();
 
-	loop nTrial = 1 until nTrial > 40 begin
+	loop t = 1 until t > nTrials begin
 
 		# sets all letters back to gray
 
@@ -277,14 +281,14 @@ allTrials.shuffle();
 		string T2letter;
 
 		# Lag 2
-		if  allTrials[nTrial] == 2 then
+		if  allTrials[t] == 2 then
 			stimLetters[7].set_font_color(0,255,0);
 			stimLetters[7].redraw();
 			T2_letter = stimLetters[7].caption();
 			D7.set_part(1, stimLetters[7]);
 
 		# Lag 8
-		elseif allTrials[nTrial] == 8 then
+		elseif allTrials[t] == 8 then
 			stimLetters[13].set_font_color(0,255,0);
 			stimLetters[13].redraw();
 			T2_letter = stimLetters[13].caption();
@@ -388,9 +392,9 @@ allTrials.shuffle();
 		end;
 
 
-		out.print(nTrial);
+		out.print(t);
 		out.print("\t");
-		out.print(allTrials[nTrial]);
+		out.print(allTrials[t]);
 		out.print("\t");
 		out.print(timeD1 - timeT1);
 		out.print("\t");
@@ -409,7 +413,7 @@ allTrials.shuffle();
 		out.print(T1T2acc);
 		out.print("\n");
 		 /* # LCR: does this mean all of this is commented out?
-		term.print(allTrials[nTrial]);
+		term.print(allTrials[t]);
 		term.print("# ");
 		term.print(timeT1);
 		term.print(" ");
@@ -420,9 +424,9 @@ allTrials.shuffle();
 		term.print(" // ");
 
 
-		term.print(nTrial);
+		term.print(t);
 		term.print(" ");
-		term.print(allTrials[nTrial]);
+		term.print(allTrials[t]);
 		term.print(" ");
 		term.print(T1letter);
 		term.print(" ");
@@ -434,17 +438,17 @@ allTrials.shuffle();
 		term.print("=t2 // ");
 		*/
 
-nTrial = nTrial + 1;
+t = t + 1;
 
 end;
 
-if nBlock < 5 then
+if b < 5 then
 breakTrial.present();
-elseif nBlock == 5 then
+elseif b == 5 then
 expEnd.present();
 end;
 
-nBlock = nBlock +1;
+b = b +1;
 
 end;
 
@@ -475,7 +479,7 @@ out.close();
 	out.print(T1T2acc);
 	out.print("\n");
 
-	nTrial = nTrial + 1;
+	t = t + 1;
 
 	end;
 

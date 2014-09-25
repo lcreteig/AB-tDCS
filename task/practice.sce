@@ -267,15 +267,18 @@ begin_pcl;
 # 2 = lag 2
 # 8 = lag 8
 
-array <int> allTrials[20];
-allTrials.fill(1,10,2,0);
-allTrials.fill(11,20,8,0);
+# Experiment parameters
+int nTrials = 20;
+
+array <int> allTrials[nTrials];
+allTrials.fill(1,nTrials/2,2,0);
+allTrials.fill((nTrials/2)+1),nTrials,8,0);
 
 array <int> alleletters[17]={1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17}; #LCR: never used; remove
 
 allTrials.shuffle();
 
-int nTrial;
+int t;
 int t1hit = 0; #LCR: never used; remove
 int t2hit = 0; #LCR: never used; remove
 int T1acc = 0;
@@ -286,7 +289,7 @@ instruction1.present();
 instruction2.present();
 instruction3.present();
 
-	loop nTrial = 1 until nTrial > 20 begin
+	loop t = 1 until t > nTrials begin
 
 		# sets all letters back to gray
 		stimLetters[5].set_font_color(128,128,128); # T1
@@ -326,14 +329,14 @@ instruction3.present();
 		string T2_letter;
 
 		# Lag 2
-		if  allTrials[nTrial] == 2 then
+		if  allTrials[t] == 2 then
 			stimLetters[7].set_font_color(0,255,0);
 			stimLetters[7].redraw();
 			T2_letter = stimLetters[7].caption();
 			D7.set_part(1, stimLetters[7]);
 
 		# Lag 8
-		elseif allTrials[nTrial] == 8 then
+		elseif allTrials[t] == 8 then
 			stimLetters[13].set_font_color(0,255,0);
 			stimLetters[13].redraw();
 			T2_letter = stimLetters[13].caption();
@@ -366,7 +369,7 @@ reportT1.present();
 reportT2.present();
 
 
-nTrial = nTrial + 1;
+t = t + 1;
 
 end;
 
