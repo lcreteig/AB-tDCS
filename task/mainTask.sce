@@ -208,15 +208,12 @@ picture{
 begin_pcl;
 
 # allTrials --> conditions
-# 21 = absent lag 4
-# 22 = absent lag 10
-# 31 = present lag 4
-# 32 = present lag 10
-# 40 = absent lag 2
+# 2 = lag 2
+# 8 = lag 8
 
-array <int> allTrials[40]={
-21,22,31,32,40,21,22,31,32,40,21,22,31,32,40,21,22,31,32,40,
-21,22,31,32,40,21,22,31,32,40,21,22,31,32,40,21,22,31,32,40 };
+array <int> allTrials[40];
+allTrials.fill(1,20,2,0);
+allTrials.fill(21,40,8,0);
 
 array <int> alleletters[17]={1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17}; #LCR: never used; remove
 
@@ -247,10 +244,8 @@ allTrials.shuffle();
 		stimLetters[5].redraw();
 		stimLetters[7].set_font_color(128,128,128); # lag 2
 		stimLetters[7].redraw();
-		stimLetters[9].set_font_color(128,128,128); # lag 4
-		stimLetters[9].redraw();
-		stimLetters[15].set_font_color(128,128,128); # lag 10
-		stimLetters[15].redraw();
+		stimLetters[13].set_font_color(128,128,128); # lag 8
+		stimLetters[13].redraw();
 
 		# randomization
 		stimLetters.shuffle();
@@ -281,47 +276,21 @@ allTrials.shuffle();
 
 		string T2letter;
 
-		# for prime absent
-		if allTrials[nTrial] == 21 || allTrials[nTrial] == 22 then #LCR: outer if statement seems redundant; remove
+		# Lag 2
+		if  allTrials[nTrial] == 2 then
+			stimLetters[7].set_font_color(0,255,0);
+			stimLetters[7].redraw();
+			T2_letter = stimLetters[7].caption();
+			D7.set_part(1, stimLetters[7]);
 
-		if  allTrials[nTrial] == 21 then # lag 4 absent #LCR: change to lag 2
-			stimLetters[9].set_font_color(0,255,0);
-			stimLetters[9].redraw();
-			T2letter = stimLetters[9].caption();
-			D9.set_part(1, stimLetters[9]);
-
-		elseif allTrials[nTrial] == 22 then # lag 10 absent
-			stimLetters[15].set_font_color(0,255,0);
-			stimLetters[15].redraw();
-			T2letter = stimLetters[15].caption();
-			D15.set_part(1, stimLetters[15]);
+		# Lag 8
+		elseif allTrials[nTrial] == 8 then
+			stimLetters[13].set_font_color(0,255,0);
+			stimLetters[13].redraw();
+			T2_letter = stimLetters[13].caption();
+			D13.set_part(1, stimLetters[13]);
 		end;
 
-
-		# for prime present #LCR: remove all of this
-		elseif allTrials[nTrial] == 31 || allTrials[nTrial] == 32 then
-
-		text current_T2  = new text();
-		current_T2.set_caption(stimLetters[7].caption());
-		current_T2.set_font_color(0,255,0);
-		current_T2.redraw();
-		T2letter = stimLetters[7].caption();
-
-
-		# 7 is the lag of the prime, the code sets T2 to the same letter as the prime, in green
-		if allTrials[nTrial] == 31 then # lag 4 present
-			D9.set_part(1, current_T2);
-		elseif allTrials[nTrial] == 32 then # lag 10 present
-			D15.set_part(1, current_T2);
-		end;
-
-		elseif allTrials[nTrial] == 40 then
-		stimLetters[7].set_font_color(0,255,0);
-		stimLetters[7].redraw();
-		D7.set_part(1, stimLetters[7]);
-		T2letter = stimLetters[7].caption();
-
-		end;
 
 		pic1.set_stimulus(D1);
 		pic2.set_stimulus(D2);
