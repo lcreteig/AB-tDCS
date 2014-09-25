@@ -122,7 +122,7 @@ choosing these letters is therefore not an option.
 
 
  trial {
-  trial_duration = 15995; Not sure why this is set to this particular number (15 seconds and 995 ms)
+  trial_duration = 15995; # LCR: Not sure why this is set to this particular number (15 seconds and 995 ms)
   picture { text { caption = "Well done!
   You are now ready to perform the actual experiment.
   Please wait for the experimenter to start the task.
@@ -272,7 +272,7 @@ int nTrials = 20;
 
 array <int> allTrials[nTrials];
 allTrials.fill(1,nTrials/2,2,0);
-allTrials.fill((nTrials/2)+1),nTrials,8,0);
+allTrials.fill((nTrials/2)+1,nTrials,8,0);
 
 array <int> alleletters[17]={1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17}; #LCR: never used; remove
 
@@ -326,20 +326,20 @@ instruction3.present();
 		D17.set_part(1, stimLetters[17]);
 
 
-		string T2_letter;
+		string T2letter;
 
 		# Lag 2
 		if  allTrials[t] == 2 then
 			stimLetters[7].set_font_color(0,255,0);
 			stimLetters[7].redraw();
-			T2_letter = stimLetters[7].caption();
+			T2letter = stimLetters[7].caption();
 			D7.set_part(1, stimLetters[7]);
 
 		# Lag 8
 		elseif allTrials[t] == 8 then
 			stimLetters[13].set_font_color(0,255,0);
 			stimLetters[13].redraw();
-			T2_letter = stimLetters[13].caption();
+			T2letter = stimLetters[13].caption();
 			D13.set_part(1, stimLetters[13]);
 		end;
 

@@ -14,8 +14,8 @@
 #######################################################################################################
 
 response_matching = simple_matching; # use newest Presentation features for associating responses with stimuli
-active_buttons = 21;
-button_codes = 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21;
+active_buttons = 20;
+button_codes = 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20;
 event_code_delimiter = "\t";
 write_codes = true; # write event codes to parallel port
 response_logging = log_all;
@@ -217,7 +217,7 @@ int nTrials = 40;
 
 array <int> allTrials[nTrials];
 allTrials.fill(1,nTrials/2,2,0);
-allTrials.fill((nTrials/2)+1),nTrials,8,0);
+allTrials.fill((nTrials/2)+1,nTrials,8,0);
 
 array <int> alleletters[17]={1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17}; #LCR: never used; remove
 
@@ -284,14 +284,14 @@ allTrials.shuffle();
 		if  allTrials[t] == 2 then
 			stimLetters[7].set_font_color(0,255,0);
 			stimLetters[7].redraw();
-			T2_letter = stimLetters[7].caption();
+			T2letter = stimLetters[7].caption();
 			D7.set_part(1, stimLetters[7]);
 
 		# Lag 8
 		elseif allTrials[t] == 8 then
 			stimLetters[13].set_font_color(0,255,0);
 			stimLetters[13].redraw();
-			T2_letter = stimLetters[13].caption();
+			T2letter = stimLetters[13].caption();
 			D13.set_part(1, stimLetters[13]);
 		end;
 
