@@ -208,8 +208,8 @@ picture{
 begin_pcl;
 
 # Experiment parameters
-int nBlocks = 5;
-int nTrials = 40;
+int nBlocks = 4;
+int nTrials = 50;
 
 # allTrials --> conditions
 # 2 = lag 2
@@ -450,9 +450,9 @@ tTot = tTot + 1;
 
 end;
 
-if b < 5 then
+if b < nBlocks then
 breakTrial.present();
-elseif b == 5 then
+elseif b == nBlocks then
 expEnd.present();
 end;
 
