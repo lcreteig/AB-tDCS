@@ -221,6 +221,7 @@ allTrials.fill((nTrials/2)+1,nTrials,8,0);
 
 array <int> alleletters[17]={1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17}; #LCR: never used; remove
 
+int tTot=1;
 int t;
 int b;
 int t1hit = 0; #LCR: never used; remove
@@ -235,6 +236,9 @@ string outFile = logfile.subject()+ "_AB_output.txt";
 output_file out = new output_file;
 
 out.open(outFile);
+
+#print column headers
+out.print("totalTrial\tblock\ttrial\tlag\tT1letter\tT1resp\tT2letter\tT2resp\tT1acc\tT2acc\tT1T2acc\ttiming\n\n");
 
 loop b = 1 until b > nBlocks begin
 
@@ -391,12 +395,13 @@ allTrials.shuffle();
 			T1T2acc = 12;
 		end;
 
-
+		out.print(tTot);
+		out.print("\t");
+		out.print(b);
+		out.print("\t");
 		out.print(t);
 		out.print("\t");
 		out.print(allTrials[t]);
-		out.print("\t");
-		out.print(timeD1 - timeT1);
 		out.print("\t");
 		out.print(T1letter);
 		out.print("\t");
@@ -411,6 +416,8 @@ allTrials.shuffle();
 		out.print(T2acc);
 		out.print("\t");
 		out.print(T1T2acc);
+		out.print(timeD1 - timeT1);
+		out.print("\t");
 		out.print("\n");
 		 /* # LCR: does this mean all of this is commented out?
 		term.print(allTrials[t]);
@@ -439,6 +446,7 @@ allTrials.shuffle();
 		*/
 
 t = t + 1;
+tTot = tTot + 1;
 
 end;
 
