@@ -14,10 +14,10 @@
 #######################################################################################################
 
 response_matching = simple_matching; # use newest Presentation features for associating responses with stimuli
-active_buttons = 20;
-button_codes = 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20;
+active_buttons = 21;
+button_codes = 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21;
 event_code_delimiter = "\t";
-write_codes = true; # write event codes to parallel port
+#write_codes = true; # write event codes to parallel port
 response_logging = log_all;
 response_port_output=false; # don't write response events to parallel port
 pulse_width = 10; #standard short pulse width is 10
@@ -265,7 +265,7 @@ allTrials.shuffle();
 
 		# set T2 color
 		stimLetters[T1pos+allTrials[t]].set_font_color(T2color);
-		stimLetters[T1pos+allTrials[t]].redraw;
+		stimLetters[T1pos+allTrials[t]].redraw();
 		string T2letter = stimLetters[T1pos+allTrials[t]].caption();
 
 		D1.set_part(1, stimLetters[1]);
@@ -410,8 +410,8 @@ term.print("# ");
 		out.print(T2acc);
 		out.print("\t");
 		out.print(T1T2acc);
-		out.print(timeD1 - timeT1);
 		out.print("\t");
+		out.print(timeD1 - timeT1);
 		out.print("\n");
 		 /* # LCR: does this mean all of this is commented out?
 		term.print(allTrials[t]);
