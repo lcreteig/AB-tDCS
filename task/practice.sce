@@ -270,6 +270,8 @@ int nTrials = 20;
 rgb_color defColor = rgb_color(128,128,128);
 rgb_color T1color = rgb_color(255,0,0);
 rgb_color T2color = rgb_color(0,255,0);
+int T1posMin = 5;
+int T1posMax = 8;
 
 # allTrials --> conditions
 # 2 = lag 2
@@ -289,6 +291,7 @@ int t2hit = 0; #LCR: never used; remove
 int T1acc = 0;
 int T2acc = 0;
 int T1T2acc = 0;
+int T1pos;
 
 instruction1.present();
 instruction2.present();
@@ -296,21 +299,19 @@ instruction3.present();
 
 	loop t = 1 until t > nTrials begin
 
-		# sets all letters back to gray
-		stimLetters[5].set_font_color(defColor); # T1
-		stimLetters[5].redraw();
-		stimLetters[7].set_font_color(defColor); # lag 2
-		stimLetters[7].redraw();
-		stimLetters[13].set_font_color(defColor); # lag 8
-		stimLetters[13].redraw();
-
 		# randomization
 		stimLetters.shuffle();
+		T1pos = random(T1posMin,T1posMax); #determine T1 position in stream
 
-		# sets T1 to red color
-		stimLetters[5].set_font_color(T1color);
-		stimLetters[5].redraw();
+		# set T1 color
+		stimLetters[T1pos].set_font_color(T1color);
+		stimLetters[T1pos].redraw();
 		string T1_letter = stimLetters[5].caption();
+
+		# set T2 color
+		stimLetters[T1pos+allTrials[t]].set_font_color(T2color);
+		stimLetters[T1pos+allTrials[t]].redraw;
+		string T2letter = stimLetters[T1pos+allTrials[t]].caption();
 
 		D1.set_part(1, stimLetters[1]);
 		D2.set_part(1, stimLetters[2]);
@@ -329,25 +330,6 @@ instruction3.present();
 		D15.set_part(1, stimLetters[15]);
 		D16.set_part(1, stimLetters[16]);
 		D17.set_part(1, stimLetters[17]);
-
-
-		string T2letter;
-
-		# Lag 2
-		if  allTrials[t] == 2 then
-			stimLetters[7].set_font_color(T2color);
-			stimLetters[7].redraw();
-			T2letter = stimLetters[7].caption();
-			D7.set_part(1, stimLetters[7]);
-
-		# Lag 8
-		elseif allTrials[t] == 8 then
-			stimLetters[13].set_font_color(T2color);
-			stimLetters[13].redraw();
-			T2letter = stimLetters[13].caption();
-			D13.set_part(1, stimLetters[13]);
-		end;
-
 
 		pic1.set_stimulus(D1);
 		pic2.set_stimulus(D2);
@@ -372,6 +354,13 @@ ABtrial.present();
 
 reportT1.present();
 reportT2.present();
+
+# set all targets back to gray
+
+stimLetters[T1pos].set_font_color(defColor); # T1
+stimLetters[T1pos].redraw();
+stimLetters[T1pos+allTrials[t]].set_font_color(defColor); # T2
+stimLetters[T1pos+allTrials[t]].redraw();
 
 
 t = t + 1;

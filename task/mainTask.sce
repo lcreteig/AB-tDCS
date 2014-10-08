@@ -215,6 +215,8 @@ int nTrials = 50;
 rgb_color defColor = rgb_color(128,128,128);
 rgb_color T1color = rgb_color(255,0,0);
 rgb_color T2color = rgb_color(0,255,0);
+int T1posMin = 5;
+int T1posMax = 8;
 
 # allTrials --> conditions
 # 2 = lag 2
@@ -234,6 +236,7 @@ int t2hit = 0; #LCR: never used; remove
 int T1acc = 0;
 int T2acc = 0;
 int T1T2acc = 0;
+int T1pos;
 
 
 ### data are also put in a separate logfile
@@ -243,7 +246,7 @@ output_file out = new output_file;
 out.open(outFile);
 
 #print column headers
-out.print("totalTrial\tblock\ttrial\tlag\tT1letter\tT1resp\tT2letter\tT2resp\tT1acc\tT2acc\tT1T2acc\ttiming\n\n");
+out.print("totalTrial\tblock\ttrial\tlag\tT1pos\tT1letter\tT1resp\tT2letter\tT2resp\tT1acc\tT2acc\tT1T2acc\ttiming\n\n");
 
 loop b = 1 until b > nBlocks begin
 
@@ -251,22 +254,19 @@ allTrials.shuffle();
 
 	loop t = 1 until t > nTrials begin
 
-		# sets all letters back to gray
-
-		stimLetters[5].set_font_color(defColor); # T1
-		stimLetters[5].redraw();
-		stimLetters[7].set_font_color(defColor); # lag 2
-		stimLetters[7].redraw();
-		stimLetters[13].set_font_color(defColor); # lag 8
-		stimLetters[13].redraw();
-
 		# randomization
 		stimLetters.shuffle();
+		T1pos = random(T1posMin,T1posMax); #determine T1 position in stream
 
-		# sets T1 to red
-		stimLetters[5].set_font_color(T1color);
-		stimLetters[5].redraw();
-		string T1letter = stimLetters[5].caption();
+		# set T1 color
+		stimLetters[T1pos].set_font_color(T1color);
+		stimLetters[T1pos].redraw();
+		string T1letter = stimLetters[T1pos].caption();
+
+		# set T2 color
+		stimLetters[T1pos+allTrials[t]].set_font_color(T2color);
+		stimLetters[T1pos+allTrials[t]].redraw;
+		string T2letter = stimLetters[T1pos+allTrials[t]].caption();
 
 		D1.set_part(1, stimLetters[1]);
 		D2.set_part(1, stimLetters[2]);
@@ -285,25 +285,6 @@ allTrials.shuffle();
 		D15.set_part(1, stimLetters[15]);
 		D16.set_part(1, stimLetters[16]);
 		D17.set_part(1, stimLetters[17]);
-
-
-		string T2letter;
-
-		# Lag 2
-		if  allTrials[t] == 2 then
-			stimLetters[7].set_font_color(T2color);
-			stimLetters[7].redraw();
-			T2letter = stimLetters[7].caption();
-			D7.set_part(1, stimLetters[7]);
-
-		# Lag 8
-		elseif allTrials[t] == 8 then
-			stimLetters[13].set_font_color(T2color);
-			stimLetters[13].redraw();
-			T2letter = stimLetters[13].caption();
-			D13.set_part(1, stimLetters[13]);
-		end;
-
 
 		pic1.set_stimulus(D1);
 		pic2.set_stimulus(D2);
@@ -328,12 +309,18 @@ allTrials.shuffle();
 
 		ABtrial.present();
 
-		#LCR: decide whether to keep all these outputs to terminal
-		term.print(preStimNr);
-		term.print("# ");
+		# set all targets back to gray
 
+		stimLetters[T1pos].set_font_color(defColor); # T1
+		stimLetters[T1pos].redraw();
+		stimLetters[T1pos+allTrials[t]].set_font_color(defColor); # T2
+		stimLetters[T1pos+allTrials[t]].redraw();
 
 ###### output: timing
+
+#LCR: decide whether to keep all these outputs to terminal
+term.print(preStimNr);
+term.print("# ");
 
 		stimulus_data t1 = stimulus_manager.get_stimulus_data(preStimNr+6);
 		stimulus_data d1 = stimulus_manager.get_stimulus_data(preStimNr+7);
@@ -407,6 +394,8 @@ allTrials.shuffle();
 		out.print(t);
 		out.print("\t");
 		out.print(allTrials[t]);
+		out.print("\t");
+		out.print(T1pos);
 		out.print("\t");
 		out.print(T1letter);
 		out.print("\t");
