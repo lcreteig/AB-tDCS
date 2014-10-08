@@ -263,12 +263,17 @@ picture{
 
 begin_pcl;
 
+# Experiment parameters
+int nTrials = 20;
+
+# Stimulus properties
+rgb_color defColor = rgb_color(128,128,128);
+rgb_color T1color = rgb_color(255,0,0);
+rgb_color T2color = rgb_color(0,255,0);
+
 # allTrials --> conditions
 # 2 = lag 2
 # 8 = lag 8
-
-# Experiment parameters
-int nTrials = 20;
 
 array <int> allTrials[nTrials];
 allTrials.fill(1,nTrials/2,2,0);
@@ -292,18 +297,18 @@ instruction3.present();
 	loop t = 1 until t > nTrials begin
 
 		# sets all letters back to gray
-		stimLetters[5].set_font_color(128,128,128); # T1
+		stimLetters[5].set_font_color(defColor); # T1
 		stimLetters[5].redraw();
-		stimLetters[7].set_font_color(128,128,128); # lag 2
+		stimLetters[7].set_font_color(defColor); # lag 2
 		stimLetters[7].redraw();
-		stimLetters[13].set_font_color(128,128,128); # lag 8
+		stimLetters[13].set_font_color(defColor); # lag 8
 		stimLetters[13].redraw();
 
 		# randomization
 		stimLetters.shuffle();
 
 		# sets T1 to red color
-		stimLetters[5].set_font_color(255,0,0);
+		stimLetters[5].set_font_color(T1color);
 		stimLetters[5].redraw();
 		string T1_letter = stimLetters[5].caption();
 
@@ -330,14 +335,14 @@ instruction3.present();
 
 		# Lag 2
 		if  allTrials[t] == 2 then
-			stimLetters[7].set_font_color(0,255,0);
+			stimLetters[7].set_font_color(T2color);
 			stimLetters[7].redraw();
 			T2letter = stimLetters[7].caption();
 			D7.set_part(1, stimLetters[7]);
 
 		# Lag 8
 		elseif allTrials[t] == 8 then
-			stimLetters[13].set_font_color(0,255,0);
+			stimLetters[13].set_font_color(T2color);
 			stimLetters[13].redraw();
 			T2letter = stimLetters[13].caption();
 			D13.set_part(1, stimLetters[13]);
