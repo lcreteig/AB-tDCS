@@ -277,9 +277,13 @@ int T1posMax = 8;
 # 2 = lag 2
 # 8 = lag 8
 
+# Experiment conditions
+array<int> lags[] = {1, 2, 3, 4, 8}; # all desired lag positions for T2
 array <int> allTrials[nTrials];
-allTrials.fill(1,nTrials/2,2,0);
-allTrials.fill((nTrials/2)+1,nTrials,8,0);
+loop int i = 1 until i > lags.count() begin # for each lag
+allTrials.fill(1+(i-1)*nTrials/lags.count(),i*nTrials/lags.count(),lags[i],0); # fill condition matrix with equal amount of trials
+i= i + 1;
+end
 
 array <int> alleletters[17]={1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17}; #LCR: never used; remove
 

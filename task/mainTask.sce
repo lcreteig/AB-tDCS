@@ -208,8 +208,8 @@ picture{
 begin_pcl;
 
 # Experiment parameters
-int nBlocks = 4;
-int nTrials = 50;
+int nBlocks = 6;
+int nTrials = 120;
 
 # Stimulus properties
 rgb_color defColor = rgb_color(128,128,128);
@@ -218,13 +218,13 @@ rgb_color T2color = rgb_color(0,255,0);
 int T1posMin = 5;
 int T1posMax = 8;
 
-# allTrials --> conditions
-# 2 = lag 2
-# 8 = lag 8
-
+# Experiment conditions
+array<int> lags[] = {1, 2, 3, 4, 8}; # all desired lag positions for T2
 array <int> allTrials[nTrials];
-allTrials.fill(1,nTrials/2,2,0);
-allTrials.fill((nTrials/2)+1,nTrials,8,0);
+loop int i = 1 until i > lags.count() begin # for each lag
+allTrials.fill(1+(i-1)*nTrials/lags.count(),i*nTrials/lags.count(),lags[i],0); # fill condition matrix with equal amount of trials
+i= i + 1;
+end
 
 array <int> alleletters[17]={1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17}; #LCR: never used; remove
 
