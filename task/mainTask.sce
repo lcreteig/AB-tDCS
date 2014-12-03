@@ -16,7 +16,6 @@
 response_matching = simple_matching; # use newest Presentation features for associating responses with stimuli
 active_buttons = 21;
 button_codes = 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21;
-event_code_delimiter = "\t";
 #write_codes = true; # write event codes to parallel port
 response_logging = log_all;
 response_port_output=false; # don't write response events to parallel port
@@ -38,7 +37,7 @@ begin;
 array{
 $fixTime = 480; #fixation period before start of stream
 $stimTime = 87; #duration of one stimulus in the stream. LCR: should be 91.66 ms, not sure why it's set to 87. Minus half a frame?
-$totalTime = 87; #inter-stimulus interval (onset relative to preceding stimulus in the stream). LCR: as each should be presented for 91.66 ms ($stimTime) with no frames in between ($totalTime), not sure why there's 2 variables.
+$totalTime = 87; #inter-stimulus interval (onset relative to preceding stimulus in the stream).
 } eventTimes;
 
 # Fixation cross
@@ -75,7 +74,7 @@ Press Enter whenever you are ready to continue."; font_size = 22;};
 
 
  trial {
-  trial_duration = 15995; #LCR: Not sure why this is set to this particular number (15 seconds and 995 ms)
+  trial_duration = 15995;
   picture { text { caption = "All done!
 
 Please wait for the experimenter."; font_size = 22;};
@@ -196,11 +195,6 @@ trial {
 } reportT2;
 
 
-text{caption=" ";}responseTxt ; #LCR: this doesn't appear to do anything; remove
-picture{
-	text responseTxt ;x=0;y=0;
-}pictureDigitResponse;
-
 ###################################################################################
 #	PCL																									 #
 ###################################################################################
@@ -209,30 +203,26 @@ begin_pcl;
 
 # Experiment parameters
 int nBlocks = 6;
-int nTrials = 120;
+int nTrials = 100;
 
 # Stimulus properties
 rgb_color defColor = rgb_color(128,128,128);
 rgb_color T1color = rgb_color(255,0,0);
 rgb_color T2color = rgb_color(0,255,0);
 int T1posMin = 5;
-int T1posMax = 8;
+int T1posMax = 5;
 
 # Experiment conditions
-array<int> lags[] = {1, 2, 3, 4, 8}; # all desired lag positions for T2
+array<int> lags[5] = {1, 2, 3, 4, 8}; # all desired lag positions for T2
 array <int> allTrials[nTrials];
 loop int i = 1 until i > lags.count() begin # for each lag
 allTrials.fill(1+(i-1)*nTrials/lags.count(),i*nTrials/lags.count(),lags[i],0); # fill condition matrix with equal amount of trials
 i= i + 1;
-end
-
-array <int> alleletters[17]={1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17}; #LCR: never used; remove
+end;
 
 int tTot=1;
 int t;
 int b;
-int t1hit = 0; #LCR: never used; remove
-int t2hit = 0; #LCR: never used; remove
 int T1acc = 0;
 int T2acc = 0;
 int T1T2acc = 0;
@@ -246,7 +236,7 @@ output_file out = new output_file;
 out.open(outFile);
 
 #print column headers
-out.print("totalTrial\tblock\ttrial\tlag\tT1pos\tT1letter\tT1resp\tT2letter\tT2resp\tT1acc\tT2acc\tT1T2acc\ttiming\n\n");
+out.print("totalTrial\tblock\ttrial\tlag\tT1pos\tT1letter\tT1resp\tT2letter\tT2resp\tT1acc\tT2acc\tT1T2acc\n");
 
 loop b = 1 until b > nBlocks begin
 
@@ -318,10 +308,6 @@ allTrials.shuffle();
 
 ###### output: timing
 
-#LCR: decide whether to keep all these outputs to terminal
-term.print(preStimNr);
-term.print("# ");
-
 		stimulus_data t1 = stimulus_manager.get_stimulus_data(preStimNr+6);
 		stimulus_data d1 = stimulus_manager.get_stimulus_data(preStimNr+7);
 		stimulus_data stim2 = stimulus_manager.get_stimulus_data(preStimNr+8);
@@ -333,10 +319,6 @@ term.print("# ");
 		int timeFix = fix.time();
 		int timeStim1 = stim1.time();
 
-		#term.print(timeT1);
-		#term.print(" ");
-		#term.print(timeD1);
-		#term.print(" | ");
 		term.print(timeD1 - timeT1);
 		term.print(" | ");
 		term.print(timeStim2 - timeD1);
@@ -344,7 +326,7 @@ term.print("# ");
 		term.print(timeStim1 - timeFix);
 		term.print(" \n ");
 
-###### output: letters # LCR: not sure how these letters are mapped to numbers 1-20
+###### output: letters
 
 		array <string> button2key[20]={"W","E","R","T","Y","P","A","S","D","F","G","H","J","K","Z","X","C","B","N","M"};
 
@@ -379,12 +361,6 @@ term.print("# ");
 			T1T2acc = 1;
 		elseif T1letter != T1key && T2letter == T2key then		### 2 = only T2 correct
 			T1T2acc = 2;
-		elseif T1letter == T2key && T2letter == T1key then		### 13 = T1/T2 swapped (both correct)
-			T1T2acc = 13;
-		elseif T1letter == T2key && T2letter != T1key then		### 11 = only T1 correct, but given as T2 answer
-			T1T2acc = 11;
-		elseif T1letter != T2key && T2letter == T1key then		### 12 = only T2 correct, but given as T1 answer
-			T1T2acc = 12;
 		end;
 
 		out.print(tTot);
@@ -410,34 +386,7 @@ term.print("# ");
 		out.print(T2acc);
 		out.print("\t");
 		out.print(T1T2acc);
-		out.print("\t");
-		out.print(timeD1 - timeT1);
 		out.print("\n");
-		 /* # LCR: does this mean all of this is commented out?
-		term.print(allTrials[t]);
-		term.print("# ");
-		term.print(timeT1);
-		term.print(" ");
-		term.print(time_t2);
-		term.print(" | ");
-		int timeT1_t2 = time_t2 - timeT1; #LCR: time_t2 does not appear to exist...
-		term.print(timeT1_t2);
-		term.print(" // ");
-
-
-		term.print(t);
-		term.print(" ");
-		term.print(allTrials[t]);
-		term.print(" ");
-		term.print(T1letter);
-		term.print(" ");
-		term.print(T1key);
-		term.print("=t1 | ");
-		term.print(T2letter);
-		term.print(" ");
-		term.print(T2key);
-		term.print("=t2 // ");
-		*/
 
 t = t + 1;
 tTot = tTot + 1;
@@ -455,48 +404,3 @@ b = b +1;
 end;
 
 out.close();
-
-
-
-/* #LCR: again I take it this is all non-functioning
-
-	out.print(T2acc);
-	out.print("\t");
-   if givenresponseT1 == responseT1 && givenresponseT2 == responseT2 then			### 3 = both correct
-		T1T2acc = 3;
-	elseif givenresponseT1 != responseT1 && givenresponseT2 != responseT2 && givenresponseT1 != responseT2 && givenresponseT2 != responseT1 then		### 0 = both incorrect
-		T1T2acc = 0;
-	elseif givenresponseT1 == responseT1 && givenresponseT2 != responseT2 then		### 1 = T1 correct
-		T1T2acc = 1;
-	elseif givenresponseT1 != responseT1 && givenresponseT2 == responseT2 then		### 2 = T2 corrrect
-		T1T2acc = 2;
-	elseif givenresponseT1 == responseT2 && givenresponseT2 == responseT1 then		### 10 = T1/T2 switched (wrong order)
-		T1T2acc = 10;
-		swapped_code.present();
-
-	#elseif givenresponseT1 != responseT2 && givenresponseT2 == responseT1 then	### are we interested in this??
-	#	T2acc = 4;
-
-	end;
-	out.print(T1T2acc);
-	out.print("\n");
-
-	t = t + 1;
-
-	end;
-
-#Insert breaks
-if i == 1 || i==2 || i==3 || i == 5|| i==6 || i==7 || i == 9 || i==10 then
- KortePauze.present();
-elseif i == 4 || i == 8 then
- LangePauze.present();
-end;
-
-i = i + 1;
-
-
-end;
-
-out.close();
-#report_scores();
-expEnd.present();

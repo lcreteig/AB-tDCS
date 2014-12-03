@@ -16,7 +16,6 @@
 response_matching = simple_matching; # use newest Presentation features for associating responses with stimuli
 active_buttons = 21;
 button_codes = 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21;
-event_code_delimiter = "\t";
 #write_codes = true; # write event codes to parallel port
 response_logging = log_all;
 response_port_output=false; # don't write response events to parallel port
@@ -38,7 +37,7 @@ begin;
 array{
 $fixTime = 480; #fixation period before start of stream
 $stimTime = 87; #duration of one stimulus in the stream. LCR: should be 91.66 ms, not sure why it's set to 87.
-$totalTime = 87; #inter-stimulus interval (onset relative to preceding stimulus in the stream). LCR: as each should be presented for 91.66 ms ($stimTime) with no frames in between ($totalTime), not sure why there's 2 variables.
+$totalTime = 87; #inter-stimulus interval (onset relative to preceding stimulus in the stream).
 } eventTimes;
 
 # Fixation cross
@@ -122,7 +121,7 @@ choosing these letters is therefore not an option.
 
 
  trial {
-  trial_duration = 15995; # LCR: Not sure why this is set to this particular number (15 seconds and 995 ms)
+  trial_duration = 15995;
   picture { text { caption = "Well done!
   You are now ready to perform the actual experiment.
   Please wait for the experimenter to start the task.
@@ -252,11 +251,6 @@ trial {
 } reportT2;
 
 
-text{caption=" ";}responseTxt ; #LCR: this doesn't appear to do anything; remove
-picture{
-	text responseTxt ;x=0;y=0;
-}pictureDigitResponse;
-
 ###################################################################################
 #	PCL																									 #
 ###################################################################################
@@ -271,27 +265,19 @@ rgb_color defColor = rgb_color(128,128,128);
 rgb_color T1color = rgb_color(255,0,0);
 rgb_color T2color = rgb_color(0,255,0);
 int T1posMin = 5;
-int T1posMax = 8;
-
-# allTrials --> conditions
-# 2 = lag 2
-# 8 = lag 8
+int T1posMax = 5;
 
 # Experiment conditions
-array<int> lags[] = {1, 2, 3, 4, 8}; # all desired lag positions for T2
+array<int> lags[5] = {1, 2, 3, 4, 8}; # all desired lag positions for T2
 array <int> allTrials[nTrials];
 loop int i = 1 until i > lags.count() begin # for each lag
 allTrials.fill(1+(i-1)*nTrials/lags.count(),i*nTrials/lags.count(),lags[i],0); # fill condition matrix with equal amount of trials
 i= i + 1;
-end
-
-array <int> alleletters[17]={1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17}; #LCR: never used; remove
+end;
 
 allTrials.shuffle();
 
 int t;
-int t1hit = 0; #LCR: never used; remove
-int t2hit = 0; #LCR: never used; remove
 int T1acc = 0;
 int T2acc = 0;
 int T1T2acc = 0;
