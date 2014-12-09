@@ -286,6 +286,7 @@ int T1pos;
 instruction1.present();
 instruction2.present();
 instruction3.present();
+response_manager.set_button_active(21,false); # stop listening for 'return/enter' button presses
 
 	loop t = 1 until t > nTrials begin
 

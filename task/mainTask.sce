@@ -241,6 +241,7 @@ out.print("totalTrial\tblock\ttrial\tlag\tT1pos\tT1letter\tT1resp\tT2letter\tT2r
 loop b = 1 until b > nBlocks begin
 
 allTrials.shuffle();
+response_manager.set_button_active(21,false); # stop listening for 'return/enter' button presses
 
 	loop t = 1 until t > nTrials begin
 
@@ -393,6 +394,7 @@ tTot = tTot + 1;
 
 end;
 
+response_manager.set_button_active(21,true); # resume listening for 'return/enter' button presses
 if b < nBlocks then
 breakTrial.present();
 elseif b == nBlocks then
