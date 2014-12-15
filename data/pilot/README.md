@@ -1,3 +1,10 @@
+## .xls files
+
+These three xls files contain data of pre-pilots run on the experimenters:
+* *BlankPilot_LeonHeleen* examines the attentional blink under conditions of no blanks between the letters in the stream vs. a 60 ms blank.
+* *T1LumPilot_Leon* examines the attentional blink under different intensities of T1 RGB values ([255 0 0] vs. [210 40 40] vs. [170 80 80]).
+* *T1posPilot_Leon* examines the attentional blink under a fixed T1 position (nr. 5 in the stream) vs. a variable position (5-8).
+
 ## Leon
 
 File *Leon_20141201_AB_output* contains pilot data of the experimenter collected
