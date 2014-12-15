@@ -8,3 +8,9 @@ Thumbs.db
 
 # Office files
 *.xlsx
+
+# Folders
+/IRB
+/data
+/figures
+!README.md # still version control the readme files
