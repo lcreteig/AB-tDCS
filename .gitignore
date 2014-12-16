@@ -1,6 +1,9 @@
 # Presentation (Neurobehavioral Systems) files
 *.exp
-/task/log/*
+task/log/*
+
+# Matlab files
+*.asv
 
 # Windows / OSX files
 *.DS_store
@@ -10,8 +13,8 @@ Thumbs.db
 *.xlsx
 
 # Folders
-/IRB/*
-/data/*
-/figures/*
-# still version control the readme files
+IRB/*
+data/*
+figures/*
+# always still version control the readme files
 !README.md
