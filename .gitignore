@@ -18,3 +18,6 @@ data/*
 figures/*
 # always still version control the readme files
 !README.md
+!IRB/2014-BC-3883
+IRB/2014-BC-3883/*
+!IRB/2014-BC-3883/README.md
