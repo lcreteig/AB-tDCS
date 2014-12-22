@@ -33,10 +33,11 @@ default_text_color = 128,128,128;
 
 begin;
 
-# Stimulus durations
+# Stimulus durations (N.B. All times are minus approx. half a frame at 120 Hz, to present at next scan)
 array{
-$fixTime = 480; #fixation period before start of stream
-$stimTime = 87; #duration of one stimulus in the stream. LCR: should be 91.66 ms, not sure why it's set to 87.
+$preFixTime = 1995; #fixation period before start of stream
+$postFixTime = 995; #fixation period after end of stream
+$stimTime = 87; #duration of one stimulus in the stream.
 $totalTime = 87; #inter-stimulus interval (onset relative to preceding stimulus in the stream).
 } eventTimes;
 
@@ -187,7 +188,7 @@ picture {text D; x = 0; y = 0; } D17;
 	trial_duration = stimuli_length;
 	trial_type = fixed;
 
-	stimulus_event {  picture fixPic; time = 0; duration = $fixTime; code="prefix"; port_code = 32;} fixEventPrepS;
+	stimulus_event {  picture fixPic; time = 0; duration = $fixTime; code="prefix"; port_code = 32;} fixEventPre;
 	stimulus_event {	picture D1; deltat = $fixTime; duration = $stimTime; code = "D1";} pic1;
 	stimulus_event {	picture D2; deltat = $totalTime; duration = $stimTime; code = "D2";} pic2;
 	stimulus_event {	picture D3; deltat = $totalTime; duration = $stimTime; code = "D3";} pic3;
@@ -205,6 +206,7 @@ picture {text D; x = 0; y = 0; } D17;
 	stimulus_event {	picture D15; deltat = $totalTime; duration = $stimTime; code = "D15";} pic15;
 	stimulus_event {	picture D16; deltat = $totalTime; duration = $stimTime; code = "D16";} pic16;
 	stimulus_event {	picture D17; deltat = $totalTime; duration = $stimTime; code = "D17";} pic17;
+	stimulus_event {  picture fixPic; deltat = $stimTime; duration = $postFixTime; code="postfix"; port_code = 33;} fixEventPost;
 
  } ABtrial;
 
