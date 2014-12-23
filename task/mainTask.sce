@@ -220,8 +220,8 @@ trial{
 begin_pcl;
 
 # Experiment parameters
-int nBlocks = 6;
-int nTrials = 100;
+int nBlocks = 4;
+int nTrials = 50;
 
 # Stimulus properties
 rgb_color defColor = rgb_color(128,128,128);
@@ -231,7 +231,10 @@ int T1posMin = 5;
 int T1posMax = 5;
 
 # Experiment conditions
-array<int> lags[5] = {1, 2, 3, 4, 8}; # all desired lag positions for T2
+array<int> lags[3] = {3,3,8}; # all desired lag positions for T2.
+#If you add the same lag more than once, there will be proportionally more of these trials (e.g. {3,3,8} means 2 times as many lag 3 trials as lag 8 trials).
+#Note that the array size indicator x ("lags[x]") must always match the number of elements (so in the above example x should be 3)!
+
 array <int> allTrials[nTrials];
 loop int i = 1 until i > lags.count() begin # for each lag
 allTrials.fill(1+(i-1)*nTrials/lags.count(),i*nTrials/lags.count(),lags[i],0); # fill condition matrix with equal amount of trials
