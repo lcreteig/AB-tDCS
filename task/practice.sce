@@ -180,8 +180,6 @@ picture {text D; x = 0; y = 0; } D12;
 picture {text D; x = 0; y = 0; } D13;
 picture {text D; x = 0; y = 0; } D14;
 picture {text D; x = 0; y = 0; } D15;
-picture {text D; x = 0; y = 0; } D16;
-picture {text D; x = 0; y = 0; } D17;
 
 
  trial {
@@ -204,8 +202,6 @@ picture {text D; x = 0; y = 0; } D17;
 	stimulus_event {	picture D13; deltat = $totalTime; duration = $stimTime; code = "D13";} pic13;
 	stimulus_event {	picture D14; deltat = $totalTime; duration = $stimTime; code = "D14";} pic14;
 	stimulus_event {	picture D15; deltat = $totalTime; duration = $stimTime; code = "D15";} pic15;
-	stimulus_event {	picture D16; deltat = $totalTime; duration = $stimTime; code = "D16";} pic16;
-	stimulus_event {	picture D17; deltat = $totalTime; duration = $stimTime; code = "D17";} pic17;
 	stimulus_event {  picture fixPic; deltat = $stimTime; duration = $postFixTime; code="postfix"; } fixEventPost;
 
  } ABtrial;
@@ -324,8 +320,6 @@ response_manager.set_button_active(21,false); # stop listening for 'return/enter
 		D13.set_part(1, stimLetters[13]);
 		D14.set_part(1, stimLetters[14]);
 		D15.set_part(1, stimLetters[15]);
-		D16.set_part(1, stimLetters[16]);
-		D17.set_part(1, stimLetters[17]);
 
 		pic1.set_stimulus(D1);
 		pic2.set_stimulus(D2);
@@ -342,8 +336,6 @@ response_manager.set_button_active(21,false); # stop listening for 'return/enter
 		pic13.set_stimulus(D13);
 		pic14.set_stimulus(D14);
 		pic15.set_stimulus(D15);
-		pic16.set_stimulus(D16);
-		pic17.set_stimulus(D17);
 
 
 ABtrial.present();
