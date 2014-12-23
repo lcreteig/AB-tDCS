@@ -16,7 +16,7 @@
 response_matching = simple_matching; # use newest Presentation features for associating responses with stimuli
 active_buttons = 21;
 button_codes = 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21;
-#write_codes = true; # write event codes to parallel port
+write_codes = false; # write event codes to parallel port
 response_logging = log_all;
 response_port_output=false; # don't write response events to parallel port
 pulse_width = 10; #standard short pulse width is 10
@@ -188,7 +188,7 @@ picture {text D; x = 0; y = 0; } D17;
 	trial_duration = stimuli_length;
 	trial_type = fixed;
 
-	stimulus_event {  picture fixPic; time = 0; duration = $fixTime; code="prefix"; port_code = 32;} fixEventPre;
+	stimulus_event {  picture fixPic; time = 0; duration = $fixTime; code="prefix"; } fixEventPre;
 	stimulus_event {	picture D1; deltat = $fixTime; duration = $stimTime; code = "D1";} pic1;
 	stimulus_event {	picture D2; deltat = $totalTime; duration = $stimTime; code = "D2";} pic2;
 	stimulus_event {	picture D3; deltat = $totalTime; duration = $stimTime; code = "D3";} pic3;
@@ -206,7 +206,7 @@ picture {text D; x = 0; y = 0; } D17;
 	stimulus_event {	picture D15; deltat = $totalTime; duration = $stimTime; code = "D15";} pic15;
 	stimulus_event {	picture D16; deltat = $totalTime; duration = $stimTime; code = "D16";} pic16;
 	stimulus_event {	picture D17; deltat = $totalTime; duration = $stimTime; code = "D17";} pic17;
-	stimulus_event {  picture fixPic; deltat = $stimTime; duration = $postFixTime; code="postfix"; port_code = 33;} fixEventPost;
+	stimulus_event {  picture fixPic; deltat = $stimTime; duration = $postFixTime; code="postfix"; } fixEventPost;
 
  } ABtrial;
 

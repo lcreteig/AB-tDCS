@@ -16,7 +16,7 @@
 response_matching = simple_matching; # use newest Presentation features for associating responses with stimuli
 active_buttons = 21;
 button_codes = 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21;
-#write_codes = true; # write event codes to parallel port
+write_codes = true; # write event codes to parallel port
 response_logging = log_all;
 response_port_output=false; # don't write response events to parallel port
 pulse_width = 10; #standard short pulse width is 10
@@ -35,7 +35,8 @@ begin;
 
 # Stimulus durations (N.B. All times are minus approx. half a frame at 120 Hz, to present at next scan)
 array{
-$preFixTime = 1995; #fixation period before start of stream
+$preFixTime = 1745; #fixation period before start of stream
+$postRespTime = 245; # fixation period after final response (so adjoining pre-stream fixation)
 $postFixTime = 995; #fixation period after end of stream
 $stimTime = 87; #duration of one stimulus in the stream.
 $totalTime = 87; #inter-stimulus interval (onset relative to preceding stimulus in the stream).
@@ -133,7 +134,7 @@ picture {text D; x = 0; y = 0; } D17;
 	trial_duration = stimuli_length;
 	trial_type = fixed;
 
-	stimulus_event {  picture fixPic; time = 0; duration = $preFixTime; code="prefix"; port_code = 32;} fixEventPre;
+	stimulus_event {  picture fixPic; time = 0; duration = $preFixTime; code="prefix"; port_code = 10;} fixEventPre;
 	stimulus_event {	picture D1; deltat = $preFixTime; duration = $stimTime; code = "D1";} pic1;
 	stimulus_event {	picture D2; deltat = $totalTime; duration = $stimTime; code = "D2";} pic2;
 	stimulus_event {	picture D3; deltat = $totalTime; duration = $stimTime; code = "D3";} pic3;
@@ -151,7 +152,7 @@ picture {text D; x = 0; y = 0; } D17;
 	stimulus_event {	picture D15; deltat = $totalTime; duration = $stimTime; code = "D15";} pic15;
 	stimulus_event {	picture D16; deltat = $totalTime; duration = $stimTime; code = "D16";} pic16;
 	stimulus_event {	picture D17; deltat = $totalTime; duration = $stimTime; code = "D17";} pic17;
-  stimulus_event {  picture fixPic; deltat = $stimTime; duration = $postFixTime; code="postfix"; port_code = 33;} fixEventPost;
+  stimulus_event {  picture fixPic; deltat = $stimTime; duration = $postFixTime; code="postfix"; port_code = 40;} fixEventPost;
 
  } ABtrial;
 
@@ -173,11 +174,12 @@ trial {
    stimulus_time_out = never;
    response_active = true;
    code = "Q1";
+	 port_code = 50;
 	} target1;
 
 } reportT1;
 
-#T2 question
+### T2 question
 trial {
 
    trial_duration = forever;
@@ -196,6 +198,20 @@ trial {
 
 } reportT2;
 
+### Post-response fixation
+# to have something to attach T2 accuracy trigger to
+# together with $preFixTime this makes the total ITI
+
+trial{
+
+	trial_duration=stimuli_length;
+	trial_type=fixed;
+	stimulus_event{
+		picture fixPic;
+		duration=$postRespTime;
+	}itiEventPost;
+
+}itiTrialPost;
 
 ###################################################################################
 #	PCL																									 #
@@ -254,12 +270,18 @@ response_manager.set_button_active(21,false); # stop listening for 'return/enter
 		# set T1 color
 		stimLetters[T1pos].set_font_color(T1color);
 		stimLetters[T1pos].redraw();
-		string T1letter = stimLetters[T1pos].caption();
+		string T1letter = stimLetters[T1pos].caption(); # get T1 identity
 
 		# set T2 color
 		stimLetters[T1pos+allTrials[t]].set_font_color(T2color);
 		stimLetters[T1pos+allTrials[t]].redraw();
-		string T2letter = stimLetters[T1pos+allTrials[t]].caption();
+		string T2letter = stimLetters[T1pos+allTrials[t]].caption(); # get T2 identity
+
+		# set triggers
+		ABtrial.get_stimulus_event(1).set_port_code(20+allTrials[t]); #stream onset, code is 20 + lag (e.g. "22" for lag 2)
+		ABtrial.get_stimulus_event(T1pos).set_port_code(31); # T1
+		ABtrial.get_stimulus_event(T1pos+allTrials[t]).set_port_code(32); # T2
+
 
 		D1.set_part(1, stimLetters[1]);
 		D2.set_part(1, stimLetters[2]);
@@ -338,23 +360,26 @@ response_manager.set_button_active(21,false); # stop listening for 'return/enter
 		int T1button = T1resp.button();
 		string T1key = button2key[T1button];
 
+		if T1letter == T1key then
+			T1acc = 1;
+			target2.set_port_code(61);
+		else
+			T1acc = 0;
+			target2.set_port_code(60);
+		end;
+
 		reportT2.present();
 		stimulus_data T2resp  = stimulus_manager.last_stimulus_data();
 		int T2button = T2resp.button();
 		string T2key = button2key[T2button];
 
-
-		if T1letter == T1key then
-			T1acc = 1;
-		else
-			T1acc = 0;
-		end;
 		if T2letter == T2key then
 			T2acc = 1;
+			itiEventPost.set_port_code(71);
 		else
 			T2acc = 0;
+			itiEventPost.set_port_code(70);
 		end;
-
 
 		if T1letter == T1key && T2letter == T2key then			### 3 = both correct
 			T1T2acc = 3;
@@ -365,6 +390,8 @@ response_manager.set_button_active(21,false); # stop listening for 'return/enter
 		elseif T1letter != T1key && T2letter == T2key then		### 2 = only T2 correct
 			T1T2acc = 2;
 		end;
+
+		itiTrialPost.present();
 
 		out.print(tTot);
 		out.print("\t");
