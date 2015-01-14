@@ -35,7 +35,7 @@ begin;
 
 # Stimulus durations (N.B. All times are minus approx. half a frame at 120 Hz, to present at next scan)
 array{
-$preFixTime = 1745; #fixation period before start of stream
+$preFixTime = 1495; #fixation period before start of stream
 $postRespTime = 245; # fixation period after final response (so adjoining pre-stream fixation)
 $postFixTime = 995; #fixation period after end of stream
 $stimTime = 87; #duration of one stimulus in the stream.
@@ -215,8 +215,8 @@ trial{
 begin_pcl;
 
 # Experiment parameters
-int nBlocks = 4;
-int nTrials = 50;
+int nBlocks = 5; #estimate that 4 blocks of around 50 trials can be done in 20 minutes; 1 extra block for fast subjects
+int nTrials = 51;
 
 # Stimulus properties
 rgb_color defColor = rgb_color(128,128,128);

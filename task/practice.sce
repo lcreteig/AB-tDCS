@@ -35,7 +35,7 @@ begin;
 
 # Stimulus durations (N.B. All times are minus approx. half a frame at 120 Hz, to present at next scan)
 array{
-$preFixTime = 1995; #fixation period before start of stream
+$preFixTime = 1745; #fixation period before start of stream
 $postFixTime = 995; #fixation period after end of stream
 $stimTime = 87; #duration of one stimulus in the stream.
 $totalTime = 87; #inter-stimulus interval (onset relative to preceding stimulus in the stream).
@@ -122,7 +122,7 @@ choosing these letters is therefore not an option.
 
 
  trial {
-  trial_duration = 15995;
+  trial_duration = 29995;
   picture { text { caption = "Well done!
   You are now ready to perform the actual experiment.
   Please wait for the experimenter to start the task.
