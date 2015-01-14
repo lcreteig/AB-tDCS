@@ -45,6 +45,19 @@ $totalTime = 87; #inter-stimulus interval (onset relative to preceding stimulus 
 # Fixation cross
 picture{text { caption = "+"; font = "courier new"; font_size = 22;};x=0;y=0;}fixPic;
 
+# Fixation period on first trial
+# this is to send a trigger at the start of each block, and
+# to give participants a bit more time to "get into the task" on the first trial
+trial {
+	stimulus_event {
+		picture fixPic;
+		code="startblock";
+		time = 0;
+		duration = $preFixTime;
+		port_code = 99;
+	}startEvent;
+}startTrial;
+
 # Response prompts
 picture {
 	text { caption = "Which letter was red?"; font_size = 22;};
@@ -70,7 +83,6 @@ trial {
 
 Press Enter whenever you are ready to continue."; font_size = 22;};
 	x = 0; y = 0;};
-	code = "99";
    }breakStim;
  } breakTrial;
 
@@ -81,7 +93,6 @@ Press Enter whenever you are ready to continue."; font_size = 22;};
 
 Please wait for the experimenter."; font_size = 22;};
   x = 0; y = 0;};
-  code = "99";
 } expEnd;
 
 
@@ -256,6 +267,7 @@ out.print("totalTrial\tblock\ttrial\tlag\tT1pos\tT1letter\tT1resp\tT2letter\tT2r
 
 loop b = 1 until b > nBlocks begin
 
+startTrial.present;
 allTrials.shuffle();
 response_manager.set_button_active(21,false); # stop listening for 'return/enter' button presses
 

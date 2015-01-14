@@ -44,6 +44,18 @@ $totalTime = 87; #inter-stimulus interval (onset relative to preceding stimulus 
 # Fixation cross
 picture{text { caption = "+"; font = "courier new"; font_size = 22;};x=0;y=0;}fixPic;
 
+# Fixation period on first trial
+# this is to send a trigger at the start of each block, and
+# to give participants a bit more time to "get into the task" on the first trial
+trial {
+	stimulus_event {
+		picture fixPic;
+		code="startblock";
+		time = 0;
+		duration = $preFixTime;
+	}startEvent;
+}startTrial;
+
 # Response prompts
 picture {
 	text { caption = "Which letter was red?"; font_size = 22;};
@@ -77,7 +89,6 @@ to input these two letters using the keyboard.
 
   Press Enter to continue."; font_size = 22;};
 	x = 0; y = 0;};
-	code = "99";
    }instr1;
  } instruction1;
 
@@ -97,7 +108,6 @@ choosing these letters is therefore not an option.
 
   Press Enter to continue."; font_size = 22;};
 	x = 0; y = 0;};
-	code = "99";
    }instr2;
  } instruction2;
 
@@ -114,7 +124,6 @@ choosing these letters is therefore not an option.
 
   Press Enter to start the practice!"; font_size = 22;};
 	x = 0; y = 0;};
-	code = "99";
    }instr3;
  } instruction3;
 
@@ -135,7 +144,6 @@ If you have any questions about the task, please ask the experimenter now.
 
 Good luck!"; font_size = 22;};
   x = 0; y = 0;};
-  code = "99";
 } practEnd;
 
 
@@ -290,6 +298,8 @@ instruction3.present();
 response_manager.set_button_active(21,false); # stop listening for 'return/enter' button presses
 
 	loop t = 1 until t > nTrials begin
+
+		startTrial.present;
 
 		# randomization
 		stimLetters.shuffle();
