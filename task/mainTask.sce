@@ -14,8 +14,8 @@
 #######################################################################################################
 
 response_matching = simple_matching; # use newest Presentation features for associating responses with stimuli
-active_buttons = 21;
-button_codes = 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21;
+active_buttons = 22;
+button_codes = 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22; #1 through 20 are keyboard letters; 21 is "return" (for subject, to go to next screen); 22 is "home" (for experimenter, to exit)
 write_codes = true; # write event codes to parallel port
 response_logging = log_all;
 response_port_output=false; # don't write response events to parallel port
@@ -346,7 +346,9 @@ response_manager.set_button_active(21,false); # stop listening for 'return/enter
 
 ###### output: letters
 
-		array <string> button2key[20]={"W","E","R","T","Y","P","A","S","D","F","G","H","J","K","Z","X","C","B","N","M"};
+		lastResp = response_manager.last_stimulus_data().button(); # check what the last response was (for experimenter to end task)
+
+		array <string> button2key[20]={"W","E","R","T","Y","P","A","S","D","F","G","H","J","K","Z","X","C","B","N","M"}; # Make sure these match the buttons defined in the experiment file!
 
 		reportT1.present();
 		stimulus_data T1resp = stimulus_manager.last_stimulus_data();
@@ -410,6 +412,11 @@ response_manager.set_button_active(21,false); # stop listening for 'return/enter
 		out.print("\t");
 		out.print(T1T2acc);
 		out.print("\n");
+
+		if lastResp == 22 then # if experimenter pressed the terminate button
+		b = nBlocks; # pretend we've done the final block
+		break; # exit out of trial loop
+		end;
 
 t = t + 1;
 tTot = tTot + 1;

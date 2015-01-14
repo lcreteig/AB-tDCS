@@ -14,8 +14,8 @@
 #######################################################################################################
 
 response_matching = simple_matching; # use newest Presentation features for associating responses with stimuli
-active_buttons = 21;
-button_codes = 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21;
+active_buttons = 22;
+button_codes = 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22; #1 through 20 are keyboard letters; 21 is "return" (for subject, to go to next screen); 22 is "home" (for experimenter, to exit)
 write_codes = false; # write event codes to parallel port
 response_logging = log_all;
 response_port_output=false; # don't write response events to parallel port
