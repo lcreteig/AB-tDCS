@@ -253,11 +253,17 @@ int T1T2acc = 0;
 int T1pos;
 response_data null_ref;
 
-### data are also put in a separate logfile
-string outFile = logfile.subject()+ "_AB_output.txt";
-output_file out = new output_file;
-
-out.open(outFile);
+# Output file
+string outFile = "AB_" + logfile.subject(); # filename with subject ID
+if file_exists( logfile_directory + outFile + ".txt" ) then  #if this exists already
+	int i = 1; # initialize counter
+	loop until !file_exists( logfile_directory + outFile + string(i) + ".txt" ) begin # check whether file with counter exists
+		i = i+1; # if so, increase counter
+	end;
+	outFile = outFile + string(i); # filename with counter appended
+end;
+output_file out = new output_file; # create output file
+out.open(outFile + ".txt"); # open for writing to it
 
 #print column headers
 out.print("totalTrial\tblock\ttrial\tlag\tT1pos\tT1letter\tT1resp\tT2letter\tT2resp\tT1acc\tT2acc\tT1T2acc\n");
