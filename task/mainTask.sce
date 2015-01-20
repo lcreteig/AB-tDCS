@@ -285,9 +285,9 @@ response_manager.set_button_active(21,false); # stop listening for 'return/enter
 		string T2letter = stimLetters[T1pos+allTrials[t]].caption(); # get T2 identity
 
 		# set triggers
-		ABtrial.get_stimulus_event(1).set_port_code(20+allTrials[t]); #stream onset, code is 20 + lag (e.g. "22" for lag 2)
-		ABtrial.get_stimulus_event(T1pos).set_port_code(31); # T1
-		ABtrial.get_stimulus_event(T1pos+allTrials[t]).set_port_code(32); # T2
+		ABtrial.get_stimulus_event(2).set_port_code(20+allTrials[t]); #stream onset, code is 20 + lag (e.g. "22" for lag 2)
+		ABtrial.get_stimulus_event(1+T1pos).set_port_code(31); # T1
+		ABtrial.get_stimulus_event(1+T1pos+allTrials[t]).set_port_code(32); # T2
 
 
 		D1.set_part(1, stimLetters[1]);
@@ -332,6 +332,7 @@ response_manager.set_button_active(21,false); # stop listening for 'return/enter
 		stimLetters[T1pos].redraw();
 		stimLetters[T1pos+allTrials[t]].set_font_color(defColor); # T2
 		stimLetters[T1pos+allTrials[t]].redraw();
+		ABtrial.get_stimulus_event(T1pos+allTrials[t]).set_port_code(port_code_none); # remove trigger from this trial's T2
 
 ###### output: timing
 
