@@ -109,6 +109,26 @@ choosing these letters is therefore not an option.
  } instruction2;
 
 
+trial {
+	trial_duration = forever;
+	trial_type = first_response;
+	stimulus_event{
+	picture { text { caption = "Before the stream of letters starts and after it finishes,
+you'll see a small cross in the center of the screen.
+Please sit still and keep your eyes on this cross at all times.
+
+Once you are asked to type in the letters,
+you are allowed to move around and look at the keyboard.
+Please make sure you are ready again for the next stream to start
+before you type in the second letter.
+
+
+
+	Press Enter to continue."; font_size = 22;};
+	x = 0; y = 0;};
+	}instr3;
+} instruction3;
+
 
  trial {
   trial_duration = forever;
@@ -122,9 +142,7 @@ choosing these letters is therefore not an option.
   Press Enter to start the practice!"; font_size = 22;};
 	x = 0; y = 0;};
    }instr3;
- } instruction3;
-
-
+ } instruction4;
 
 
  trial {
@@ -292,6 +310,7 @@ int T1pos;
 instruction1.present();
 instruction2.present();
 instruction3.present();
+instruction4.present();
 response_manager.set_button_active(21,false); # stop listening for 'return/enter' button presses
 
 startTrial.present();
