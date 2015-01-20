@@ -41,18 +41,15 @@ $stimTime = 87; #duration of one stimulus in the stream.
 $totalTime = 87; #inter-stimulus interval (onset relative to preceding stimulus in the stream).
 } eventTimes;
 
-# Fixation cross
-picture{text { caption = "+"; font = "courier new"; font_size = 22;};x=0;y=0;}fixPic;
-
 # Fixation period on first trial
 # this is to send a trigger at the start of each block, and
 # to give participants a bit more time to "get into the task" on the first trial
 trial {
+trial_duration = $preFixTime;
 	stimulus_event {
 		picture fixPic;
 		code="startblock";
 		time = 0;
-		duration = $preFixTime;
 	}startEvent;
 }startTrial;
 
@@ -194,8 +191,8 @@ picture {text D; x = 0; y = 0; } D15;
 	trial_duration = stimuli_length;
 	trial_type = fixed;
 
-	stimulus_event {  picture fixPic; time = 0; duration = $fixTime; code="prefix"; } fixEventPre;
-	stimulus_event {	picture D1; deltat = $fixTime; duration = $stimTime; code = "D1";} pic1;
+	stimulus_event {  picture fixPic; time = 0; duration = $preFixTime; code="prefix"; } fixEventPre;
+	stimulus_event {	picture D1; deltat = $preFixTime; duration = $stimTime; code = "D1";} pic1;
 	stimulus_event {	picture D2; deltat = $totalTime; duration = $stimTime; code = "D2";} pic2;
 	stimulus_event {	picture D3; deltat = $totalTime; duration = $stimTime; code = "D3";} pic3;
 	stimulus_event {	picture D4; deltat = $totalTime; duration = $stimTime; code = "D4";} pic4;

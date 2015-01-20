@@ -49,11 +49,11 @@ picture{text { caption = "+"; font = "courier new"; font_size = 22;};x=0;y=0;}fi
 # this is to send a trigger at the start of each block, and
 # to give participants a bit more time to "get into the task" on the first trial
 trial {
+trial_duration = $preFixTime;
 	stimulus_event {
 		picture fixPic;
 		code="startblock";
 		time = 0;
-		duration = $preFixTime;
 		port_code = 99;
 	}startEvent;
 }startTrial;
@@ -209,14 +209,11 @@ trial {
 # together with $preFixTime this makes the total ITI
 
 trial{
-
-	trial_duration=stimuli_length;
-	trial_type=fixed;
+	trial_duration = $postRespTime;
 	stimulus_event{
 		picture fixPic;
-		duration=$postRespTime;
+		code = "post-resp_fix";
 	}itiEventPost;
-
 }itiTrialPost;
 
 ###################################################################################
