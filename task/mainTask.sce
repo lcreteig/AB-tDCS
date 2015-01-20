@@ -142,7 +142,7 @@ picture {text D; x = 0; y = 0; } D15;
 	trial_duration = stimuli_length;
 	trial_type = fixed;
 
-	stimulus_event {  picture fixPic; time = 0; duration = $preFixTime; code="prefix"; port_code = 10;} fixEventPre;
+	stimulus_event {  picture fixPic; time = 0; duration = $preFixTime; code="pre-stream_fix"; port_code = 10;} fixEventPre;
 	stimulus_event {	picture D1; deltat = $preFixTime; duration = $stimTime; code = "D1";} pic1;
 	stimulus_event {	picture D2; deltat = $totalTime; duration = $stimTime; code = "D2";} pic2;
 	stimulus_event {	picture D3; deltat = $totalTime; duration = $stimTime; code = "D3";} pic3;
@@ -158,7 +158,7 @@ picture {text D; x = 0; y = 0; } D15;
 	stimulus_event {	picture D13; deltat = $totalTime; duration = $stimTime; code = "D13";} pic13;
 	stimulus_event {	picture D14; deltat = $totalTime; duration = $stimTime; code = "D14";} pic14;
 	stimulus_event {	picture D15; deltat = $totalTime; duration = $stimTime; code = "D15";} pic15;
-  stimulus_event {  picture fixPic; deltat = $stimTime; duration = $postFixTime; code="postfix"; port_code = 40;} fixEventPost;
+  stimulus_event {  picture fixPic; deltat = $stimTime; duration = $postFixTime; code="post-stream_fix"; port_code = 40;} fixEventPost;
 
  } ABtrial;
 
@@ -322,8 +322,6 @@ response_manager.set_button_active(21,false); # stop listening for 'return/enter
 		pic14.set_stimulus(D14);
 		pic15.set_stimulus(D15);
 
-		int preStimNr = stimulus_manager.stimulus_count();
-
 		ABtrial.present();
 
 		# set all targets back to gray
@@ -333,26 +331,6 @@ response_manager.set_button_active(21,false); # stop listening for 'return/enter
 		stimLetters[T1pos+allTrials[t]].set_font_color(defColor); # T2
 		stimLetters[T1pos+allTrials[t]].redraw();
 		ABtrial.get_stimulus_event(T1pos+allTrials[t]).set_port_code(port_code_none); # remove trigger from this trial's T2
-
-###### output: timing
-
-		stimulus_data t1 = stimulus_manager.get_stimulus_data(preStimNr+6);
-		stimulus_data d1 = stimulus_manager.get_stimulus_data(preStimNr+7);
-		stimulus_data stim2 = stimulus_manager.get_stimulus_data(preStimNr+8);
-		stimulus_data fix = stimulus_manager.get_stimulus_data(preStimNr+1);
-		stimulus_data stim1 = stimulus_manager.get_stimulus_data(preStimNr+2);
-		int timeT1 = t1.time();
-		int timeD1 = d1.time();
-		int timeStim2 = stim2.time();
-		int timeFix = fix.time();
-		int timeStim1 = stim1.time();
-
-		term.print(timeD1 - timeT1);
-		term.print(" | ");
-		term.print(timeStim2 - timeD1);
-		term.print(" | ");
-		term.print(timeStim1 - timeFix);
-		term.print(" \n ");
 
 ###### response
 
