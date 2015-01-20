@@ -254,7 +254,7 @@ int T1acc = 0;
 int T2acc = 0;
 int T1T2acc = 0;
 int T1pos;
-
+response_data null_ref;
 
 ### data are also put in a separate logfile
 string outFile = logfile.subject()+ "_AB_output.txt";
@@ -356,9 +356,9 @@ response_manager.set_button_active(21,false); # stop listening for 'return/enter
 		term.print(timeStim1 - timeFix);
 		term.print(" \n ");
 
-###### output: letters
+###### response
 
-		lastResp = response_manager.last_stimulus_data().button(); # check what the last response was (for experimenter to end task)
+		response_data lastResp = response_manager.last_response_data(); # check what the last response was (for experimenter to end task)
 
 		array <string> button2key[20]={"W","E","R","T","Y","P","A","S","D","F","G","H","J","K","Z","X","C","B","N","M"}; # Make sure these match the buttons defined in the experiment file!
 
@@ -425,9 +425,11 @@ response_manager.set_button_active(21,false); # stop listening for 'return/enter
 		out.print(T1T2acc);
 		out.print("\n");
 
-		if lastResp == 22 then # if experimenter pressed the terminate button
-		b = nBlocks; # pretend we've done the final block
-		break; # exit out of trial loop
+		if lastResp != null_ref then
+			if lastResp.button() == 22 then # if experimenter pressed the terminate button
+			b = nBlocks; # pretend we've done the final block
+			break; # exit out of trial loop
+			end;
 		end;
 
 t = t + 1;
