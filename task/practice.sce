@@ -297,9 +297,9 @@ instruction2.present();
 instruction3.present();
 response_manager.set_button_active(21,false); # stop listening for 'return/enter' button presses
 
-	loop t = 1 until t > nTrials begin
+startTrial.present();
 
-		startTrial.present;
+	loop t = 1 until t > nTrials begin
 
 		# randomization
 		stimLetters.shuffle();

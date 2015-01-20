@@ -267,7 +267,7 @@ out.print("totalTrial\tblock\ttrial\tlag\tT1pos\tT1letter\tT1resp\tT2letter\tT2r
 
 loop b = 1 until b > nBlocks begin
 
-startTrial.present;
+startTrial.present();
 allTrials.shuffle();
 response_manager.set_button_active(21,false); # stop listening for 'return/enter' button presses
 
