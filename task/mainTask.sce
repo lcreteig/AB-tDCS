@@ -76,7 +76,8 @@ picture {
 
 trial {
   trial_duration = forever;
-  trial_type = first_response;
+	trial_type = specific_response;
+	terminator_button = 21, 22;
   stimulus_event{
   picture { text { caption = "You can take a short break now!
 
@@ -87,12 +88,11 @@ Press Enter whenever you are ready to continue."; font_size = 22;};
  } breakTrial;
 
 
- trial {
-  trial_duration = 15995;
-  picture { text { caption = "All done!
-
-Please wait for the experimenter."; font_size = 22;};
-  x = 0; y = 0;};
+trial {
+	trial_duration = 15995;
+	picture { text { caption = "Please wait for the experimenter.";
+	font_size = 22;};
+	x = 0; y = 0;};
 } expEnd;
 
 
@@ -175,7 +175,6 @@ trial {
 	picture question1;
 	time = 0;
 	duration = 15000;
-   target_button = 1;
    stimulus_time_in = 0;
    stimulus_time_out = never;
    response_active = true;
@@ -195,7 +194,6 @@ trial {
 	picture question2;
 	time = 0;
 	duration = 1500000;
-   target_button = 1;
    stimulus_time_in = 0;
    stimulus_time_out = never;
    response_active = true;
@@ -268,13 +266,19 @@ out.open(outFile + ".txt"); # open for writing to it
 #print column headers
 out.print("totalTrial\tblock\ttrial\tlag\tT1pos\tT1letter\tT1resp\tT2letter\tT2resp\tT1acc\tT2acc\tT1T2acc\n");
 
+# create output port variable
+#output_port oport = output_port_manager.get_port(1);
+
 loop b = 1 until b > nBlocks begin
 
 startTrial.present();
+#oport.send_code(254); # trigger (re)start of EEG recording
 allTrials.shuffle();
 response_manager.set_button_active(21,false); # stop listening for 'return/enter' button presses
 
 	loop t = 1 until t > nTrials begin
+
+###### stream
 
 		# randomization
 		stimLetters.shuffle();
@@ -428,8 +432,10 @@ end;
 response_manager.set_button_active(21,true); # resume listening for 'return/enter' button presses
 if b < nBlocks then
 breakTrial.present();
+#oport.send_code(255); # trigger pause of EEG recording
 elseif b == nBlocks then
 expEnd.present();
+#oport.send_code(255); # trigger pause of EEG recording
 end;
 
 b = b +1;

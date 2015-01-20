@@ -41,6 +41,9 @@ $stimTime = 87; #duration of one stimulus in the stream.
 $totalTime = 87; #inter-stimulus interval (onset relative to preceding stimulus in the stream).
 } eventTimes;
 
+# Fixation cross
+picture{text { caption = "+"; font = "courier new"; font_size = 22;};x=0;y=0;}fixPic;
+
 # Fixation period on first trial
 # this is to send a trigger at the start of each block, and
 # to give participants a bit more time to "get into the task" on the first trial
@@ -242,7 +245,6 @@ trial {
 	picture question1;
 	time = 0;
 	duration = 15000;
-   target_button = 1;
    stimulus_time_in = 0;
    stimulus_time_out = never;
    response_active = true;
@@ -262,7 +264,6 @@ trial {
 	picture question2;
 	time = 0;
 	duration = 1500000;
-   target_button = 1;
    stimulus_time_in = 0;
    stimulus_time_out = never;
    response_active = true;
