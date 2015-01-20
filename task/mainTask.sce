@@ -370,14 +370,20 @@ response_manager.set_button_active(21,false); # stop listening for 'return/enter
 			itiEventPost.set_port_code(70);
 		end;
 
-		if T1letter == T1key && T2letter == T2key then			### 3 = both correct
+		if T1letter == T2key && T2letter == T1key then				### 3 = both incorrect: T1 and T2 identities were swapped
 			T1T2acc = 3;
-		elseif T1letter != T1key && T2letter != T2key then		### 0 = both incorrect
-			T1T2acc = 0;
-		elseif T1letter == T1key && T2letter != T2key then		### 1 = only T1 correct (blink trial)
+		elseif T1letter == T2key && T2letter != T1key then		### 1 = both incorrect: T1 identity given as T2 answer
 			T1T2acc = 1;
-		elseif T1letter != T1key && T2letter == T2key then		### 2 = only T2 correct
+		elseif T1letter != T2key && T2letter == T1key then		### 2 = both incorrect: T2 identity given as T1 answer
 			T1T2acc = 2;
+		elseif T1letter != T1key && T2letter != T2key then		### 0 = both incorrect: otherwise
+			T1T2acc = 0;
+		elseif T1letter == T1key && T2letter == T2key then		### 13 = both correct (noblink trial)
+			T1T2acc = 13;
+		elseif T1letter == T1key && T2letter != T2key then		### 11 = only T1 correct (blink trial)
+			T1T2acc = 11;
+		elseif T1letter != T1key && T2letter == T2key then		### 12 = only T2 correct
+			T1T2acc = 12;
 		end;
 
 		itiTrialPost.present();
