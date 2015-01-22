@@ -8,11 +8,13 @@ task/log/*
 # Windows / OSX files
 *.DS_store
 Thumbs.db
+*.smbdelete*
 
 # Office files
 *.xlsx
 
 # Folders
+doc/*
 IRB/*
 data/*
 figures/*
