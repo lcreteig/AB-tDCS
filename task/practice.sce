@@ -15,7 +15,7 @@
 
 response_matching = simple_matching; # use newest Presentation features for associating responses with stimuli
 active_buttons = 21;
-button_codes = 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22; #1 through 20 are keyboard letters; 21 is "return" (for subject, to go to next screen); 22 is "home" (for experimenter, to exit)
+button_codes = 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21; #1 through 20 are keyboard letters; 21 is "return" (for subject, to go to next screen); 22 is "home" (for experimenter, to exit)
 write_codes = false; # write event codes to parallel port
 response_logging = log_all;
 response_port_output=false; # don't write response events to parallel port
@@ -144,7 +144,7 @@ before you type in the second letter.
 
   Press Enter to start the practice!"; font_size = 22;};
 	x = 0; y = 0;};
-   }instr3;
+   }instr4;
  } instruction4;
 
 
@@ -244,10 +244,8 @@ trial {
 	stimulus_event {
 	picture question1;
 	time = 0;
-	duration = 15000;
-   stimulus_time_in = 0;
-   stimulus_time_out = never;
-   response_active = true;
+	duration = response;
+  response_active = true;
    code = "Q1";
 	} target1;
 
@@ -263,9 +261,7 @@ trial {
 	stimulus_event {
 	picture question2;
 	time = 0;
-	duration = 1500000;
-   stimulus_time_in = 0;
-   stimulus_time_out = never;
+	duration = response;
    response_active = true;
    code = "Q2";
 	} target2;

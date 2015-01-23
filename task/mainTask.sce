@@ -54,7 +54,6 @@ trial_duration = $preFixTime;
 		picture fixPic;
 		code="startblock";
 		time = 0;
-		port_code = 99;
 	}startEvent;
 }startTrial;
 
@@ -174,9 +173,7 @@ trial {
 	stimulus_event {
 	picture question1;
 	time = 0;
-	duration = 15000;
-   stimulus_time_in = 0;
-   stimulus_time_out = never;
+	duration = response;
    response_active = true;
    code = "Q1";
 	 port_code = 50;
@@ -193,9 +190,7 @@ trial {
 	stimulus_event {
 	picture question2;
 	time = 0;
-	duration = 1500000;
-   stimulus_time_in = 0;
-   stimulus_time_out = never;
+	duration = response;
    response_active = true;
    code = "Q2";
 	} target2;
@@ -221,8 +216,8 @@ trial{
 begin_pcl;
 
 # Experiment parameters
-int nBlocks = 5; #estimate that 4 blocks of around 50 trials can be done in 20 minutes; 1 extra block for fast subjects
-int nTrials = 51;
+int nBlocks = 2; #estimate that 4 blocks of around 50 trials can be done in 20 minutes; 1 extra block for fast subjects
+int nTrials = 6;
 
 # Stimulus properties
 rgb_color defColor = rgb_color(128,128,128);
@@ -266,13 +261,9 @@ out.open(outFile + ".txt"); # open for writing to it
 #print column headers
 out.print("totalTrial\tblock\ttrial\tlag\tT1pos\tT1letter\tT1resp\tT2letter\tT2resp\tT1acc\tT2acc\tT1T2acc\n");
 
-# create output port variable
-#output_port oport = output_port_manager.get_port(1);
-
 loop b = 1 until b > nBlocks begin
 
 startTrial.present();
-#oport.send_code(254); # trigger (re)start of EEG recording
 allTrials.shuffle();
 response_manager.set_button_active(21,false); # stop listening for 'return/enter' button presses
 
@@ -340,7 +331,7 @@ response_manager.set_button_active(21,false); # stop listening for 'return/enter
 		stimLetters[T1pos].redraw();
 		stimLetters[T1pos+allTrials[t]].set_font_color(defColor); # T2
 		stimLetters[T1pos+allTrials[t]].redraw();
-		ABtrial.get_stimulus_event(T1pos+allTrials[t]).set_port_code(port_code_none); # remove trigger from this trial's T2
+		ABtrial.get_stimulus_event(1+T1pos+allTrials[t]).set_port_code(port_code_none); # remove trigger from this trial's T2
 
 ###### response
 
@@ -432,10 +423,8 @@ end;
 response_manager.set_button_active(21,true); # resume listening for 'return/enter' button presses
 if b < nBlocks then
 breakTrial.present();
-#oport.send_code(255); # trigger pause of EEG recording
 elseif b == nBlocks then
 expEnd.present();
-#oport.send_code(255); # trigger pause of EEG recording
 end;
 
 b = b +1;
