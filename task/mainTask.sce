@@ -54,6 +54,7 @@ trial_duration = $preFixTime;
 		picture fixPic;
 		code="startblock";
 		time = 0;
+		port_code = 254; # trigger (re)start of EEG recording
 	}startEvent;
 }startTrial;
 
@@ -92,6 +93,7 @@ trial {
 	picture { text { caption = "Please wait for the experimenter.";
 	font_size = 22;};
 	x = 0; y = 0;};
+	port_code = 255; # trigger pause of EEG recording
 } expEnd;
 
 
