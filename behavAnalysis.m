@@ -24,7 +24,7 @@ end
 
 %% Plot T1 accuracy
 
-figure
+figure('color', 'w')
 hold on
 title('T1 accuracy', 'fontSize', 16)
 plot(lags,T1acc, 'color', [0.7 0.7 0.7]) % plot single subject data
@@ -37,7 +37,7 @@ ylabel('proportion correct', 'fontSize', 14)
 
 %% Plot T2|T1 accuracy
 
-figure
+figure('color', 'w')
 hold on
 title('T2|T1 accuracy', 'fontSize', 16)
 plot(lags,T2ifT1acc, 'color', [0.7 0.7 0.7]) % plot single subject data
