@@ -336,7 +336,7 @@ response_manager.set_button_active(21,false); # stop listening for 'return/enter
 		ABtrial.get_stimulus_event(1+T1pos+allTrials[t]).set_port_code(port_code_none); # remove trigger from this trial's T2
 
 ###### response
-
+		response_manager.set_button_active(22,false); # stop listening for 'home' button presses
 		response_data lastResp = response_manager.last_response_data(); # check what the last response was (for experimenter to end task)
 
 		array <string> button2key[20]={"W","E","R","T","Y","P","A","S","D","F","G","H","J","K","Z","X","C","B","N","M"}; # Make sure these match the buttons defined in the experiment file!
@@ -367,7 +367,7 @@ response_manager.set_button_active(21,false); # stop listening for 'return/enter
 			itiEventPost.set_port_code(70);
 		end;
 
-		if T1letter == T2key && T2letter == T1key then				### 3 = both incorrect: T1 and T2 identities were swapped
+		if T1letter == T2key && T2letter == T1key then			### 3 = both incorrect: T1 and T2 identities were swapped
 			T1T2acc = 3;
 		elseif T1letter == T2key && T2letter != T1key then		### 1 = both incorrect: T1 identity given as T2 answer
 			T1T2acc = 1;
@@ -420,6 +420,7 @@ response_manager.set_button_active(21,false); # stop listening for 'return/enter
 t = t + 1;
 tTot = tTot + 1;
 
+response_manager.set_button_active(22,true) # resume listening for 'home' button presses
 end;
 
 response_manager.set_button_active(21,true); # resume listening for 'return/enter' button presses
