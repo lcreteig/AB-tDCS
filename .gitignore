@@ -5,6 +5,11 @@ task/log/*
 # Matlab files
 *.asv
 
+# R/Rstudio files
+*.RData
+*.RHistory
+*.Rproj
+
 # Windows / OSX files
 *.DS_store
 Thumbs.db
@@ -23,3 +28,6 @@ figures/*
 !IRB/2014-BC-3883
 IRB/2014-BC-3883/*
 !IRB/2014-BC-3883/README.md
+
+.Rproj.user/
+.Rproj.user
