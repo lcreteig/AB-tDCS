@@ -1,7 +1,3 @@
-# TO DO:
-# - Deal with subjects that have multiple data files per block (because task crashed)
-# - Specify factors
-
 dataDir = "data/main" #data directory (relative to project root)
 subs2exclude = c("S04", "S14") 
 subID = list.dirs(dataDir, full.names = FALSE, recursive = FALSE) # get subject names
@@ -39,9 +35,19 @@ for (iSub in subID) {
   for (iStim in tDCScode) {
     for (iBlock in block) {
       
-      # load file
-      dataFile = Sys.glob(file.path(dataDir, iSub, paste("AB_", iSub, "_*", iStim, "_", iBlock, ".txt", sep = "")))
-      ABdata <- read.table(dataFile, header = TRUE) #load single dubject data
+      # load file(s)
+      dataFiles = Sys.glob(file.path(dataDir, iSub, paste("AB_", iSub, "_*", iStim, "_", iBlock, "*.txt", sep = ""))) #file name
+      
+      for (iFile in 1:length(dataFiles)) { # loop in the case of multiple files
+        if (iFile == 1) {
+          ABdata <- read.table(dataFiles[iFile], header = TRUE) #load single subject data
+          next
+        } else {
+          tempData <- read.table(dataFiles[iFile], header = TRUE) # load next file, if there is one
+          ABdata <- merge(ABdata, tempData, all = TRUE, sort = FALSE) # paste on to bottom of data frame
+        }
+        
+      }
       
       for (iLag in lag) { # for each lag
         
@@ -65,7 +71,7 @@ for (iSub in subID) {
       
     }
     
-    if (grepl(paste("1", iStim, sep = ""), dataFile)) { # if current file was the 1st session
+    if (grepl(paste("1", iStim, sep = ""), dataFiles[iFile])) { # if current file was the 1st session
       groupData$first.session[groupData$subject == iSub] <- stimulation[tDCScode == iStim] # store the stimulation type
     }
     
