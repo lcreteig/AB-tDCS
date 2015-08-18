@@ -26,9 +26,9 @@ subjectInfo <- read.table(file.path(dataDir, "subject_info.txt"), header = TRUE,
 groupData$subject <- rep(subID, each = repRows)
 groupData$gender <- rep(subjectInfo$gender, each = repRows)
 groupData$date.of.birth <- rep(as.Date(as.Date(subjectInfo$date.of.birth, "%d-%b-%Y")), each = repRows) # convert strings to R date format
-groupData$stimulation <- rep(stimulation, each = length(block)*length(lag), times = numSubjects)
-groupData$block <- rep(block, each = length(lag), times = numSubjects)
-groupData$lag <- rep(lag, times = numSubjects)
+groupData$stimulation <- factor(rep(stimulation, each = length(block)*length(lag), times = numSubjects))
+groupData$block <- factor(rep(block, each = length(lag), times = numSubjects), levels = block)
+groupData$lag <- factor(rep(lag, times = numSubjects))
 
 for (iSub in subID) {
   
@@ -71,4 +71,5 @@ for (iSub in subID) {
     
   }
 }
+groupData$first.session <- factor(groupData$first.session)
 
