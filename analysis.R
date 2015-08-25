@@ -56,10 +56,10 @@ for (iSub in subID) {
         numTrials <- sum(trialsLag) # number of trials of this lag
         
         trialsT1 <- ABdata$T1acc == 1 # indices of T1 correct trials
-        T1 <- sum(trialsT1 & trialsLag) / numTrials # proportion of T1 correct trials
+        T1 <- sum(trialsT1 & trialsLag) / numTrials * 100 # percentage of T1 correct trials
         
         trialsT2 <- ABdata$T2acc == 1 # indices of T2 correct trials
-        nonBlink <- sum(ABdata$T2acc[trialsLag & trialsT1 & trialsT2]) / numTrials # proportion of T2 given T1 correct trials
+        nonBlink <- sum(ABdata$T2acc[trialsLag & trialsT1 & trialsT2]) / numTrials * 100 # percentage of T2 given T1 correct trials
         
         # insert into data frame
         cellIdx = groupData$subject == iSub & groupData$stimulation == stimulation[tDCScode == iStim] & groupData$block == iBlock & groupData$lag == iLag # get index of current cell
