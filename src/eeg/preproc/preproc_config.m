@@ -23,8 +23,8 @@ preproc.do_removechans = [0 0]; % 4. remove unused channels from data set
 preproc.do_chanlookup = [0 0]; % 5. import standard channel locations
 preproc.do_filter = [0 1]; % 6. high-pass filter the data
 
-preproc.do_recodeTrigs = [0 0]; % 7. recode original marker values to more meaningful ones for analysis
-preproc.do_epoch = [1 0]; % 8. split continous data into epochs (not yet separated per condition)
+preproc.do_recodeTrigs = [1 0]; % 7. recode original marker values to more meaningful ones for analysis
+preproc.do_epoch = [0 0]; % 8. split continous data into epochs (not yet separated per condition)
 preproc.do_baseline = [0 0]; % 9. subtract a (pre-stimulus) baseline from each epoch
 
 preproc.do_trialrej = [0 0]; % 10. manually identify trials for rejection and save trial indices to file
@@ -144,12 +144,25 @@ trig.T2correctCode = {'1', '0'};
 trig.lag = {'short', 'long'};
 trig.lagCode = {'3', '8'};
 
+trig.conditions = cell(prod([numel(trig.lag) numel(trig.T2correct) numel(trig.block) numel(trig.session)] ),2);
+iCond = 1;
+for iSession = 1:length(trig.session)
+    for iBlock = 1:length(trig.block)
+        for iBlink = 1:length(trig.T2correct)
+            for iLag = 1:length(trig.lag)
+                trig.conditions{iCond,1} = [trig.tDCS{iSession} '_' trig.block{iBlock} '_' trig.T2correct{iBlink} '_' trig.lag{iLag}]; % specify full condition label
+                trig.conditions{iCond,2} = str2double([num2str(trig.T1) trig.tDCScode{iSession} trig.blockCode{iBlock} trig.T2correctCode{iBlink} trig.lagCode{iLag}]); % specify full trigger
+                iCond = iCond + 1;
+            end
+        end
+    end
+end
 
-% trig.conditions={
-%     'anodal_pre_noblink_short'  str2double([num2str(trig.T1) '1' '1' '1' '3']); % T2 & T1 correct ('1'), lag 3 trial ('3')
-%     'anodal_pre_noblink_long'   str2double([num2str(trig.T1) '1' '8']); % T2 & T1 correct ('1'), lag 8 trial ('8')
-%     'anodal_pre_blink_short'    str2double([num2str(trig.T1) '0' '3']); % T1 correct % T2 incorrect ('0'), lag 3 trial ('3')
-%     'anodal_pre_blink_long'     str2double([num2str(trig.T1) '0' '8']); % T1 correct % T2 incorrect ('0'), lag 8 trial ('8')
+% trig.conditions{1,:}=
+%     'anodal_pre_noblink_short'
+%     'anodal_pre_noblink_long'
+%     'anodal_pre_blink_short'
+%     'anodal_pre_blink_long'
 %     'anodal_tDCS_noblink_short'
 %     'anodal_tDCS_noblink_long'
 %     'anodal_tDCS_blink_short'

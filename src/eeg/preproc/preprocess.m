@@ -194,18 +194,7 @@ if preproc.(pipeLine{step})(1)
     
     sessionIdx = strcmpi(currSession, trig.session);
     blockIdx = strcmpi(currBlock, trig.block);
-    
-    % for each noblink/blink and short/long lag combination
-    conditions = cell(prod([numel(trig.T2correct) numel(trig.lag)]),2); 
-    iCond = 1;
-    for iBlink = 1:length(trig.T2correct)
-        for iLag = 1:length(trig.lag)
-            conditions{iCond,1} = [trig.tDCS{sessionIdx} '_' trig.block{blockIdx} '_' trig.T2correct{iBlink} '_' trig.lag{iLag}]; % specify full condition label
-            conditions{iCond,2} = str2double([num2str(trig.T1) trig.tDCScode{sessionIdx} trig.blockCode{blockIdx} trig.T2correctCode{iBlink} trig.lagCode{iLag}]); % specify full trigger
-            iCond = iCond + 1;
-        end
-    end
-        
+         
     triggerCodes = cell2mat({EEG.event.type});
     T1idx = find(triggerCodes == trig.T1); % index of events representing T1 onset
     lag = triggerCodes(triggerCodes == trig.streamLag3 | triggerCodes == trig.streamLag8); % trigger codes for lag (3, 8)
@@ -217,20 +206,20 @@ if preproc.(pipeLine{step})(1)
     
     for iEvent = 1:length(T1idx) % loop over T1 triggers (one for each trial)
         if T1ans(iEvent) == trig.T2QT1corr && T2ans(iEvent) == trig.itiT2corr && lag(iEvent) == trig.streamLag3 % if on present trial: T1 correct, T2 correct, lag 3
-            condIdx = strcmp([trig.tDCS{sessionIdx} '_' trig.block{blockIdx} '_' 'noblink_short'], conditions(:,1)); % find index of 'noblink_short' condition label
-            EEG.event(T1idx(iEvent)).type = conditions{condIdx,2}; % assign matching trigger to T1 onset
+            condIdx = strcmp([trig.tDCS{sessionIdx} '_' trig.block{blockIdx} '_' 'noblink_short'], trig.conditions(:,1)); % find index of 'noblink_short' condition label
+            EEG.event(T1idx(iEvent)).type = trig.conditions{condIdx,2}; % assign matching trigger to T1 onset
             
         elseif T1ans(iEvent) == trig.T2QT1corr && T2ans(iEvent) == trig.itiT2corr && lag(iEvent) == trig.streamLag8 % if on present trial: T1 correct, T2 correct, lag 8
-            condIdx = strcmp([trig.tDCS{sessionIdx} '_' trig.block{blockIdx} '_' 'noblink_long'], conditions(:,1)); % find index of 'noblink_long' condition label
-            EEG.event(T1idx(iEvent)).type = conditions{condIdx,2}; 
+            condIdx = strcmp([trig.tDCS{sessionIdx} '_' trig.block{blockIdx} '_' 'noblink_long'], trig.conditions(:,1)); % find index of 'noblink_long' condition label
+            EEG.event(T1idx(iEvent)).type = trig.conditions{condIdx,2}; 
             
         elseif T1ans(iEvent) == trig.T2QT1corr && T2ans(iEvent) == trig.itiT2err && lag(iEvent) == trig.streamLag3 % if on present trial: T1 correct, T2 incorrect, lag 3
-            condIdx = strcmp([trig.tDCS{sessionIdx} '_' trig.block{blockIdx} '_' 'blink_short'], conditions(:,1)); % find index of 'blink_short' condition label
-            EEG.event(T1idx(iEvent)).type = conditions{condIdx,2};
+            condIdx = strcmp([trig.tDCS{sessionIdx} '_' trig.block{blockIdx} '_' 'blink_short'], trig.conditions(:,1)); % find index of 'blink_short' condition label
+            EEG.event(T1idx(iEvent)).type = trig.conditions{condIdx,2};
             
         elseif T1ans(iEvent) == trig.T2QT1corr && T2ans(iEvent) == trig.itiT2err && lag(iEvent) == trig.streamLag8 % if on present trial: T1 correct, T2 incorrect, lag 8
-            condIdx = strcmp([trig.tDCS{sessionIdx} '_' trig.block{blockIdx} '_' 'blink_long'], conditions(:,1)); % find index of 'blink_long' condition label
-            EEG.event(T1idx(iEvent)).type = conditions{condIdx,2};
+            condIdx = strcmp([trig.tDCS{sessionIdx} '_' trig.block{blockIdx} '_' 'blink_long'], trig.conditions(:,1)); % find index of 'blink_long' condition label
+            EEG.event(T1idx(iEvent)).type = trig.conditions{condIdx,2};
         end
     end
     
