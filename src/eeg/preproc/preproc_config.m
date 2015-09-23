@@ -2,39 +2,41 @@
 %-set channels to zero before trial rej
 %-fix crash inequal triggers
 %-build triggers in config
-%-trial rejection, also for newer matlab versions
+%-single epoch interpolation
 %-epoch structure
+
+%-automated trial rejection
 
 %% Workflow
 
-paths.subs2process = {'S01', 'S02' 'S03', 'S05', 'S06'}; % list of all subjects to process
-paths.sessions2process = {'B', 'D'}; % list of all sessions to process
-paths.blocks2process = {'pre', 'tDCS', 'post'}; % list of all blocks to process
+paths.subs2process = {'S01'}; % list of all subjects to process
+paths.sessions2process = {'B'}; % list of all sessions to process
+paths.blocks2process = {'pre'}; % list of all blocks to process
 
 % Lists all pre-processing steps in the order they will be carried out
 % First element: if true, perform this step. 2nd element: if true, write EEG data to disk afterwards
 
-preproc.do_importdata = 1; % 1. import the data from the bdf files into EEGlab
-preproc.do_reref = [1 0]; % 2. re-reference the data to mastoids
-preproc.do_bipolar = [1 0]; % 3. bipolarize external channels (subtract pairs from each other, e.g. both HEOG channels)
-preproc.do_removechans = [1 0]; % 4. remove unused channels from data set
-preproc.do_chanlookup = [1 0]; % 5. import standard channel locations
-preproc.do_filter = [1 1]; % 6. high-pass filter the data
+preproc.do_importdata = 0; % 1. import the data from the bdf files into EEGlab
+preproc.do_reref = [0 0]; % 2. re-reference the data to mastoids
+preproc.do_bipolar = [0 0]; % 3. bipolarize external channels (subtract pairs from each other, e.g. both HEOG channels)
+preproc.do_removechans = [0 0]; % 4. remove unused channels from data set
+preproc.do_chanlookup = [0 0]; % 5. import standard channel locations
+preproc.do_filter = [0 1]; % 6. high-pass filter the data
 
 preproc.do_recodeTrigs = [0 0]; % 7. recode original marker values to more meaningful ones for analysis
-preproc.do_epoch = [0 0]; % 8. split continous data into epochs (not yet separated per condition)
+preproc.do_epoch = [1 0]; % 8. split continous data into epochs (not yet separated per condition)
 preproc.do_baseline = [0 0]; % 9. subtract a (pre-stimulus) baseline from each epoch
 
 preproc.do_trialrej = [0 0]; % 10. manually identify trials for rejection and save trial indices to file
 preproc.do_removetrials = [0 0]; % 11. remove trials previously identified for rejection (if they exist)
 preproc.do_markbadchans = [0 0]; % 12. set all values at bad channels to zero
 preproc.do_interpchans = [0 0]; % 13. interpolate (subset of) bad channels
-%preproc.do_averef = [0 0]; % 14. re-reference the data to the common average
-preproc.do_ica = [0 1]; % 14. run independent component preproc
+preproc.do_averef = [0 0]; % 14. re-reference the data to the common average
+preproc.do_ica = [0 1]; % 15. run independent component preproc
 
-preproc.do_removeIC = [0 0]; % 15. subtract marked components from the data
-preproc.do_laplacian = [0 0]; % 16. apply scalp laplacian
-preproc.do_conditions = [0 1]; % 17. re-epoch into separate conditions
+preproc.do_removeIC = [0 0]; % 16. subtract marked components from the data
+preproc.do_laplacian = [0 0]; % 17. apply scalp laplacian
+preproc.do_conditions = [0 1]; % 18. re-epoch into separate conditions
 
 %% paths
 

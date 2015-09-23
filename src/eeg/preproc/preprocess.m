@@ -1,6 +1,7 @@
 
 timeStamp = datestr(now, 'yyyy-mm-dd_HH-MM-SS'); % get present time and date, for tagging directories
-pipeLine = fieldnames(preproc); % get names of all preprocessing steps
+stepNames = fieldnames(preproc);
+pipeLine = stepNames(strncmp('do_', stepNames, length('do_'))); % get names of all preprocessing steps in structure
 
 % loop over each file
 for iSub = 1:length(paths.subs2process)
@@ -77,7 +78,7 @@ step = step+1;
 if preproc.(pipeLine{step})(1)
     
     if ~preproc.(pipeLine{step-1})(1) % if the previous processing step should not be redone
-        EEG = loadEEG(paths, rawFile, pipeLine, step);
+        EEG = loadEEG(paths, rawFile, pipeLine);
     end
     
     fprintf('    Bipolarizing external channels...\n')
@@ -117,7 +118,7 @@ step = step+1;
 if preproc.(pipeLine{step})(1)
     
     if ~preproc.(pipeLine{step-1})(1)
-        EEG = loadEEG(paths, rawFile, pipeLine, step);
+        EEG = loadEEG(paths, rawFile, pipeLine);
     end
     
     fprintf('    Removing unused channels...\n')
@@ -140,7 +141,7 @@ step = step+1;
 if preproc.(pipeLine{step})(1)
     
     if ~preproc.(pipeLine{step-1})(1)
-        EEG = loadEEG(paths, rawFile, pipeLine, step);
+        EEG = loadEEG(paths, rawFile, pipeLine);
     end
     
     fprintf('    Looking up channel info...\n')
@@ -163,7 +164,7 @@ step = step+1;
 if preproc.(pipeLine{step})(1)
     
     if ~preproc.(pipeLine{step-1})(1)
-        EEG = loadEEG(paths, rawFile, pipeLine, step);
+        EEG = loadEEG(paths, rawFile, pipeLine);
     end
     
     fprintf('    High-pass filtering the data...\n')
@@ -186,7 +187,7 @@ step = step+1;
 if preproc.(pipeLine{step})(1)
     
     if ~preproc.(pipeLine{step-1})(1)
-        EEG = loadEEG(paths, rawFile, pipeLine, step);
+        EEG = loadEEG(paths, rawFile, pipeLine);
     end
     
     fprintf('    Recoding marker values...\n')
@@ -249,7 +250,7 @@ step = step+1;
 if preproc.(pipeLine{step})(1)
     
     if ~preproc.(pipeLine{step-1})(1)
-        EEG = loadEEG(paths, rawFile, pipeLine, step);
+        EEG = loadEEG(paths, rawFile, pipeLine);
     end
     
     fprintf('    Epoching the data...\n')
@@ -272,7 +273,7 @@ step = step+1;
 if preproc.(pipeLine{step})(1)
     
     if ~preproc.(pipeLine{step-1})(1)
-       EEG = loadEEG(paths, rawFile, pipeLine, step);
+       EEG = loadEEG(paths, rawFile, pipeLine);
     end
     
     fprintf('    Performing baseline correction ...\n')
