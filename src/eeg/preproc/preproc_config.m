@@ -1,7 +1,5 @@
 %TO DO:
 %-set channels to zero before trial rej
-%-fix crash inequal triggers
-%-build triggers in config
 %-single epoch interpolation
 %-epoch structure
 
@@ -9,7 +7,7 @@
 
 %% Workflow
 
-paths.subs2process = {'S01'}; % list of all subjects to process
+paths.subs2process = {'S12'}; % list of all subjects to process
 paths.sessions2process = {'B'}; % list of all sessions to process
 paths.blocks2process = {'pre'}; % list of all blocks to process
 
