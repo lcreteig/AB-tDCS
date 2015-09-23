@@ -16,11 +16,11 @@ for iStep = 1:length(pipeReverse)
     end
     
     if exist(fullfile(loadDir, [procFile '.set']), 'file') % if data are stored in EEGlab format
-        fprintf('    Loading data from "%s" step...\n', stepName)
+        fprintf('    Loading data from file %s ...\n', procFile)
         EEG = pop_loadset('filename', [procFile '.set'], 'filepath', loadDir);
         break
     elseif exist(fullfile(loadDir, [procFile '.mat']), 'file') % if data are stored as regular .mat files
-        fprintf('    Loading data from %s step...\n', stepName)
+        fprintf('    Loading data from file %s ...\n', procFile)
         load(fullfile(loadDir, [procFile '.mat']), 'EEG'); % load (only) the EEG structure
         break
     else
