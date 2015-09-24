@@ -181,7 +181,7 @@ for iSub = 1:length(paths.subs2process)
                 end
             end
             
-            %% Recode triggers
+            %% 7. Recode triggers
             step = step+1;
             
             if preproc.(pipeLine{step})(1)
@@ -203,6 +203,7 @@ for iSub = 1:length(paths.subs2process)
                 T1idx = find([EEG.event.type] == trig.T1); % index of events representing T1 onset
                 T1idxPad = [1 T1idx length([EEG.event.type])]; %include first and last of all events for looping
                 
+                missingTriggers = 1;
                 for iEvent = 2:length(T1idxPad)-1 % for every T1
                     
                     lagMrks = [EEG.event(T1idxPad(iEvent-1):T1idxPad(iEvent)).type]; % find markers between current and previous T1 (or beginning of 1st trial)
@@ -212,10 +213,13 @@ for iSub = 1:length(paths.subs2process)
                     T1ansIdx = T1idxPad(iEvent) + find(ansMrks == trig.T2QT1corr)-1; % from these, find the marker signalling T1 was answered correctly
                     T2ansIdx = T1idxPad(iEvent) + find(ansMrks == trig.itiT2err | ansMrks == trig.itiT2corr)-1; % also find the marker signalling T2 answer
                     
-                    % if any of these markers are missing (e.g. due to a conflict on the parallel port): 
+                    % if any of these markers are missing (e.g. due to a conflict on the parallel port):
                     % not enough information to analyze current trial, so skip
-                    if isempty(lagIdx) || isempty(T1ansIdx) || isempty(T2ansIdx)
-                        continue
+                    if any([isempty(lagIdx) isempty(T2ansIdx) isempty(T1ansIdx)])
+                        if isempty(lagIdx) || isempty(T2ansIdx)
+                            missingTriggers = missingTriggers +1;
+                        end
+                        continue % also skip if T1 was answered incorrectly
                     else % get the stream onset and T2 marker values
                         lag = EEG.event(lagIdx).type;
                         T2ans = EEG.event(T2ansIdx).type;
@@ -233,11 +237,12 @@ for iSub = 1:length(paths.subs2process)
                 end
                 
                 fprintf(['Total number of trials: %i\n'...
+                    'Trials missing one or more triggers: %i\n' ...
                     'T1 correct trials: %i\n' ...
                     'noblink_short trials: %i\n' ...
                     'noblink_long trials: %i\n' ...
                     'blink_short trials: %i\n' ...
-                    'noblink_long trials: %i\n'], length(T1idx), length(T1idx) - sum([EEG.event.type] == trig.T1), ...
+                    'noblink_long trials: %i\n'], length(T1idx), missingTriggers, length(T1idx) + missingTriggers - sum([EEG.event.type] == trig.T1), ...
                     sum([EEG.event.type] == trig_noblink_short), sum([EEG.event.type] == trig_noblink_long), ...
                     sum([EEG.event.type] == trig_blink_short), sum([EEG.event.type] == trig_blink_long))
                 
@@ -251,7 +256,32 @@ for iSub = 1:length(paths.subs2process)
                 end
             end
             
-            %% Epoch
+            %% 8. Set channels to zero
+            
+            step = step+1;
+            
+            if preproc.(pipeLine{step})(1)
+                
+                 if ~preproc.(pipeLine{step-1})(1)
+                    EEG = loadEEG(paths, rawFile, pipeLine);
+                 end
+                
+                chansZero = blocked_chans(currSub, currSession); % get names of channels to zero
+                chansZeroIdx = ismember({EEG.chanlocs.labels}, chansZero); % find indices in chanlocs structure
+                EEG.data(chansZeroIdx, :) = 0; % set all samples on these channels to zero
+                 
+                 if preproc.(pipeLine{step})(2)
+                     [saveDir, procFile] = prepSave(paths, rawFile, pipeLine, step, timeStamp);
+                     EEG.setname = [paths.expID ': ' pipeLine{step}(4:end)];
+                     EEG.filename = [procFile '.mat'];
+                     EEG.filepath = saveDir;
+                     fprintf('    Saving file %s...\n', procFile);
+                     save(fullfile(saveDir, procFile), 'EEG', 'paths', 'preproc', 'trig');
+                 end
+                 
+            end
+            
+            %% 9. Epoch
             step = step+1;
             
             if preproc.(pipeLine{step})(1)
@@ -274,7 +304,7 @@ for iSub = 1:length(paths.subs2process)
                 end
             end
             
-            %% Baseline
+            %% 10. Baseline
             step = step+1;
             
             if preproc.(pipeLine{step})(1)
@@ -297,15 +327,15 @@ for iSub = 1:length(paths.subs2process)
                 end
             end
             
-            %% Reject trials
+            %% 11. Reject trials
             step = step+1;
             
             if preproc.(pipeLine{step})(1)
                 
                 eeglab redraw
-                pop_eegplot(EEG, 1, 1, 0);
-                
-                rejectedTrials=EEG.reject.rejmanual;
+                pop_eegplot(EEG, 1, 1, 0); % plot the data, set to mark trials for rejection (not actually remove them just yet!)
+                EEG.rejectedTrials = EEG.reject.rejmanual; 
+               
             end
             
         end

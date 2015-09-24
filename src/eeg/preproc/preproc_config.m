@@ -1,5 +1,4 @@
 %TO DO:
-%-set channels to zero before trial rej
 %-single epoch interpolation
 %-epoch structure
 
@@ -7,7 +6,7 @@
 
 %% Workflow
 
-paths.subs2process = {'S12'}; % list of all subjects to process
+paths.subs2process = {'S01'}; % list of all subjects to process
 paths.sessions2process = {'B'}; % list of all sessions to process
 paths.blocks2process = {'pre'}; % list of all blocks to process
 
@@ -21,20 +20,20 @@ preproc.do_removechans = [0 0]; % 4. remove unused channels from data set
 preproc.do_chanlookup = [0 0]; % 5. import standard channel locations
 preproc.do_filter = [0 1]; % 6. high-pass filter the data
 
-preproc.do_recodeTrigs = [1 0]; % 7. recode original marker values to more meaningful ones for analysis
-preproc.do_epoch = [0 0]; % 8. split continous data into epochs (not yet separated per condition)
-preproc.do_baseline = [0 0]; % 9. subtract a (pre-stimulus) baseline from each epoch
+preproc.do_recodeTrigs = [0 0]; % 7. recode original marker values to more meaningful ones for analysis
+preproc.do_zerochans = [0 0]; % 8. set all values at unused channels (blocked by tDCS electrodes) to zero.
+preproc.do_epoch = [1 0]; % 9. split continous data into epochs (not yet separated per condition)
+preproc.do_baseline = [1 0]; % 10. subtract a (pre-stimulus) baseline from each epoch
 
-preproc.do_trialrej = [0 0]; % 10. manually identify trials for rejection and save trial indices to file
-preproc.do_removetrials = [0 0]; % 11. remove trials previously identified for rejection (if they exist)
-preproc.do_markbadchans = [0 0]; % 12. set all values at bad channels to zero
-preproc.do_interpchans = [0 0]; % 13. interpolate (subset of) bad channels
-preproc.do_averef = [0 0]; % 14. re-reference the data to the common average
-preproc.do_ica = [0 1]; % 15. run independent component preproc
+preproc.do_trialrej = [1 0]; % 11. manually identify trials for rejection and save trial indices to file
+preproc.do_removetrials = [0 0]; % 13. remove trials previously identified for rejection (if they exist)
+preproc.do_interpchans = [0 0]; % 14. interpolate (subset of) bad channels
+preproc.do_averef = [0 0]; % 15. re-reference the data to the common average
+preproc.do_ica = [0 1]; % 16. run independent component preproc
 
-preproc.do_removeIC = [0 0]; % 16. subtract marked components from the data
-preproc.do_laplacian = [0 0]; % 17. apply scalp laplacian
-preproc.do_conditions = [0 1]; % 18. re-epoch into separate conditions
+preproc.do_removeIC = [0 0]; % 17. subtract marked components from the data
+preproc.do_laplacian = [0 0]; % 18. apply scalp laplacian
+preproc.do_conditions = [0 1]; % 19. re-epoch into separate conditions
 
 %% paths
 
@@ -109,14 +108,12 @@ preproc.noChans = {'EXG7', 'EXG8'}; % channels where no data was recorded
 
 preproc.highPass = 0.1; %cut-off for highpass filter in Hz
 
-%% Epoch
+%% Set channels to zero
 
-preproc.zeroMarkers = {trig.streamLag3, trig.streamLag8}; % markers for time 0 in the epoch (onset of stream in attentional blink task)
-preproc.epochTime= [-1.25 1.375+1]; % relative to time 0, cut epochs from some period before (-1.25) to end (stream + post-stream fixation = 2.375)
-
-%% Baseline
-
-preproc.baseTime = [-200 0]; % time range in ms to use for baseline subtraction, relative to time 0 of the epoch
+% Some channels were not recorded from, because their holders in the cap 
+% were blocked by the tDCS electrode pads. They are mostly flat lines, but
+% every so often the electrode tips will touch something and record major
+% voltage deflections, so it is neccessary to zero them out.
 
 %% Recode triggers
 
@@ -183,7 +180,17 @@ end
 %     'cathodal_post_blink_long' 
 %     };
 
-%% Reject trials
+%% Epoch
+
+preproc.zeroMarkers = {trig.streamLag3, trig.streamLag8}; % markers for time 0 in the epoch (onset of stream in attentional blink task)
+preproc.epochTime= [-1.25 1.375+1]; % relative to time 0, cut epochs from some period before (-1.25) to end (stream + post-stream fixation = 2.375)
+
+%% Baseline
+
+preproc.baseTime = [-200 0]; % time range in ms to use for baseline subtraction, relative to time 0 of the epoch
+
+
+%% Remove rejected trials
 
 %% Mark bad channels
 
