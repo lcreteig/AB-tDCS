@@ -189,6 +189,10 @@ preproc.epochTime= [-1.25 1.375+1]; % relative to time 0, cut epochs from some p
 
 preproc.baseTime = [-200 0]; % time range in ms to use for baseline subtraction, relative to time 0 of the epoch
 
+%% Mark trials for rejection
+ 
+% Plots the data so epochs can be marked for rejection: they are not
+% actually removed untill later!
 
 %% Remove rejected trials
 

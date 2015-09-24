@@ -333,9 +333,28 @@ for iSub = 1:length(paths.subs2process)
             if preproc.(pipeLine{step})(1)
                 
                 eeglab redraw
-                pop_eegplot(EEG, 1, 1, 0); % plot the data, set to mark trials for rejection (not actually remove them just yet!)
-                EEG.rejectedTrials = EEG.reject.rejmanual; 
-               
+                msg_handle = msgbox(sprintf('Reject trials manually using the EEGlab graphical user interface.\nPress "Update marks" when done; the script will then resume.'), 'Trial rejection');
+                uiwait(msg_handle)
+                pop_eegplot(EEG,1,1,0);  % plot the data, set to mark trials for rejection (not actually remove them just yet!
+                uiwait
+                
+                % The rejmanual subfield will be reset after removing trials, but we want to keep the info!
+                % So make a back-up both in the EEG structure and as a text file
+                if ~isempty(EEG.reject.rejmanual)
+                    EEG.rejectedTrials = EEG.reject.rejmanual;
+                    rejectedTrials = find(EEG.reject.rejmanual);
+                    dlmwrite(fullfile(paths.procDir, [rawFile '_' 'rejectedtrials' '_' timeStamp '.txt']), rejectedTrials, 'delimiter', '\t')
+                end
+
+                if preproc.(pipeLine{step})(2)
+                    [saveDir, procFile] = prepSave(paths, rawFile, pipeLine, step, timeStamp);
+                    EEG.setname = [paths.expID ': ' pipeLine{step}(4:end)];
+                    EEG.filename = [procFile '.mat'];
+                    EEG.filepath = saveDir;
+                    fprintf('    Saving file %s...\n', procFile);
+                    save(fullfile(saveDir, procFile), 'EEG', 'paths', 'preproc', 'trig');
+                end
+                
             end
             
         end
