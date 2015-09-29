@@ -384,9 +384,60 @@ for iSub = 1:length(paths.subs2process)
                  end
                  
             end
-           
-            %% 13. Interpolate channels (single epochs) 
+            
+            
+            %% 13. Interpolate channels (all epochs)
             step = 13;
+            
+            if preproc.(pipeLine{step})(1)
+                
+                if ~preproc.(pipeLine{step-1})(1)
+                    EEG = loadEEG(paths, rawFile, pipeLine);
+                end
+                
+                interpChans = chans2interp(currSub, currSession, currBlock);
+                if ~isempty(interpChans)
+                    fprintf('    Interpolating channels...\n')
+                    
+                    interpChanIdx = find(ismember({EEG.chanlocs.labels}, interpChans));
+                    
+                     % exclude external channels from interpolation
+                    exclInterpChanIdx = find(ismember({EEG.chanlocs.labels}, {'HEOG', 'VEOG', 'EARREF'}));
+                    
+                    % exclude blocked channels from interpolation
+                    chansZero = blocked_chans(currSub, currSession);
+                    chansZeroIdx = find(ismember({EEG.chanlocs.labels}, chansZero)); 
+                    
+                    % exclude otherwise bad channels from interpolation
+                    chansBad = bad_chans(currSub, currSession, currBlock);
+                    if ~isempty(chansBad)
+                        chansBadIdx = find(ismember({EEG.chanlocs.labels}, chansBad)); 
+                    else
+                        chansBadIdx = [];
+                    end
+                    
+                    inChans = interpChanIdx;
+                    exclChans = [exclInterpChanIdx chansZeroIdx chansBadIdx];
+                    
+                    if isempty(intersect(inChans, exclChans))
+                        EEG = eeg_interp_excl(EEG, inChans, exclChans);
+                    else
+                        error('At least one channel is both specified as "to-be interpolated" and "to-be excluded from interpolation"!')
+                    end
+                    
+                    if preproc.(pipeLine{step})(2)
+                        [saveDir, procFile] = prepSave(paths, rawFile, pipeLine, step, timeStamp);
+                        EEG.setname = [paths.expID ': ' pipeLine{step}(4:end)];
+                        EEG.filename = [procFile '.mat'];
+                        EEG.filepath = saveDir;
+                        fprintf('    Saving file %s...\n', procFile);
+                        save(fullfile(saveDir, procFile), 'EEG', 'paths', 'preproc', 'trig');
+                    end
+                end
+            end
+                 
+            %% 14. Interpolate channels (single epochs) 
+            step = 14;
             
             if preproc.(pipeLine{step})(1)
                 
@@ -397,20 +448,40 @@ for iSub = 1:length(paths.subs2process)
                 [interpEpochChans, interpEpochs] = epochs2interp(currSub, currSession, currBlock);
                 if ~isempty(interpEpochs)
                     fprintf('    Interpolating epochs...\n')
-                    interpChanIdx = find(ismember({EEG.chanlocs.labels}, interpEpochChans));
-                    exclInterpChanIdx = find(ismember({EEG.chanlocs.labels}, {'HEOG', 'VEOG', 'EARREF'})); % exclude external channels from interpolation
                     
+                    interpEpochChanIdx = find(ismember({EEG.chanlocs.labels}, interpEpochChans));
+                    
+                    % exclude external channels from interpolation
+                    exclInterpChanIdx = find(ismember({EEG.chanlocs.labels}, {'HEOG', 'VEOG', 'EARREF'})); 
+                    
+                    % exclude already interpolated channels from interpolation
+                    interpChans = chans2interp(currSub, currSession, currBlock);
+                    if ~isempty(interpChans)
+                        interpChanIdx = find(ismember({EEG.chanlocs.labels}, interpChans)); 
+                    else
+                        interpChanIdx = [];
+                    end
+                    
+                    % exclude blocked channels from interpolation
                     chansZero = blocked_chans(currSub, currSession);
-                    chansZeroIdx = find(ismember({EEG.chanlocs.labels}, chansZero)); % exclude blocked channels from interpolation
+                    chansZeroIdx = find(ismember({EEG.chanlocs.labels}, chansZero)); 
                     
+                    % exclude otherwise bad channels from interpolation
                     chansBad = bad_chans(currSub, currSession, currBlock);
                     if ~isempty(chansBad)
-                        chansBadIdx = find(ismember({EEG.chanlocs.labels}, chansBad)); % exclude otherwise bad channels from interpolation
+                        chansBadIdx = find(ismember({EEG.chanlocs.labels}, chansBad)); 
                     else
                         chansBadIdx = [];
                     end
                     
-                    EEG = eeg_interp_trials(EEG, interpChanIdx, 'spherical', interpEpochs, [exclInterpChanIdx chansZeroIdx chansBadIdx]);
+                    inChans = interpEpochChanIdx;
+                    exclChans = [exclInterpChanIdx interpChanIdx chansZeroIdx chansBadIdx];
+                    
+                    if isempty(intersect(inChans, exclChans))
+                        EEG = eeg_interp_trials(EEG, inChans, 'spherical', interpEpochs, exclChans);
+                    else
+                        error('At least one channel is both specified as "to-be interpolated" and "to-be excluded from interpolation"!')
+                    end
                     
                     if preproc.(pipeLine{step})(2)
                         [saveDir, procFile] = prepSave(paths, rawFile, pipeLine, step, timeStamp);

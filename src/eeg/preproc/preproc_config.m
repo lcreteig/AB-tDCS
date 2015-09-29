@@ -28,9 +28,9 @@ preproc.do_baseline = [1 0]; % 10. subtract a (pre-stimulus) baseline from each 
 
 preproc.do_trialrej = [1 0]; % 11. manually identify trials for rejection and save trial indices to file
 preproc.do_badchans = [1 0]; % 12. mark additional channels as bad (that should not be interpolated) after data inspection
-preproc.do_interpepochs = [1 0]; % 13. interpolate channel on a single epoch
-preproc.do_removetrials = [0 0]; % 14. remove trials previously identified for rejection (if they exist)
-preproc.do_interpchans = [0 0]; % 15. interpolate (subset of) bad channels
+preproc.do_interpchans = [1 0]; % 13. interpolate (subset of) bad channels
+preproc.do_interpepochs = [1 0]; % 14. interpolate channel on a single epoch
+preproc.do_removetrials = [0 0]; % 15. remove trials previously identified for rejection (if they exist)
 preproc.do_averef = [0 0]; % 16. re-reference the data to the common average
 preproc.do_ica = [0 1]; % 17. run independent component preproc
 
@@ -210,7 +210,19 @@ preproc.baseTime = [-200 0]; % time range in ms to use for baseline subtraction,
 %
 % See bad_chans.m for a list of channels.
 
-%% 13. Interpolate channels (single epochs)
+%% 13. Interpolate channels (all epochs)
+
+% Uses a modified version of the standard "eeg_interp" called
+% "eeg_interp_excl" to interpolate channels. This adds the option of
+% excluding "bad" channels from being used in the interpolation of the
+% "to-be-interpolated channels". Channels that should be excluded are pure 
+% noise channels, e.g. that were not plugged in  due to tDCS electrodes, 
+% (initial zeroed-out channels, step 8) or went out of range during tDCS 
+% (later zeroed-out channels, step 12).
+
+% See chans2interp.m for a list of channels.
+
+%% 14. Interpolate channels (single epochs)
 
 % Sometimes only a single channel acts out on a single epoch, in which case 
 % it would be a shame to throw away the epoch or interpolate the channel.
@@ -219,9 +231,7 @@ preproc.baseTime = [-200 0]; % time range in ms to use for baseline subtraction,
 %
 % See epochs2interp.m for a list of channels and epochs.
 
-%% 14. Remove rejected trials
-
-%% 15. Interpolate channels (all epochs)
+%% 15. Remove rejected trials
 
 %% 16. Average reference
 
