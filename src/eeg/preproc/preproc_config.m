@@ -21,14 +21,14 @@ preproc.do_removechans = [0 0]; % 4. remove unused channels from data set
 preproc.do_chanlookup = [0 0]; % 5. import standard channel locations
 preproc.do_filter = [0 1]; % 6. high-pass filter the data
 
-preproc.do_recodeTrigs = [0 0]; % 7. recode original marker values to more meaningful ones for analysis
-preproc.do_zerochans = [0 0]; % 8. set all values at unused channels (blocked by tDCS electrodes) to zero.
+preproc.do_recodeTrigs = [1 0]; % 7. recode original marker values to more meaningful ones for analysis
+preproc.do_zerochans = [1 0]; % 8. set all values at unused channels (blocked by tDCS electrodes) to zero.
 preproc.do_epoch = [1 0]; % 9. split continous data into epochs (not yet separated per condition)
 preproc.do_baseline = [1 0]; % 10. subtract a (pre-stimulus) baseline from each epoch
 
 preproc.do_trialrej = [1 0]; % 11. manually identify trials for rejection and save trial indices to file
 preproc.do_badchans = [1 0]; % 12. mark additional channels as bad (that should not be interpolated) after data inspection
-preproc.do_interpepochs = [0 0]; % 13. interpolate channel on a single epoch
+preproc.do_interpepochs = [1 0]; % 13. interpolate channel on a single epoch
 preproc.do_removetrials = [0 0]; % 14. remove trials previously identified for rejection (if they exist)
 preproc.do_interpchans = [0 0]; % 15. interpolate (subset of) bad channels
 preproc.do_averef = [0 0]; % 16. re-reference the data to the common average
@@ -211,6 +211,13 @@ preproc.baseTime = [-200 0]; % time range in ms to use for baseline subtraction,
 % See bad_chans.m for a list of channels.
 
 %% 13. Interpolate channels (single epochs)
+
+% Sometimes only a single channel acts out on a single epoch, in which case 
+% it would be a shame to throw away the epoch or interpolate the channel.
+% "eeg_interp_trials.m" is a modification of the EEGLAB interpolate
+% function that can interpolate a channel only on a given epoch.
+%
+% See epochs2interp.m for a list of channels and epochs.
 
 %% 14. Remove rejected trials
 

@@ -52,7 +52,7 @@ for iSub = 1:length(paths.subs2process)
             end
             
             %% 2. Re-reference
-            step = step+1; % mark that we're now at the next preprocessing step
+            step = 2; % mark that we're now at the next preprocessing step
             
             if preproc.(pipeLine{step})(1)
                 
@@ -73,7 +73,7 @@ for iSub = 1:length(paths.subs2process)
             end
             
             %% 3. Bipolarize external channels
-            step = step+1;
+            step = 3;
             
             if preproc.(pipeLine{step})(1)
                 
@@ -113,7 +113,7 @@ for iSub = 1:length(paths.subs2process)
             end
             
             %% 4. Remove unused channels
-            step = step+1;
+            step = 4;
             
             if preproc.(pipeLine{step})(1)
                 
@@ -136,7 +136,7 @@ for iSub = 1:length(paths.subs2process)
             end
             
             %% 5. Channel info lookup
-            step = step+1;
+            step = 5;
             
             if preproc.(pipeLine{step})(1)
                 
@@ -159,7 +159,7 @@ for iSub = 1:length(paths.subs2process)
             end
             
             %% 6. Filter
-            step = step+1;
+            step = 6;
             
             if preproc.(pipeLine{step})(1)
                 
@@ -182,7 +182,7 @@ for iSub = 1:length(paths.subs2process)
             end
             
             %% 7. Recode triggers
-            step = step+1;
+            step = 7;
             
             if preproc.(pipeLine{step})(1)
                 
@@ -257,7 +257,7 @@ for iSub = 1:length(paths.subs2process)
             end
             
             %% 8. Set channels to zero
-            step = step+1;
+            step = 8;
             
             if preproc.(pipeLine{step})(1)
                 
@@ -283,7 +283,7 @@ for iSub = 1:length(paths.subs2process)
             end
             
             %% 9. Epoch
-            step = step+1;
+            step = 9;
             
             if preproc.(pipeLine{step})(1)
                 
@@ -306,7 +306,7 @@ for iSub = 1:length(paths.subs2process)
             end
             
             %% 10. Baseline
-            step = step+1;
+            step = 10;
             
             if preproc.(pipeLine{step})(1)
                 
@@ -329,7 +329,7 @@ for iSub = 1:length(paths.subs2process)
             end
             
             %% 11. Reject trials
-            step = step+1;
+            step = 11;
             
             if preproc.(pipeLine{step})(1)
                 
@@ -359,8 +359,7 @@ for iSub = 1:length(paths.subs2process)
             end
             
            %% 12. Mark bad channels
-           
-           step = step+1;
+           step = 12;
             
             if preproc.(pipeLine{step})(1)
                 
@@ -386,6 +385,43 @@ for iSub = 1:length(paths.subs2process)
                  
             end
            
+            %% 13. Interpolate channels (single epochs) 
+            step = 13;
+            
+            if preproc.(pipeLine{step})(1)
+                
+                if ~preproc.(pipeLine{step-1})(1)
+                    EEG = loadEEG(paths, rawFile, pipeLine);
+                end
+                
+                [interpEpochChans, interpEpochs] = epochs2interp(currSub, currSession, currBlock);
+                if ~isempty(interpEpochs)
+                    fprintf('    Interpolating epochs...\n')
+                    interpChanIdx = find(ismember({EEG.chanlocs.labels}, interpEpochChans));
+                    exclInterpChanIdx = find(ismember({EEG.chanlocs.labels}, {'HEOG', 'VEOG', 'EARREF'})); % exclude external channels from interpolation
+                    
+                    chansZero = blocked_chans(currSub, currSession);
+                    chansZeroIdx = find(ismember({EEG.chanlocs.labels}, chansZero)); % exclude blocked channels from interpolation
+                    
+                    chansBad = bad_chans(currSub, currSession, currBlock);
+                    if ~isempty(chansBad)
+                        chansBadIdx = find(ismember({EEG.chanlocs.labels}, chansBad)); % exclude otherwise bad channels from interpolation
+                    else
+                        chansBadIdx = [];
+                    end
+                    
+                    EEG = eeg_interp_trials(EEG, interpChanIdx, 'spherical', interpEpochs, [exclInterpChanIdx chansZeroIdx chansBadIdx]);
+                    
+                    if preproc.(pipeLine{step})(2)
+                        [saveDir, procFile] = prepSave(paths, rawFile, pipeLine, step, timeStamp);
+                        EEG.setname = [paths.expID ': ' pipeLine{step}(4:end)];
+                        EEG.filename = [procFile '.mat'];
+                        EEG.filepath = saveDir;
+                        fprintf('    Saving file %s...\n', procFile);
+                        save(fullfile(saveDir, procFile), 'EEG', 'paths', 'preproc', 'trig');
+                    end
+                end
+            end
         end
     end
 end
