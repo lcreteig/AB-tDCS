@@ -30,7 +30,7 @@ preproc.do_trialrej = [1 0]; % 11. manually identify trials for rejection and sa
 preproc.do_badchans = [1 0]; % 12. mark additional channels as bad (that should not be interpolated) after data inspection
 preproc.do_interpchans = [1 0]; % 13. interpolate (subset of) bad channels
 preproc.do_interpepochs = [1 0]; % 14. interpolate channel on a single epoch
-preproc.do_removetrials = [0 0]; % 15. remove trials previously identified for rejection (if they exist)
+preproc.do_removetrials = [1 0]; % 15. remove trials previously identified for rejection (if they exist)
 preproc.do_averef = [0 0]; % 16. re-reference the data to the common average
 preproc.do_ica = [0 1]; % 17. run independent component preproc
 
@@ -200,6 +200,10 @@ preproc.baseTime = [-200 0]; % time range in ms to use for baseline subtraction,
  
 % Plots the data so epochs can be marked for rejection: they are not
 % actually removed untill later!
+%
+% N.B. Write the data to disk in this step to save info on rejected
+% trials in the EEG structure! Regardless, a text file will always be
+% written to disk containing the rejected trials.
 
 %% 12. Mark bad channels
 
@@ -232,6 +236,10 @@ preproc.baseTime = [-200 0]; % time range in ms to use for baseline subtraction,
 % See epochs2interp.m for a list of channels and epochs.
 
 %% 15. Remove rejected trials
+
+% At this point trials marked for rejection in step 11 will actually be
+% removed,(which changes the trial indices!).
+
 
 %% 16. Average reference
 

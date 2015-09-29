@@ -493,6 +493,40 @@ for iSub = 1:length(paths.subs2process)
                     end
                 end
             end
+            
+            %% 15. Remove rejected trials 
+            step = 15;
+            
+            if preproc.(pipeLine{step})(1)
+                
+                if ~preproc.(pipeLine{step-1})(1)
+                    EEG = loadEEG(paths, rawFile, pipeLine);
+                end
+            end
+            
+            if ~isempty(EEG.reject.rejmanual) % if rejected trials were marked by hand
+                rejectedTrials = find(EEG.reject.rejmanual);
+            elseif isfield(EEG, 'rejectedTrials') && ~isempty(EEG.rejectedTrials)  % if not, look for a list of trials to remove in the EEG structure
+                rejectedTrials = find(EEG.rejectedTrials);
+            elseif ~isempty(dir(fullfile(paths.procDir, [rawFile '_' 'rejectedtrials' '_' '*' '.txt']))) % if also not there, load the most recent text file from disk
+                rejFile = dir(fullfile(paths.procDir, [rawFile '_' 'rejectedtrials' '_' '*' '.txt']));
+                [~,i] = sort([rejFile.datenum]);
+                rejectedTrials = load(fullfile(paths.procDir, rejFile(i(end)).name));
+            else % if nothing works
+                error('Could not find list of trials to reject!')
+            end
+            EEG = pop_select(EEG, 'notrial', rejectedTrials);
+            
+            if preproc.(pipeLine{step})(2)
+                [saveDir, procFile] = prepSave(paths, rawFile, pipeLine, step, timeStamp);
+                EEG.setname = [paths.expID ': ' pipeLine{step}(4:end)];
+                EEG.filename = [procFile '.mat'];
+                EEG.filepath = saveDir;
+                fprintf('    Saving file %s...\n', procFile);
+                save(fullfile(saveDir, procFile), 'EEG', 'paths', 'preproc', 'trig');
+            end
+            
+            
         end
     end
 end
