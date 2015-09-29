@@ -1,6 +1,7 @@
 %TO DO:
 %-single epoch interpolation
 %-epoch structure
+%-zerochans2
 
 %-automated trial rejection
 
@@ -26,14 +27,16 @@ preproc.do_epoch = [1 0]; % 9. split continous data into epochs (not yet separat
 preproc.do_baseline = [1 0]; % 10. subtract a (pre-stimulus) baseline from each epoch
 
 preproc.do_trialrej = [1 0]; % 11. manually identify trials for rejection and save trial indices to file
-preproc.do_removetrials = [0 0]; % 13. remove trials previously identified for rejection (if they exist)
-preproc.do_interpchans = [0 0]; % 14. interpolate (subset of) bad channels
-preproc.do_averef = [0 0]; % 15. re-reference the data to the common average
-preproc.do_ica = [0 1]; % 16. run independent component preproc
+preproc.do_badchans = [1 0]; % 12. mark additional channels as bad (that should not be interpolated) after data inspection
+preproc.do_interpepochs = [0 0]; % 13. interpolate channel on a single epoch
+preproc.do_removetrials = [0 0]; % 14. remove trials previously identified for rejection (if they exist)
+preproc.do_interpchans = [0 0]; % 15. interpolate (subset of) bad channels
+preproc.do_averef = [0 0]; % 16. re-reference the data to the common average
+preproc.do_ica = [0 1]; % 17. run independent component preproc
 
-preproc.do_removeIC = [0 0]; % 17. subtract marked components from the data
-preproc.do_laplacian = [0 0]; % 18. apply scalp laplacian
-preproc.do_conditions = [0 1]; % 19. re-epoch into separate conditions
+preproc.do_removeIC = [0 0]; % 18. subtract marked components from the data
+preproc.do_laplacian = [0 0]; % 19. apply scalp laplacian
+preproc.do_conditions = [0 1]; % 20. re-epoch into separate conditions
 
 %% paths
 
@@ -86,36 +89,31 @@ trig.itiT2corr = 71; % Inter-trial interval onset | T2 question answered correct
 
 trig.pauseEEG = 255; % Pause EEG recording (task finished)
 
-%% Re-reference
+%% 1. Import data
+
+%% 2. Re-reference
 
 preproc.refChans = {'EXG3','EXG4'}; % names of reference channels (earlobes)
 
-%% Channel info lookup
-
-preproc.channelInfo = 'standard-10-5-cap385.elp'; % file with locations of channels in cap
-
-%% Bipolarize external channels
+%% 3. Bipolarize external channels
 
 preproc.veogChans = {'EXG1', 'EXG2'}; % names of vertical EOG channels (above and below left eye)
 preproc.earChans = {'EXG3', 'EXG4'};
 preproc.heogChans = {'EXG5', 'EXG6'}; % names of horizontal EOG channels (next to outer canthi)
 
-%% Remove unused channels
+%% 4. Remove unused channels
 
 preproc.noChans = {'EXG7', 'EXG8'}; % channels where no data was recorded
 
-%% Filter
+%% 5. Channel info lookup
+
+preproc.channelInfo = 'standard-10-5-cap385.elp'; % file with locations of channels in cap
+
+%% 6. Filter
 
 preproc.highPass = 0.1; %cut-off for highpass filter in Hz
 
-%% Set channels to zero
-
-% Some channels were not recorded from, because their holders in the cap 
-% were blocked by the tDCS electrode pads. They are mostly flat lines, but
-% every so often the electrode tips will touch something and record major
-% voltage deflections, so it is neccessary to zero them out.
-
-%% Recode triggers
+%% 7. Recode triggers
 
 % Specify modifications for trigger codes. These numbers will be appended
 % to the T1 trigger code ('31'). So for example, the T1 trigger for a trial
@@ -180,30 +178,50 @@ end
 %     'cathodal_post_blink_long' 
 %     };
 
-%% Epoch
+%% 8. Set channels to zero
+
+% Some channels were not recorded from, because their holders in the cap 
+% were blocked by the tDCS electrode pads. They are mostly flat lines, but
+% every so often the electrode tips will touch something and record major
+% voltage deflections, so it is neccessary to zero them out.
+%
+% See blocked_chans.m for a list of channels.
+
+%% 9. Epoch
 
 preproc.zeroMarkers = {trig.streamLag3, trig.streamLag8}; % markers for time 0 in the epoch (onset of stream in attentional blink task)
 preproc.epochTime= [-1.25 1.375+1]; % relative to time 0, cut epochs from some period before (-1.25) to end (stream + post-stream fixation = 2.375)
 
-%% Baseline
+%% 10. Baseline
 
 preproc.baseTime = [-200 0]; % time range in ms to use for baseline subtraction, relative to time 0 of the epoch
 
-%% Mark trials for rejection
+%% 11. Reject trials
  
 % Plots the data so epochs can be marked for rejection: they are not
 % actually removed untill later!
 
-%% Remove rejected trials
+%% 12. Mark bad channels
 
-%% Mark bad channels
+% After inspection of individual data files, additional channels might have
+% to be zeroed out (e.g. those that went out of range due to tDCS. These
+% should be channels that are really 'missing' in that sense, and should
+% thus not be interpolated, or included in interpolation of other channels!
+%
+% See bad_chans.m for a list of channels.
 
-%% Interpolate channels
+%% 13. Interpolate channels (single epochs)
 
-%% Average reference
+%% 14. Remove rejected trials
 
-%% ICA
+%% 15. Interpolate channels (all epochs)
 
-%% Laplacian
+%% 16. Average reference
 
-%% Separate into conditions
+%% 17. Independent components analysis
+
+%% 18. Remove independent components
+
+%% 19. Laplacian
+
+%% 20. Separate into conditions

@@ -257,7 +257,6 @@ for iSub = 1:length(paths.subs2process)
             end
             
             %% 8. Set channels to zero
-            
             step = step+1;
             
             if preproc.(pipeLine{step})(1)
@@ -265,6 +264,8 @@ for iSub = 1:length(paths.subs2process)
                  if ~preproc.(pipeLine{step-1})(1)
                     EEG = loadEEG(paths, rawFile, pipeLine);
                  end
+                 
+                fprintf('    Setting bad channels to zero...\n')
                 
                 chansZero = blocked_chans(currSub, currSession); % get names of channels to zero
                 chansZeroIdx = ismember({EEG.chanlocs.labels}, chansZero); % find indices in chanlocs structure
@@ -357,6 +358,34 @@ for iSub = 1:length(paths.subs2process)
                 
             end
             
+           %% 12. Mark bad channels
+           
+           step = step+1;
+            
+            if preproc.(pipeLine{step})(1)
+                
+                 if ~preproc.(pipeLine{step-1})(1)
+                    EEG = loadEEG(paths, rawFile, pipeLine);
+                 end
+                    
+                chansBad = bad_chans(currSub, currSession, currBlock); % get names of channels to zero
+                if ~isempty(chansBad)
+                    fprintf('    Setting additional bad channels to zero...\n')
+                    chansBadIdx = ismember({EEG.chanlocs.labels}, chansBad); % find indices in chanlocs structure
+                    EEG.data(chansBadIdx, :) = 0; % set all samples on these channels to zero
+                end
+                 
+                 if preproc.(pipeLine{step})(2)
+                     [saveDir, procFile] = prepSave(paths, rawFile, pipeLine, step, timeStamp);
+                     EEG.setname = [paths.expID ': ' pipeLine{step}(4:end)];
+                     EEG.filename = [procFile '.mat'];
+                     EEG.filepath = saveDir;
+                     fprintf('    Saving file %s...\n', procFile);
+                     save(fullfile(saveDir, procFile), 'EEG', 'paths', 'preproc', 'trig');
+                 end
+                 
+            end
+           
         end
     end
 end
