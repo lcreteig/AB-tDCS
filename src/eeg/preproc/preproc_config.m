@@ -26,12 +26,12 @@ preproc.do_zerochans = [1 0]; % 8. set all values at unused channels (blocked by
 preproc.do_epoch = [1 0]; % 9. split continous data into epochs (not yet separated per condition)
 preproc.do_baseline = [1 0]; % 10. subtract a (pre-stimulus) baseline from each epoch
 
-preproc.do_trialrej = [1 0]; % 11. manually identify trials for rejection and save trial indices to file
+preproc.do_trialrej = [0 0]; % 11. manually identify trials for rejection and save trial indices to file
 preproc.do_badchans = [1 0]; % 12. mark additional channels as bad (that should not be interpolated) after data inspection
-preproc.do_interpchans = [1 0]; % 13. interpolate (subset of) bad channels
-preproc.do_interpepochs = [1 0]; % 14. interpolate channel on a single epoch
-preproc.do_removetrials = [1 0]; % 15. remove trials previously identified for rejection (if they exist)
-preproc.do_averef = [0 0]; % 16. re-reference the data to the common average
+preproc.do_interpchans = [0 0]; % 13. interpolate (subset of) bad channels
+preproc.do_interpepochs = [0 0]; % 14. interpolate channel on a single epoch
+preproc.do_removetrials = [0 0]; % 15. remove trials previously identified for rejection (if they exist)
+preproc.do_averef = [1 0]; % 16. re-reference the data to the common average
 preproc.do_ica = [0 1]; % 17. run independent component preproc
 
 preproc.do_removeIC = [0 0]; % 18. subtract marked components from the data
@@ -240,8 +240,10 @@ preproc.baseTime = [-200 0]; % time range in ms to use for baseline subtraction,
 % At this point trials marked for rejection in step 11 will actually be
 % removed,(which changes the trial indices!).
 
-
 %% 16. Average reference
+
+% Re-reference to the average of all electrodes (excluding externals, and
+% possibly other ones that were zero'd out / marked as bad).
 
 %% 17. Independent components analysis
 

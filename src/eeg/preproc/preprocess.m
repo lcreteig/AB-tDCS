@@ -522,31 +522,68 @@ for iSub = 1:length(paths.subs2process)
                     EEG = loadEEG(paths, rawFile, pipeLine);
                     loadFlag = true;
                 end
+                
+                if ~isempty(EEG.reject.rejmanual) % if rejected trials were marked by hand
+                    rejectedTrials = find(EEG.reject.rejmanual);
+                elseif isfield(EEG, 'rejectedTrials') && ~isempty(EEG.rejectedTrials)  % if not, look for a list of trials to remove in the EEG structure
+                    rejectedTrials = find(EEG.rejectedTrials);
+                elseif ~isempty(dir(fullfile(paths.procDir, [rawFile '_' 'rejectedtrials' '_' '*' '.txt']))) % if also not there, load the most recent text file from disk
+                    rejFile = dir(fullfile(paths.procDir, [rawFile '_' 'rejectedtrials' '_' '*' '.txt']));
+                    [~,i] = sort([rejFile.datenum]);
+                    rejectedTrials = load(fullfile(paths.procDir, rejFile(i(end)).name));
+                else % if nothing works
+                    error('Could not find list of trials to reject!')
+                end
+                EEG = pop_select(EEG, 'notrial', rejectedTrials);
+                
+                if preproc.(pipeLine{step})(2)
+                    [saveDir, procFile] = prepSave(paths, rawFile, pipeLine, step, timeStamp);
+                    EEG.setname = [paths.expID ': ' pipeLine{step}(4:end)];
+                    EEG.filename = [procFile '.mat'];
+                    EEG.filepath = saveDir;
+                    fprintf('    Saving file %s...\n', procFile);
+                    save(fullfile(saveDir, procFile), 'EEG', 'paths', 'preproc', 'trig');
+                end
             end
             
-            if ~isempty(EEG.reject.rejmanual) % if rejected trials were marked by hand
-                rejectedTrials = find(EEG.reject.rejmanual);
-            elseif isfield(EEG, 'rejectedTrials') && ~isempty(EEG.rejectedTrials)  % if not, look for a list of trials to remove in the EEG structure
-                rejectedTrials = find(EEG.rejectedTrials);
-            elseif ~isempty(dir(fullfile(paths.procDir, [rawFile '_' 'rejectedtrials' '_' '*' '.txt']))) % if also not there, load the most recent text file from disk
-                rejFile = dir(fullfile(paths.procDir, [rawFile '_' 'rejectedtrials' '_' '*' '.txt']));
-                [~,i] = sort([rejFile.datenum]);
-                rejectedTrials = load(fullfile(paths.procDir, rejFile(i(end)).name));
-            else % if nothing works
-                error('Could not find list of trials to reject!')
+            
+            %% 16. Average reference
+            step = 16;
+            
+            if preproc.(pipeLine{step})(1)
+                
+                if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
+                    EEG = loadEEG(paths, rawFile, pipeLine);
+                    loadFlag = true;
+                end
+                
+                  fprintf('    Re-referencing to common average...\n')
+                
+                % exclude external channels from average reference
+                extChanIdx = find(ismember({EEG.chanlocs.labels}, {'HEOG', 'VEOG', 'EARREF'})); 
+                % exclude blocked channels from average reference
+                chansZero = blocked_chans(currSub, currSession);
+                chansZeroIdx = find(ismember({EEG.chanlocs.labels}, chansZero));
+                % exclude otherwise bad channels from interpolation
+                chansBad = bad_chans(currSub, currSession, currBlock);
+                if ~isempty(chansBad)
+                    chansBadIdx = find(ismember({EEG.chanlocs.labels}, chansBad));
+                else
+                    chansBadIdx = [];
+                end
+                
+                EEG = pop_reref(EEG, [], 'exclude', [extChanIdx chansZeroIdx chansBadIdx]);
+                
+                if preproc.(pipeLine{step})(2)
+                    [saveDir, procFile] = prepSave(paths, rawFile, pipeLine, step, timeStamp);
+                    EEG.setname = [paths.expID ': ' pipeLine{step}(4:end)];
+                    EEG.filename = [procFile '.mat'];
+                    EEG.filepath = saveDir;
+                    fprintf('    Saving file %s...\n', procFile);
+                    save(fullfile(saveDir, procFile), 'EEG', 'paths', 'preproc', 'trig');
+                end
             end
-            EEG = pop_select(EEG, 'notrial', rejectedTrials);
-            
-            if preproc.(pipeLine{step})(2)
-                [saveDir, procFile] = prepSave(paths, rawFile, pipeLine, step, timeStamp);
-                EEG.setname = [paths.expID ': ' pipeLine{step}(4:end)];
-                EEG.filename = [procFile '.mat'];
-                EEG.filepath = saveDir;
-                fprintf('    Saving file %s...\n', procFile);
-                save(fullfile(saveDir, procFile), 'EEG', 'paths', 'preproc', 'trig');
-            end
-            
-            
+              
         end
     end
 end
