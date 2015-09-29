@@ -8,6 +8,8 @@ for iSub = 1:length(paths.subs2process)
     for iSession = 1:length(paths.sessions2process)
         for iBlock = 1:length(paths.blocks2process)
             
+            loadFlag = false;
+            
             % Check for matlab/eeglab incompatibility
             [~,matlabVersion] = version;
             matlabPath = regexp(path,pathsep,'split');
@@ -43,6 +45,7 @@ for iSub = 1:length(paths.subs2process)
             if preproc.(pipeLine{step}) % if this processing step is flagged
                 fprintf('    Importing data for subject "%s", session "%s", block "%s" ...\n', currSub, currSession, currBlock)
                 EEG = pop_biosig(fullfile(paths.rawDir, currSub, [rawFile '.bdf'])); %import the data from biosemi .bdf files into EEGlab using the BioSig toolbox
+                loadFlag = true;
                 EEG.setname = [paths.expID ': raw'];
                 EEG.filename = [rawFile '.bdf'];
                 EEG.filepath = fullfile(paths.rawDir, currSub);
@@ -77,8 +80,9 @@ for iSub = 1:length(paths.subs2process)
             
             if preproc.(pipeLine{step})(1)
                 
-                if ~preproc.(pipeLine{step-1})(1) % if the previous processing step should not be redone
+                if ~preproc.(pipeLine{step-1})(1) && ~loadFlag % if the previous processing step should not be redone, and no data has been loaded yet
                     EEG = loadEEG(paths, rawFile, pipeLine);
+                    loadFlag = true;
                 end
                 
                 fprintf('    Bipolarizing external channels...\n')
@@ -117,8 +121,9 @@ for iSub = 1:length(paths.subs2process)
             
             if preproc.(pipeLine{step})(1)
                 
-                if ~preproc.(pipeLine{step-1})(1)
+                if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
                     EEG = loadEEG(paths, rawFile, pipeLine);
+                    loadFlag = true;
                 end
                 
                 fprintf('    Removing unused channels...\n')
@@ -140,8 +145,9 @@ for iSub = 1:length(paths.subs2process)
             
             if preproc.(pipeLine{step})(1)
                 
-                if ~preproc.(pipeLine{step-1})(1)
+                if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
                     EEG = loadEEG(paths, rawFile, pipeLine);
+                    loadFlag = true;
                 end
                 
                 fprintf('    Looking up channel info...\n')
@@ -163,8 +169,9 @@ for iSub = 1:length(paths.subs2process)
             
             if preproc.(pipeLine{step})(1)
                 
-                if ~preproc.(pipeLine{step-1})(1)
+                if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
                     EEG = loadEEG(paths, rawFile, pipeLine);
+                    loadFlag = true;
                 end
                 
                 fprintf('    High-pass filtering the data...\n')
@@ -186,8 +193,9 @@ for iSub = 1:length(paths.subs2process)
             
             if preproc.(pipeLine{step})(1)
                 
-                if ~preproc.(pipeLine{step-1})(1)
+                if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
                     EEG = loadEEG(paths, rawFile, pipeLine);
+                    loadFlag = true;
                 end
                 
                 fprintf('    Recoding marker values...\n')
@@ -261,8 +269,9 @@ for iSub = 1:length(paths.subs2process)
             
             if preproc.(pipeLine{step})(1)
                 
-                 if ~preproc.(pipeLine{step-1})(1)
+                 if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
                     EEG = loadEEG(paths, rawFile, pipeLine);
+                    loadFlag = true;
                  end
                  
                 fprintf('    Setting bad channels to zero...\n')
@@ -287,8 +296,9 @@ for iSub = 1:length(paths.subs2process)
             
             if preproc.(pipeLine{step})(1)
                 
-                if ~preproc.(pipeLine{step-1})(1)
+                if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
                     EEG = loadEEG(paths, rawFile, pipeLine);
+                    loadFlag = true;
                 end
                 
                 fprintf('    Epoching the data...\n')
@@ -310,8 +320,9 @@ for iSub = 1:length(paths.subs2process)
             
             if preproc.(pipeLine{step})(1)
                 
-                if ~preproc.(pipeLine{step-1})(1)
+                if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
                     EEG = loadEEG(paths, rawFile, pipeLine);
+                    loadFlag = true;
                 end
                 
                 fprintf('    Performing baseline correction ...\n')
@@ -332,6 +343,11 @@ for iSub = 1:length(paths.subs2process)
             step = 11;
             
             if preproc.(pipeLine{step})(1)
+                
+                if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
+                    EEG = loadEEG(paths, rawFile, pipeLine);
+                    loadFlag = true;
+                end
                 
                 eeglab redraw
                 msg_handle = msgbox(sprintf('Reject trials manually using the EEGlab graphical user interface.\nPress "Update marks" when done; the script will then resume.'), 'Trial rejection');
@@ -363,8 +379,9 @@ for iSub = 1:length(paths.subs2process)
             
             if preproc.(pipeLine{step})(1)
                 
-                 if ~preproc.(pipeLine{step-1})(1)
+                 if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
                     EEG = loadEEG(paths, rawFile, pipeLine);
+                    loadFlag = true;
                  end
                     
                 chansBad = bad_chans(currSub, currSession, currBlock); % get names of channels to zero
@@ -391,8 +408,9 @@ for iSub = 1:length(paths.subs2process)
             
             if preproc.(pipeLine{step})(1)
                 
-                if ~preproc.(pipeLine{step-1})(1)
+                if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
                     EEG = loadEEG(paths, rawFile, pipeLine);
+                    loadFlag = true;
                 end
                 
                 interpChans = chans2interp(currSub, currSession, currBlock);
@@ -441,8 +459,9 @@ for iSub = 1:length(paths.subs2process)
             
             if preproc.(pipeLine{step})(1)
                 
-                if ~preproc.(pipeLine{step-1})(1)
+                if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
                     EEG = loadEEG(paths, rawFile, pipeLine);
+                    loadFlag = true;
                 end
                 
                 [interpEpochChans, interpEpochs] = epochs2interp(currSub, currSession, currBlock);
@@ -499,8 +518,9 @@ for iSub = 1:length(paths.subs2process)
             
             if preproc.(pipeLine{step})(1)
                 
-                if ~preproc.(pipeLine{step-1})(1)
+                if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
                     EEG = loadEEG(paths, rawFile, pipeLine);
+                    loadFlag = true;
                 end
             end
             
