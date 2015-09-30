@@ -3,6 +3,8 @@
 %-epoch structure
 %-zerochans2
 
+% START LOADING FROM STEP AND BACK!
+
 %-automated trial rejection
 
 %% Workflow
@@ -22,23 +24,23 @@ preproc.do_chanlookup = [0 0]; % 5. import standard channel locations
 preproc.do_filter = [0 1]; % 6. high-pass filter the data
 
 preproc.do_recodeTrigs = [1 0]; % 7. recode original marker values to more meaningful ones for analysis
-preproc.do_zerochans = [1 0]; % 8. set all values at unused channels (blocked by tDCS electrodes) to zero.
+preproc.do_zerochans = [0 0]; % 8. set all values at unused channels (blocked by tDCS electrodes) to zero.
 preproc.do_epoch = [1 0]; % 9. split continous data into epochs (not yet separated per condition)
-preproc.do_baseline = [1 0]; % 10. subtract a (pre-stimulus) baseline from each epoch
+preproc.do_baseline = [0 0]; % 10. subtract a (pre-stimulus) baseline from each epoch
 
-preproc.do_trialrej = [1 0]; % 11. manually identify trials for rejection and save trial indices to file
+preproc.do_trialrej = [0 0]; % 11. manually identify trials for rejection and save trial indices to file
 preproc.do_badchans = [0 0]; % 12. mark additional channels as bad (that should not be interpolated) after data inspection
 preproc.do_interpchans = [0 0]; % 13. interpolate (subset of) bad channels
 preproc.do_interpepochs = [0 0]; % 14. interpolate channel on a single epoch
-preproc.do_removetrials = [1 0]; % 15. remove trials previously identified for rejection (if they exist)
+preproc.do_removetrials = [0 0]; % 15. remove trials previously identified for rejection (if they exist)
 preproc.do_averef = [0 0]; % 16. re-reference the data to the common average
 preproc.do_ica = [0 1]; % 17. run independent component analysis
 
 preproc.do_plotIC = 0; % 18. plot results of independent component analyis.
 preproc.do_removeIC = [0 0]; % 19. subtract marked components from the data
-peproc.do_removebipolars = [0 0]; % 20. drop bipolars from the dataset, leaving only the leave scalp channels
+preproc.do_removebipolars = [0 0]; % 20. drop bipolars from the dataset, leaving only the leave scalp channels
 preproc.do_laplacian = [0 0]; % 21. apply scalp laplacian
-preproc.do_conditions = [0 1]; % 22. re-epoch into separate conditions
+preproc.do_conditions = 1; % 22. re-epoch into separate conditions
 
 %% paths
 
@@ -192,7 +194,7 @@ end
 %% 9. Epoch
 
 preproc.zeroMarkers = {trig.streamLag3, trig.streamLag8}; % markers for time 0 in the epoch (onset of stream in attentional blink task)
-preproc.epochTime= [-1.25 1.375+1]; % relative to time 0, cut epochs from some period before (-1.25) to end (stream + post-stream fixation = 2.375)
+preproc.epochTime1= [-1.25 1.375+1]; % relative to time 0, cut epochs from some period before (-1.25) to end (stream + post-stream fixation = 2.375)
 
 %% 10. Baseline
 
@@ -280,4 +282,9 @@ preproc.icaType = 'jader'; % either 'runica' to run the most standard ICA algori
 % ERPs (especially "broad" ones such as the P3, which may be attenuated by
 % the laplacian), but a good idea otherwise.
 
-%% 21. Separate into conditions
+%% 22. Separate into conditions
+
+%Re-epoch with T1 as time zero, leaving only those trials that were
+%re-coded earlier (only the 4 blink/lag combinations).
+
+preproc.epochTime2= [-1.25 2]; %after T1 onset (5th letter), there are 11 letters (including T1 presentation time) of 91.66 ms left, + 1 second fixation period, equalling about 2 seconds

@@ -204,9 +204,9 @@ for iSub = 1:length(paths.subs2process)
                 blockIdx = strcmpi(currBlock, trig.block);
                 % find triggers to assign in condition labels
                 trig_noblink_short = trig.conditions{strcmp([trig.tDCS{sessionIdx} '_' trig.block{blockIdx} '_' 'noblink_short'], trig.conditions(:,1)),2}; % get trigger corresponding to 'noblink_short' condition
-                trig_noblink_long = trig.conditions{strcmp([trig.tDCS{sessionIdx} '_' trig.block{blockIdx} '_' 'noblink_long'], trig.conditions(:,1)),2}; % get trigger corresponding to 'noblink_short' 'noblink_long' condition 
-                trig_blink_short = trig.conditions{strcmp([trig.tDCS{sessionIdx} '_' trig.block{blockIdx} '_' 'blink_short'], trig.conditions(:,1)),2}; % get trigger corresponding to 'noblink_short' 'blink_short' condition
-                trig_blink_long = trig.conditions{strcmp([trig.tDCS{sessionIdx} '_' trig.block{blockIdx} '_' 'blink_long'], trig.conditions(:,1)),2}; % get trigger corresponding to 'noblink_short' 'blink_long' condition 
+                trig_noblink_long = trig.conditions{strcmp([trig.tDCS{sessionIdx} '_' trig.block{blockIdx} '_' 'noblink_long'], trig.conditions(:,1)),2}; % get trigger corresponding to 'noblink_long' condition 
+                trig_blink_short = trig.conditions{strcmp([trig.tDCS{sessionIdx} '_' trig.block{blockIdx} '_' 'blink_short'], trig.conditions(:,1)),2}; % get trigger corresponding to 'blink_short' condition
+                trig_blink_long = trig.conditions{strcmp([trig.tDCS{sessionIdx} '_' trig.block{blockIdx} '_' 'blink_long'], trig.conditions(:,1)),2}; % get trigger corresponding to 'blink_long' condition 
                 
                 T1idx = find([EEG.event.type] == trig.T1); % index of events representing T1 onset
                 T1idxPad = [1 T1idx length([EEG.event.type])]; %include first and last of all events for looping
@@ -303,7 +303,7 @@ for iSub = 1:length(paths.subs2process)
                 
                 fprintf('    Epoching the data...\n')
                 
-                EEG = pop_epoch(EEG, preproc.zeroMarkers, preproc.epochTime); % cut epochs using specified time zero and boundaries
+                EEG = pop_epoch(EEG, preproc.zeroMarkers, preproc.epochTime1); % cut epochs using specified time zero and boundaries
                 
                 if preproc.(pipeLine{step})(2) % if EEG data should be saved to disk after this step
                     [saveDir, procFile] = prepSave(paths, rawFile, pipeLine, step, timeStamp);
@@ -537,9 +537,9 @@ for iSub = 1:length(paths.subs2process)
                 
                 % Calculate and print trial rejection counts
                 trig_noblink_short = trig.conditions{strcmp([trig.tDCS{sessionIdx} '_' trig.block{blockIdx} '_' 'noblink_short'], trig.conditions(:,1)),2}; % get trigger corresponding to 'noblink_short' condition
-                trig_noblink_long = trig.conditions{strcmp([trig.tDCS{sessionIdx} '_' trig.block{blockIdx} '_' 'noblink_long'], trig.conditions(:,1)),2}; % get trigger corresponding to 'noblink_short' 'noblink_long' condition 
-                trig_blink_short = trig.conditions{strcmp([trig.tDCS{sessionIdx} '_' trig.block{blockIdx} '_' 'blink_short'], trig.conditions(:,1)),2}; % get trigger corresponding to 'noblink_short' 'blink_short' condition
-                trig_blink_long = trig.conditions{strcmp([trig.tDCS{sessionIdx} '_' trig.block{blockIdx} '_' 'blink_long'], trig.conditions(:,1)),2}; % get trigger corresponding to 'noblink_short' 'blink_long' condition 
+                trig_noblink_long = trig.conditions{strcmp([trig.tDCS{sessionIdx} '_' trig.block{blockIdx} '_' 'noblink_long'], trig.conditions(:,1)),2}; % get trigger corresponding to 'noblink_long' condition 
+                trig_blink_short = trig.conditions{strcmp([trig.tDCS{sessionIdx} '_' trig.block{blockIdx} '_' 'blink_short'], trig.conditions(:,1)),2}; % get trigger corresponding to 'blink_short' condition
+                trig_blink_long = trig.conditions{strcmp([trig.tDCS{sessionIdx} '_' trig.block{blockIdx} '_' 'blink_long'], trig.conditions(:,1)),2}; % get trigger corresponding to 'blink_long' condition 
                 noblink_short_idx = zeros(1,EEG.trials);
                 noblink_long_idx= zeros(1,EEG.trials);
                 blink_short_idx = zeros(1,EEG.trials);
@@ -579,7 +579,6 @@ for iSub = 1:length(paths.subs2process)
                     save(fullfile(saveDir, procFile), 'EEG', 'paths', 'preproc', 'trig');
                 end
             end
-            
             
             %% 16. Average reference
             step = 16;
@@ -766,6 +765,41 @@ for iSub = 1:length(paths.subs2process)
                    save(fullfile(saveDir, procFile), 'EEG', 'paths', 'preproc', 'trig');
                end
            end
+           
+           %% 22. Separate into conditions
+           step = 22;
+           
+           if preproc.(pipeLine{step})
+               
+               if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
+                   EEG = loadEEG(paths, rawFile, pipeLine);
+                   loadFlag = true;
+               end
+               
+               fprintf('    Separating into conditions...\n')
+               
+               sessionIdx = strcmpi(currSession, trig.session);
+               blockIdx = strcmpi(currBlock, trig.block);
+               condition_labels = cell(4,2);
+               % Extract part of full condition matrix that is relevant for this session/block combination (e.g. the 4 "anodal, pre" conditions)
+               condition_labels(1,:) = trig.conditions(strcmp([trig.tDCS{sessionIdx} '_' trig.block{blockIdx} '_' 'noblink_short'], trig.conditions(:,1)),:);
+               condition_labels(2,:) = trig.conditions(strcmp([trig.tDCS{sessionIdx} '_' trig.block{blockIdx} '_' 'noblink_long'], trig.conditions(:,1)),:);
+               condition_labels(3,:) = trig.conditions(strcmp([trig.tDCS{sessionIdx} '_' trig.block{blockIdx} '_' 'blink_short'], trig.conditions(:,1)),:);
+               condition_labels(4,:) = trig.conditions(strcmp([trig.tDCS{sessionIdx} '_' trig.block{blockIdx} '_' 'blink_long'], trig.conditions(:,1)),:);
+               
+               % Always save data to disk
+               [saveDir, procFile] = prepSave(paths, rawFile, pipeLine, step, timeStamp);
+               ALLEEG=EEG;
+               for iCond = 1:size(condition_labels,1)
+                   ALLEEG(iCond) = pop_epoch(EEG,condition_labels(iCond,2), preproc.epochTime2, 'newname', [paths.expID ': ' condition_labels{iCond,1}]);
+                   ALLEEG(iCond).filename = [procFile '.mat'];
+                   ALLEEG(iCond).filepath = saveDir;
+               end
+               
+               fprintf('    Saving file %s...\n', procFile);
+               save(fullfile(saveDir, procFile), 'ALLEEG', 'paths', 'preproc', 'trig', 'condition_labels');
+           end
+  
             
         end
     end
