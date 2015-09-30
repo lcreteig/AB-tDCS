@@ -203,10 +203,10 @@ for iSub = 1:length(paths.subs2process)
                 sessionIdx = strcmpi(currSession, trig.session);
                 blockIdx = strcmpi(currBlock, trig.block);
                 % find triggers to assign in condition labels
-                trig_noblink_short = trig.conditions{strcmp([trig.tDCS{sessionIdx} '_' trig.block{blockIdx} '_' 'noblink_short'], trig.conditions(:,1)),2}; % find index of 'noblink_short' condition label
-                trig_noblink_long = trig.conditions{strcmp([trig.tDCS{sessionIdx} '_' trig.block{blockIdx} '_' 'noblink_long'], trig.conditions(:,1)),2}; % find index of 'noblink_long' condition label
-                trig_blink_short = trig.conditions{strcmp([trig.tDCS{sessionIdx} '_' trig.block{blockIdx} '_' 'blink_short'], trig.conditions(:,1)),2}; % find index of 'blink_short' condition label
-                trig_blink_long = trig.conditions{strcmp([trig.tDCS{sessionIdx} '_' trig.block{blockIdx} '_' 'blink_long'], trig.conditions(:,1)),2}; % find index of 'blink_long' condition label
+                trig_noblink_short = trig.conditions{strcmp([trig.tDCS{sessionIdx} '_' trig.block{blockIdx} '_' 'noblink_short'], trig.conditions(:,1)),2}; % get trigger corresponding to 'noblink_short' condition
+                trig_noblink_long = trig.conditions{strcmp([trig.tDCS{sessionIdx} '_' trig.block{blockIdx} '_' 'noblink_long'], trig.conditions(:,1)),2}; % get trigger corresponding to 'noblink_short' 'noblink_long' condition 
+                trig_blink_short = trig.conditions{strcmp([trig.tDCS{sessionIdx} '_' trig.block{blockIdx} '_' 'blink_short'], trig.conditions(:,1)),2}; % get trigger corresponding to 'noblink_short' 'blink_short' condition
+                trig_blink_long = trig.conditions{strcmp([trig.tDCS{sessionIdx} '_' trig.block{blockIdx} '_' 'blink_long'], trig.conditions(:,1)),2}; % get trigger corresponding to 'noblink_short' 'blink_long' condition 
                 
                 T1idx = find([EEG.event.type] == trig.T1); % index of events representing T1 onset
                 T1idxPad = [1 T1idx length([EEG.event.type])]; %include first and last of all events for looping
@@ -250,7 +250,7 @@ for iSub = 1:length(paths.subs2process)
                     'noblink_short trials: %i\n' ...
                     'noblink_long trials: %i\n' ...
                     'blink_short trials: %i\n' ...
-                    'noblink_long trials: %i\n'], length(T1idx), missingTriggers, length(T1idx) + missingTriggers - sum([EEG.event.type] == trig.T1), ...
+                    'noblink_long trials: %i\n'], length(T1idx), missingTriggers, length(T1idx) - missingTriggers - sum([EEG.event.type] == trig.T1), ...
                     sum([EEG.event.type] == trig_noblink_short), sum([EEG.event.type] == trig_noblink_long), ...
                     sum([EEG.event.type] == trig_blink_short), sum([EEG.event.type] == trig_blink_long))
                 
@@ -534,6 +534,40 @@ for iSub = 1:length(paths.subs2process)
                 else % if nothing works
                     error('Could not find list of trials to reject!')
                 end
+                
+                % Calculate and print trial rejection counts
+                trig_noblink_short = trig.conditions{strcmp([trig.tDCS{sessionIdx} '_' trig.block{blockIdx} '_' 'noblink_short'], trig.conditions(:,1)),2}; % get trigger corresponding to 'noblink_short' condition
+                trig_noblink_long = trig.conditions{strcmp([trig.tDCS{sessionIdx} '_' trig.block{blockIdx} '_' 'noblink_long'], trig.conditions(:,1)),2}; % get trigger corresponding to 'noblink_short' 'noblink_long' condition 
+                trig_blink_short = trig.conditions{strcmp([trig.tDCS{sessionIdx} '_' trig.block{blockIdx} '_' 'blink_short'], trig.conditions(:,1)),2}; % get trigger corresponding to 'noblink_short' 'blink_short' condition
+                trig_blink_long = trig.conditions{strcmp([trig.tDCS{sessionIdx} '_' trig.block{blockIdx} '_' 'blink_long'], trig.conditions(:,1)),2}; % get trigger corresponding to 'noblink_short' 'blink_long' condition 
+                noblink_short_idx = zeros(1,EEG.trials);
+                noblink_long_idx= zeros(1,EEG.trials);
+                blink_short_idx = zeros(1,EEG.trials);
+                blink_long_idx = zeros(1,EEG.trials);
+                for iTrial = 1:EEG.trials
+                    epochEvents = [EEG.epoch(iTrial).eventtype{:}];
+                    if ismember(trig_noblink_short, epochEvents)
+                        noblink_short_idx(iTrial) = 1;
+                    elseif ismember(trig_noblink_long, epochEvents)
+                        noblink_long_idx(iTrial) = 1;
+                    elseif ismember(trig_blink_short, epochEvents)
+                        blink_short_idx(iTrial) = 1;
+                    elseif ismember(trig_blink_long, epochEvents)
+                        blink_long_idx(iTrial) = 1;
+                    end
+                end
+                
+                fprintf(['Rejecting %i (%i%%) of %i trials in total.\n'...
+                    'Rejecting %i noblink_short trials, which leaves %i trials.\n' ...
+                    'Rejecting %i noblink_long trials, which leaves %i trials.\n' ...
+                    'Rejecting %i blink_short trials, which leaves %i trials.\n' ...
+                    'Rejecting %i blink_long trials, which leaves %i trials.\n'], ...
+                    numel(rejectedTrials), round(numel(rejectedTrials) / EEG.trials *100), EEG.trials, ...
+                    numel(intersect(find(noblink_short_idx), rejectedTrials)), numel(find(noblink_short_idx)) - numel(intersect(find(noblink_short_idx), rejectedTrials)), ...
+                    numel(intersect(find(noblink_long_idx), rejectedTrials)), numel(find(noblink_long_idx)) - numel(intersect(find(noblink_long_idx), rejectedTrials)), ...
+                    numel(intersect(find(blink_short_idx), rejectedTrials)), numel(find(blink_short_idx)) - numel(intersect(find(blink_short_idx), rejectedTrials)), ...
+                    numel(intersect(find(blink_long_idx), rejectedTrials)), numel(find(blink_long_idx)) - numel(intersect(find(blink_long_idx), rejectedTrials)) )
+                    
                 EEG = pop_select(EEG, 'notrial', rejectedTrials);
                 
                 if preproc.(pipeLine{step})(2)
