@@ -266,6 +266,12 @@ preproc.icaType = 'jader'; % either 'runica' to run the most standard ICA algori
 % At this point only will the independent components be subtracted from the
 % data.
 
-%% 19. Laplacian
+%% 20. Laplacian
 
-%% 20. Separate into conditions
+% Apply a spatial filter (surface Laplacian) to reduce low-frequency
+% spatial features in the data (which are likely due to volume conduction),
+% thereby highlighting local features of the data. Typically not done for
+% ERPs (especially "broad" ones such as the P3, which may be attenuated by
+% the laplacian), but a good idea otherwise.
+
+%% 21. Separate into conditions
