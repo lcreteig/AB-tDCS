@@ -717,7 +717,32 @@ for iSub = 1:length(paths.subs2process)
                 end
             end
             
-           %% 20. Laplacian
+            %% 20. Remove bipolar channels
+            step = 20;
+            
+            if preproc.(pipeLine{step})(1)
+                
+                if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
+                    EEG = loadEEG(paths, rawFile, pipeLine);
+                    loadFlag = true;
+                end
+                
+                fprintf('    Removing bipolars...\n')
+                
+                EEG = pop_select(EEG, 'nochannel', {'HEOG', 'VEOG', 'EARREF'});
+                
+                if preproc.(pipeLine{step})(2)
+                    [saveDir, procFile] = prepSave(paths, rawFile, pipeLine, step, timeStamp);
+                    EEG.setname = [paths.expID ': ' pipeLine{step}(4:end)];
+                    EEG.filename = [procFile '.mat'];
+                    EEG.filepath = saveDir;
+                    fprintf('    Saving file %s...\n', procFile);
+                    save(fullfile(saveDir, procFile), 'EEG', 'paths', 'preproc', 'trig');
+                end
+            end
+            
+           %% 21. Laplacian
+           step = 21;
            
            if preproc.(pipeLine{step})(1)
                
@@ -728,12 +753,9 @@ for iSub = 1:length(paths.subs2process)
                
                fprintf('    Applying surface Laplacian...\n')
                
-               % exclude external channels from laplacian (exclude zero'd out
-               % channels too?!)
-               extChanIdx = find(ismember({EEG.chanlocs.labels}, {'HEOG', 'VEOG', 'EARREF'}));
-               laplaceChans = setdiff(EEG.nbchan, extChanIdx);
-               
-               EEG.data(laplaceChans,:,:) = laplacian_perrinX(EEG.data(laplaceChans,:,:),[EEG.chanlocs(laplaceChans).X],[EEG.chanlocs(laplaceChans).Y],[EEG.chanlocs(laplaceChans).Z]);
+               % assumes externals have been removed (should zero'd out
+               % channels be excluded too?!)
+               EEG.data = laplacian_perrinX(EEG.data,[EEG.chanlocs.X],[EEG.chanlocs.Y],[EEG.chanlocs.Z]);
                
                if preproc.(pipeLine{step})(2)
                    [saveDir, procFile] = prepSave(paths, rawFile, pipeLine, step, timeStamp);

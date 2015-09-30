@@ -36,8 +36,9 @@ preproc.do_ica = [0 1]; % 17. run independent component analysis
 
 preproc.do_plotIC = 0; % 18. plot results of independent component analyis.
 preproc.do_removeIC = [0 0]; % 19. subtract marked components from the data
-preproc.do_laplacian = [0 0]; % 20. apply scalp laplacian
-preproc.do_conditions = [0 1]; % 21. re-epoch into separate conditions
+peproc.do_removebipolars = [0 0]; % 20. drop bipolars from the dataset, leaving only the leave scalp channels
+preproc.do_laplacian = [0 0]; % 21. apply scalp laplacian
+preproc.do_conditions = [0 1]; % 22. re-epoch into separate conditions
 
 %% paths
 
@@ -266,7 +267,12 @@ preproc.icaType = 'jader'; % either 'runica' to run the most standard ICA algori
 % At this point only will the independent components be subtracted from the
 % data.
 
-%% 20. Laplacian
+%% 20. Remove bipolar channels
+
+% Drop the ear reference, vertical EOG and horizontal EOG channels, leaving
+% only the scalp channels for analysis.
+
+%% 21. Laplacian
 
 % Apply a spatial filter (surface Laplacian) to reduce low-frequency
 % spatial features in the data (which are likely due to volume conduction),
