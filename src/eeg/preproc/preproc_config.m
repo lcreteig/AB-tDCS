@@ -32,11 +32,12 @@ preproc.do_interpchans = [0 0]; % 13. interpolate (subset of) bad channels
 preproc.do_interpepochs = [0 0]; % 14. interpolate channel on a single epoch
 preproc.do_removetrials = [1 0]; % 15. remove trials previously identified for rejection (if they exist)
 preproc.do_averef = [0 0]; % 16. re-reference the data to the common average
-preproc.do_ica = [0 1]; % 17. run independent component preproc
+preproc.do_ica = [0 1]; % 17. run independent component analysis
 
-preproc.do_removeIC = [0 0]; % 18. subtract marked components from the data
-preproc.do_laplacian = [0 0]; % 19. apply scalp laplacian
-preproc.do_conditions = [0 1]; % 20. re-epoch into separate conditions
+preproc.do_plotIC = 0; % 18. plot results of independent component analyis.
+preproc.do_removeIC = [0 0]; % 19. subtract marked components from the data
+preproc.do_laplacian = [0 0]; % 20. apply scalp laplacian
+preproc.do_conditions = [0 1]; % 21. re-epoch into separate conditions
 
 %% paths
 
@@ -247,7 +248,23 @@ preproc.baseTime = [-200 0]; % time range in ms to use for baseline subtraction,
 
 %% 17. Independent components analysis
 
-%% 18. Remove independent components
+preproc.icaType = 'jader'; % either 'runica' to run the most standard ICA algorithm,
+% or 'jader' to run a faster version (which first uses PCA).
+
+%% 18. Plot independent components
+
+% Inspect the ICA results, which you can either do as part of the
+% preprocessing pipeline, or manually when saving files to disk after the
+% ICA.
+%
+% N.B. Write the data to disk in this step to save info on rejected
+% components in the EEG structure! Regardless, a text file will always be
+% written to disk containing the rejected components.
+
+%% 19. Remove independent components
+
+% At this point only will the independent components be subtracted from the
+% data.
 
 %% 19. Laplacian
 

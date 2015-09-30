@@ -617,7 +617,106 @@ for iSub = 1:length(paths.subs2process)
                     save(fullfile(saveDir, procFile), 'EEG', 'paths', 'preproc', 'trig');
                 end
             end
-              
+             
+            %% 17. Independent components analysis
+            step = 17;
+            
+            if preproc.(pipeLine{step})(1)
+                
+                if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
+                    EEG = loadEEG(paths, rawFile, pipeLine);
+                    loadFlag = true;
+                end
+                
+                fprintf('    Running independent component analysis...\n')
+                
+                if strcmp(preproc.icaType, 'jader')
+                    EEG = pop_runica(EEG,'icatype','jader','dataset',1,'options',{40}); % run ICA
+                elseif strcmp(preproc.icaType, 'runica')
+                    EEG=pop_runica(EEG,'icatype','runica','dataset',1,'options',{'extended',1});
+                else
+                    error('Unrecognized ICA type option "%s"!', preproc.icaType)
+                end
+                    
+                if preproc.(pipeLine{step})(2)
+                    [saveDir, procFile] = prepSave(paths, rawFile, pipeLine, step, timeStamp);
+                    EEG.setname = [paths.expID ': ' pipeLine{step}(4:end)];
+                    EEG.filename = [procFile '.mat'];
+                    EEG.filepath = saveDir;
+                    fprintf('    Saving file %s...\n', procFile);
+                    save(fullfile(saveDir, procFile), 'EEG', 'paths', 'preproc', 'trig');
+                end
+            end
+            
+           %% 18. Plot independent components
+           step = 18;
+           
+            if preproc.(pipeLine{step})(1)
+                
+                if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
+                    EEG = loadEEG(paths, rawFile, pipeLine);
+                    loadFlag = true;
+                end
+                
+                msg_handle = msgbox(sprintf('Mark components for rejection using the EEGlab graphical user interface.\nClose the two windows when done; the script will then resume.'), 'Component rejection');
+                uiwait(msg_handle)
+                pop_eegplot(EEG, 0, 1, 0); % plot the component timecourses
+                pop_selectcomps(EEG, 1:30); % plot the topographical maps of the first 30 components
+                uiwait
+                
+                if ~isempty(EEG.reject.gcompreject)
+                    EEG.rejectedICs = EEG.reject.gcompreject;
+                    rejectedICs = find(EEG.reject.gcompreject);
+                    dlmwrite(fullfile(paths.procDir, [rawFile '_' 'rejectedICs' '_' timeStamp '.txt']), rejectedICs, 'delimiter', '\t')
+                end
+                
+                if preproc.(pipeLine{step})(2)
+                    [saveDir, procFile] = prepSave(paths, rawFile, pipeLine, step, timeStamp);
+                    EEG.setname = [paths.expID ': ' pipeLine{step}(4:end)];
+                    EEG.filename = [procFile '.mat'];
+                    EEG.filepath = saveDir;
+                    fprintf('    Saving file %s...\n', procFile);
+                    save(fullfile(saveDir, procFile), 'EEG', 'paths', 'preproc', 'trig');
+                end
+                
+            end
+            
+            %% 19. Remove independent components
+            step = 19;
+            
+            if preproc.(pipeLine{step})(1)
+                
+                if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
+                    EEG = loadEEG(paths, rawFile, pipeLine);
+                    loadFlag = true;
+                end
+                
+                fprintf('    Removing independent components...\n')
+                
+                if ~isempty(EEG.reject.gcompreject) % if rejected components were marked by hand
+                    rejectedICs = find(EEG.reject.gcompreject);
+                elseif isfield(EEG, 'rejectedICs') && ~isempty(EEG.rejectedICs)  % if not, look for a list of components to remove in the EEG structure
+                    rejectedICs = find(EEG.rejectedICs);
+                elseif ~isempty(dir(fullfile(paths.procDir, [rawFile '_' 'rejectedICs' '_' '*' '.txt']))) % if also not there, load the most recent text file from disk
+                    rejICfile = dir(fullfile(paths.procDir, [rawFile '_' 'rejectedICs' '_' '*' '.txt']));
+                    [~,i] = sort([rejICfile.datenum]);
+                    rejectedICs = load(fullfile(paths.procDir, rejICfile(i(end)).name));
+                else % if nothing works
+                    error('Could not find list of components to reject!')
+                end
+
+                EEG = pop_subcomp(EEG, rejectedICs);
+                
+                if preproc.(pipeLine{step})(2)
+                    [saveDir, procFile] = prepSave(paths, rawFile, pipeLine, step, timeStamp);
+                    EEG.setname = [paths.expID ': ' pipeLine{step}(4:end)];
+                    EEG.filename = [procFile '.mat'];
+                    EEG.filepath = saveDir;
+                    fprintf('    Saving file %s...\n', procFile);
+                    save(fullfile(saveDir, procFile), 'EEG', 'paths', 'preproc', 'trig');
+                end
+            end
+            
         end
     end
 end
