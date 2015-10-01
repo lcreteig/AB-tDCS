@@ -81,7 +81,7 @@ for iSub = 1:length(paths.subs2process)
             if preproc.(pipeLine{step})(1)
                 
                 if ~preproc.(pipeLine{step-1})(1) && ~loadFlag % if the previous processing step should not be redone, and no data has been loaded yet
-                    EEG = loadEEG(paths, rawFile, pipeLine);
+                    EEG = loadEEG(paths, rawFile, pipeLine, step);
                     loadFlag = true;
                 end
                 
@@ -122,7 +122,7 @@ for iSub = 1:length(paths.subs2process)
             if preproc.(pipeLine{step})(1)
                 
                 if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
-                    EEG = loadEEG(paths, rawFile, pipeLine);
+                    EEG = loadEEG(paths, rawFile, pipeLine, step);
                     loadFlag = true;
                 end
                 
@@ -146,7 +146,7 @@ for iSub = 1:length(paths.subs2process)
             if preproc.(pipeLine{step})(1)
                 
                 if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
-                    EEG = loadEEG(paths, rawFile, pipeLine);
+                    EEG = loadEEG(paths, rawFile, pipeLine, step);
                     loadFlag = true;
                 end
                 
@@ -170,7 +170,7 @@ for iSub = 1:length(paths.subs2process)
             if preproc.(pipeLine{step})(1)
                 
                 if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
-                    EEG = loadEEG(paths, rawFile, pipeLine);
+                    EEG = loadEEG(paths, rawFile, pipeLine, step);
                     loadFlag = true;
                 end
                 
@@ -194,7 +194,7 @@ for iSub = 1:length(paths.subs2process)
             if preproc.(pipeLine{step})(1)
                 
                 if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
-                    EEG = loadEEG(paths, rawFile, pipeLine);
+                    EEG = loadEEG(paths, rawFile, pipeLine, step);
                     loadFlag = true;
                 end
                 
@@ -270,7 +270,7 @@ for iSub = 1:length(paths.subs2process)
             if preproc.(pipeLine{step})(1)
                 
                  if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
-                    EEG = loadEEG(paths, rawFile, pipeLine);
+                    EEG = loadEEG(paths, rawFile, pipeLine, step);
                     loadFlag = true;
                  end
                  
@@ -297,7 +297,7 @@ for iSub = 1:length(paths.subs2process)
             if preproc.(pipeLine{step})(1)
                 
                 if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
-                    EEG = loadEEG(paths, rawFile, pipeLine);
+                    EEG = loadEEG(paths, rawFile, pipeLine, step);
                     loadFlag = true;
                 end
                 
@@ -321,7 +321,7 @@ for iSub = 1:length(paths.subs2process)
             if preproc.(pipeLine{step})(1)
                 
                 if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
-                    EEG = loadEEG(paths, rawFile, pipeLine);
+                    EEG = loadEEG(paths, rawFile, pipeLine, step);
                     loadFlag = true;
                 end
                 
@@ -345,7 +345,7 @@ for iSub = 1:length(paths.subs2process)
             if preproc.(pipeLine{step})(1)
                 
                 if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
-                    EEG = loadEEG(paths, rawFile, pipeLine);
+                    EEG = loadEEG(paths, rawFile, pipeLine, step);
                     loadFlag = true;
                 end
                 
@@ -380,7 +380,7 @@ for iSub = 1:length(paths.subs2process)
             if preproc.(pipeLine{step})(1)
                 
                  if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
-                    EEG = loadEEG(paths, rawFile, pipeLine);
+                    EEG = loadEEG(paths, rawFile, pipeLine, step);
                     loadFlag = true;
                  end
                     
@@ -409,7 +409,7 @@ for iSub = 1:length(paths.subs2process)
             if preproc.(pipeLine{step})(1)
                 
                 if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
-                    EEG = loadEEG(paths, rawFile, pipeLine);
+                    EEG = loadEEG(paths, rawFile, pipeLine, step);
                     loadFlag = true;
                 end
                 
@@ -460,7 +460,7 @@ for iSub = 1:length(paths.subs2process)
             if preproc.(pipeLine{step})(1)
                 
                 if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
-                    EEG = loadEEG(paths, rawFile, pipeLine);
+                    EEG = loadEEG(paths, rawFile, pipeLine, step);
                     loadFlag = true;
                 end
                 
@@ -519,7 +519,7 @@ for iSub = 1:length(paths.subs2process)
             if preproc.(pipeLine{step})(1)
                 
                 if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
-                    EEG = loadEEG(paths, rawFile, pipeLine);
+                    EEG = loadEEG(paths, rawFile, pipeLine, step);
                     loadFlag = true;
                 end
                 
@@ -586,7 +586,7 @@ for iSub = 1:length(paths.subs2process)
             if preproc.(pipeLine{step})(1)
                 
                 if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
-                    EEG = loadEEG(paths, rawFile, pipeLine);
+                    EEG = loadEEG(paths, rawFile, pipeLine, step);
                     loadFlag = true;
                 end
                 
@@ -623,7 +623,7 @@ for iSub = 1:length(paths.subs2process)
             if preproc.(pipeLine{step})(1)
                 
                 if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
-                    EEG = loadEEG(paths, rawFile, pipeLine);
+                    EEG = loadEEG(paths, rawFile, pipeLine, step);
                     loadFlag = true;
                 end
                 
@@ -653,7 +653,7 @@ for iSub = 1:length(paths.subs2process)
             if preproc.(pipeLine{step})(1)
                 
                 if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
-                    EEG = loadEEG(paths, rawFile, pipeLine);
+                    EEG = loadEEG(paths, rawFile, pipeLine, step);
                     loadFlag = true;
                 end
                 
@@ -686,7 +686,7 @@ for iSub = 1:length(paths.subs2process)
             if preproc.(pipeLine{step})(1)
                 
                 if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
-                    EEG = loadEEG(paths, rawFile, pipeLine);
+                    EEG = loadEEG(paths, rawFile, pipeLine, step);
                     loadFlag = true;
                 end
                 
@@ -722,7 +722,7 @@ for iSub = 1:length(paths.subs2process)
             if preproc.(pipeLine{step})(1)
                 
                 if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
-                    EEG = loadEEG(paths, rawFile, pipeLine);
+                    EEG = loadEEG(paths, rawFile, pipeLine, step);
                     loadFlag = true;
                 end
                 
@@ -746,7 +746,7 @@ for iSub = 1:length(paths.subs2process)
            if preproc.(pipeLine{step})(1)
                
                if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
-                   EEG = loadEEG(paths, rawFile, pipeLine);
+                   EEG = loadEEG(paths, rawFile, pipeLine, step);
                    loadFlag = true;
                end
                
@@ -772,7 +772,7 @@ for iSub = 1:length(paths.subs2process)
            if preproc.(pipeLine{step})
                
                if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
-                   EEG = loadEEG(paths, rawFile, pipeLine);
+                   EEG = loadEEG(paths, rawFile, pipeLine, step);
                    loadFlag = true;
                end
                

@@ -9,7 +9,7 @@ if ~isdir(fullfile(paths.procDir, stepName))
 end
 
 % if no file with this exact name already exists, good to go
-if ~exist(fullfile(paths.procDir, stepName, procFile), 'file')
+if isempty(dir(fullfile(paths.procDir, stepName, [procFile '.*'])))
     saveDir = fullfile(paths.procDir, stepName);
 else % if it does exist, throw warning, and save in new directory
     warning('preproc:fileExists', 'File "%s" in directory "%s" already exists! Storing new files in a subdirectory with start time of the script as its name.', procFile, stepName)
