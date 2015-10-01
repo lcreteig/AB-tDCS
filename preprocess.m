@@ -1,3 +1,4 @@
+try
 preprocOrig = preproc;
 timeStamp = datestr(now, 'yyyy-mm-dd_HH-MM-SS'); % get present time and date, for tagging directories
 stepNames = fieldnames(preproc);
@@ -10,7 +11,8 @@ for iSub = 1:length(paths.subs2process)
             
             preproc = preprocOrig;
             loadFlag = false;
-            
+            mean
+
             % Check for matlab/eeglab incompatibility
             [~,matlabVersion] = version;
             matlabPath = regexp(path,pathsep,'split');
@@ -801,8 +803,18 @@ for iSub = 1:length(paths.subs2process)
                fprintf('    Saving file %s...\n', procFile);
                save(fullfile(saveDir, procFile), 'ALLEEG', 'paths', 'preproc', 'trig', 'condition_labels');
            end
-  
+           
+           if paths.sendMail
+               mail_from_matlab(sprintf('Preprocessing script finished!\n Final preprocessed file was: "%s"', procFile))
+           end
             
         end
     end
+end
+
+catch err
+    if paths.sendMail
+        mail_from_matlab(sprintf('Preprocessing script crashed with the following error:\n%s', err.message))
+    end
+    rethrow(err)
 end

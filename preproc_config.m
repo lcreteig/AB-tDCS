@@ -84,6 +84,8 @@ end
 paths.subs2process = subjects; % list of all subjects to process
 paths.sessions2process = sessions; % list of all sessions to process
 paths.blocks2process = blocks; % list of all blocks to process
+paths.sendMail = true; % send e-mail when preprocessing script finishes or crashes
+
 %% paths
 
 %assumes running from master project directory
@@ -99,6 +101,7 @@ paths.rawDir = fullfile(drive, 'reteig students', 'AB_tDCS-EEG', 'data', 'EEG re
 paths.procDir = fullfile('data', 'main', 'processed'); % processed eeg data
 
 paths.srcDir = fullfile('src', 'eeg', 'preproc'); % directory containing all preprocessing code for the project
+paths.libDir = fullfile(paths.srcDir, 'lib');
 paths.eeglabOld = 'eeglab8_0_3_5b'; %old version of eeglab, used for loading data (which can fail in newer versions) and on old matlab versions
 paths.eeglabNew = 'eeglab13_4_4b'; % new version of eeglab, to use with new versions of matlab
 
@@ -108,6 +111,7 @@ paths.blockID = {'pre','tDCS','post'}; % indicator for block (20 minutes): pre, 
 
 % Add folders to matlab path
 addpath(paths.srcDir); % add preprocessing code for project
+addpath(paths.libDir); % add general preprocessing code
 
 %% Triggers
 
