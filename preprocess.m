@@ -1,4 +1,4 @@
-
+preprocOrig = preproc;
 timeStamp = datestr(now, 'yyyy-mm-dd_HH-MM-SS'); % get present time and date, for tagging directories
 stepNames = fieldnames(preproc);
 pipeLine = stepNames(strncmp('do_', stepNames, length('do_'))); % get names of all preprocessing steps in structure
@@ -8,6 +8,7 @@ for iSub = 1:length(paths.subs2process)
     for iSession = 1:length(paths.sessions2process)
         for iBlock = 1:length(paths.blocks2process)
             
+            preproc = preprocOrig;
             loadFlag = false;
             
             % Check for matlab/eeglab incompatibility

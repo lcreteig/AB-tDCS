@@ -1,17 +1,44 @@
-%TO DO:
-%-single epoch interpolation
-%-epoch structure
-%-zerochans2
+function [preproc, paths, trig] = preproc_config(subjects, sessions, blocks)
+%preproc_config
+%
+% Defines preprocessing parameters, settings, file locations, etc.
+% Call this function first, and then run the main preprocessing script
+% (preprocess.m)
+%
+% Usage:
+% [preproc, paths, trig] = preproc_config(subjects, sessions, blocks)
+%
+% Inputs:
+%
+% -subjects     string (e.g. 'S01') or cell array of strings (e.g. {'S01',
+%               'S02'}) containing name(s) of subject(s) to be preprocessed.
+%
+% -sessions     string (e.g. 'B') or cell array of strings ({'B',
+%               'D'}) containing name()s of session(s) to be preprocessed.
+%
+% -blocks       string (e.g. 'pre') or cell array of string (e.g.
+%               {'pre','tDCS','post'}) containing name(s) of blocks(s) to 
+%               be preprocessed.
+% Outputs:
+%
+% -preproc      structure with preprocessing parameters.
+%
+% -paths        structure with file/script names and paths
+%
+% -trigs        structure containing info on conditions and EEG triggers.
+%
 
-% START LOADING FROM STEP AND BACK!
+%leonreteig@gmail.com
 
-%-automated trial rejection
+% subjects = {'S01', 'S02', 'S03', 'S01', 'S05', 'S06', 'S07', 'S08',
+% 'S09', 'S10','S11', 'S12', 'S13', 'S15', 'S16', 'S17', 'S18', 'S19', 'S20',
+% 'S21'};
+%
+% sessions = {'B', 'D'};
+%
+% blocks = {'pre','tDCS','post'};
 
-%% Workflow
-
-paths.subs2process = {'S01'}; % list of all subjects to process
-paths.sessions2process = {'B'}; % list of all sessions to process
-paths.blocks2process = {'pre'}; % list of all blocks to process
+%% Pipeline
 
 % Lists all pre-processing steps in the order they will be carried out
 % First element: if true, perform this step. 2nd element: if true, write EEG data to disk afterwards
@@ -42,6 +69,21 @@ preproc.do_removebipolars = [0 0]; % 20. drop bipolars from the dataset, leaving
 preproc.do_laplacian = [0 0]; % 21. apply scalp laplacian
 preproc.do_conditions = 1; % 22. re-epoch into separate conditions
 
+%% Inputs
+
+if ~iscell(subjects)
+    subjects = {subjects}; % list of all subjects to process
+end
+if ~iscell(sessions)
+    sessions = {sessions}; % list of all subjects to process
+end
+if ~iscell(blocks)
+    blocks = {blocks}; % list of all subjects to process
+end
+
+paths.subs2process = subjects; % list of all subjects to process
+paths.sessions2process = sessions; % list of all sessions to process
+paths.blocks2process = blocks; % list of all blocks to process
 %% paths
 
 %assumes running from master project directory
