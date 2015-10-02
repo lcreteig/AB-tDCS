@@ -642,6 +642,8 @@ for iSub = 1:length(paths.subs2process)
                     error('Unrecognized ICA type option "%s"!', preproc.icaType)
                 end
                 
+                EEG.icaact = [];
+                
                 if preproc.(pipeLine{step})(2)
                     [saveDir, procFile] = prepSave(paths, rawFile, pipeLine, step, timeStamp);
                     EEG.setname = [paths.expID ': ' pipeLine{step}(4:end)];
