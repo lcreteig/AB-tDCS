@@ -11,7 +11,6 @@ for iSub = 1:length(paths.subs2process)
             
             preproc = preprocOrig;
             loadFlag = false;
-            mean
 
             % Check for matlab/eeglab incompatibility
             [~,matlabVersion] = version;
@@ -539,6 +538,8 @@ for iSub = 1:length(paths.subs2process)
                     error('Could not find list of trials to reject!')
                 end
                 
+                sessionIdx = strcmpi(currSession, trig.session);
+                blockIdx = strcmpi(currBlock, trig.block);
                 % Calculate and print trial rejection counts
                 trig_noblink_short = trig.conditions{strcmp([trig.tDCS{sessionIdx} '_' trig.block{blockIdx} '_' 'noblink_short'], trig.conditions(:,1)),2}; % get trigger corresponding to 'noblink_short' condition
                 trig_noblink_long = trig.conditions{strcmp([trig.tDCS{sessionIdx} '_' trig.block{blockIdx} '_' 'noblink_long'], trig.conditions(:,1)),2}; % get trigger corresponding to 'noblink_long' condition 
