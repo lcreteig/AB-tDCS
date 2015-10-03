@@ -1,6 +1,7 @@
 dataDir = "data/main" #data directory (relative to project root)
 subs2exclude = c("S04", "S14") 
 subID = list.dirs(dataDir, full.names = FALSE, recursive = FALSE) # get subject names
+subID = subID[grep("S", subID)];
 numSubjects <- length(subID);
 
 # factors
