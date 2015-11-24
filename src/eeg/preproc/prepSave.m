@@ -1,4 +1,4 @@
-function [saveDir, procFile] = prepSave(paths, rawFile, pipeLine, step, timeStamp)
+function [saveDir, procFile, EEG] = prepSave(EEG,paths, rawFile, pipeLine, step, timeStamp)
 
 stepName = pipeLine{step}(4:end); % get name of current preprocessing step
 procFile = [rawFile '_' stepName]; % append to base file name
@@ -16,3 +16,8 @@ else % if it does exist, throw warning, and save in new directory
     mkdir(paths.procDir, fullfile(stepName, timeStamp))
     saveDir = fullfile(paths.procDir, stepName, timeStamp);
 end
+
+% store metadata in EEG structure
+EEG.setname = [paths.expID ': ' pipeLine{step}(4:end)];
+EEG.filename = [procFile '.mat'];
+EEG.filepath = saveDir;

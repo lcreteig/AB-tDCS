@@ -1,3 +1,6 @@
+%put code after prepsave in own function
+%EEGLAB GUI commands in function?
+%Put each preproc step in separate function (worth it because 25% oneliners and EEG GUI issues?
 try
 preprocOrig = preproc;
 timeStamp = datestr(now, 'yyyy-mm-dd_HH-MM-SS'); % get present time and date, for tagging directories
@@ -40,12 +43,13 @@ for iSub = 1:length(paths.subs2process)
             currSub = paths.subs2process{iSub};
             currSession = paths.sessions2process{iSession};
             currBlock = paths.blocks2process{iBlock};
+            fprintf('    Processing data from subject "%s", session "%s", block "%s" ...\n', currSub, currSession, currBlock)
             
             fileInfo = dir(fullfile(paths.rawDir, currSub, [currSub '_*' currSession '_' currBlock '.bdf']));
             rawFile = fileInfo.name(1:end-length('.bdf'));
             
             if preproc.(pipeLine{step}) % if this preprocessing step is flagged
-                fprintf('    Importing data for subject "%s", session "%s", block "%s" ...\n', currSub, currSession, currBlock)
+                fprintf('    Importing file %s...\n', rawFile)
                 EEG = pop_biosig(fullfile(paths.rawDir, currSub, [rawFile '.bdf'])); %import the data from biosemi .bdf files into EEGlab using the BioSig toolbox
                 loadFlag = true;
                 
@@ -68,11 +72,9 @@ for iSub = 1:length(paths.subs2process)
                 [~,exclChanIdx] = ismember([preproc.heogChans preproc.veogChans], {EEG.chanlocs.labels}); % indices of channels to exclude from reference (eye channels)
                 EEG = pop_reref(EEG, refChanIdx, 'keepref', 'on', 'exclude', exclChanIdx); % re-reference, keeping ref channels in the data set
                 
+                %SAVE
                 if preproc.(pipeLine{step})(2) % if EEG data should be saved to disk after this step
-                    [saveDir, procFile] = prepSave(paths, rawFile, pipeLine, step, timeStamp); % build directory and file name
-                    EEG.setname = [paths.expID ': ' pipeLine{step}(4:end)];
-                    EEG.filename = [procFile '.mat'];
-                    EEG.filepath = saveDir;
+                    [saveDir, procFile, EEG] = prepSave(EEG, paths, rawFile, pipeLine, step, timeStamp); % build directory and file name
                     fprintf('    Saving file %s...\n', procFile);
                     save(fullfile(saveDir, procFile), 'EEG', 'paths', 'preproc', 'trig'); %save variables to disk
                 end
@@ -83,6 +85,7 @@ for iSub = 1:length(paths.subs2process)
             
             if preproc.(pipeLine{step})(1)
                 
+                %LOAD
                 if ~preproc.(pipeLine{step-1})(1) && ~loadFlag % if the previous processing step should not be redone, and no data has been loaded yet
                     [EEG, preproc] = loadEEG(paths, rawFile, preproc, step);
                     loadFlag = true;
@@ -109,11 +112,9 @@ for iSub = 1:length(paths.subs2process)
                 
                 EEG = pop_select(EEG, 'nochannel', [heogIdx(2), veogIdx(2), refIdx(2)]); % remove the now redundant 2nd member of each pair from the dataset
                 
+                %SAVE
                 if preproc.(pipeLine{step})(2)
-                    [saveDir, procFile] = prepSave(paths, rawFile, pipeLine, step, timeStamp);
-                    EEG.setname = [paths.expID ': ' pipeLine{step}(4:end)];
-                    EEG.filename = [procFile '.mat'];
-                    EEG.filepath = saveDir;
+                    [saveDir, procFile, EEG] = prepSave(EEG, paths, rawFile, pipeLine, step, timeStamp);
                     fprintf('    Saving file %s...\n', procFile);
                     save(fullfile(saveDir, procFile), 'EEG', 'paths', 'preproc', 'trig');
                 end
@@ -124,6 +125,7 @@ for iSub = 1:length(paths.subs2process)
             
             if preproc.(pipeLine{step})(1)
                 
+                %LOAD
                 if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
                     [EEG, preproc] = loadEEG(paths, rawFile, preproc, step);
                     loadFlag = true;
@@ -133,11 +135,9 @@ for iSub = 1:length(paths.subs2process)
                 
                 EEG = pop_select(EEG,'nochannel',preproc.noChans); % remove the channels that were not used during recording
                 
+                %SAVE
                 if preproc.(pipeLine{step})(2)
-                    [saveDir, procFile] = prepSave(paths, rawFile, pipeLine, step, timeStamp);
-                    EEG.setname = [paths.expID ': ' pipeLine{step}(4:end)];
-                    EEG.filename = [procFile '.mat'];
-                    EEG.filepath = saveDir;
+                    [saveDir, procFile, EEG] = prepSave(EEG, paths, rawFile, pipeLine, step, timeStamp);
                     fprintf('    Saving file %s...\n', procFile);
                     save(fullfile(saveDir, procFile), 'EEG', 'paths', 'preproc', 'trig');
                 end
@@ -148,6 +148,7 @@ for iSub = 1:length(paths.subs2process)
             
             if preproc.(pipeLine{step})(1)
                 
+                %LOAD
                 if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
                     [EEG, preproc] = loadEEG(paths, rawFile, preproc, step);
                     loadFlag = true;
@@ -157,11 +158,9 @@ for iSub = 1:length(paths.subs2process)
                 
                 EEG=pop_chanedit(EEG,'lookup', preproc.channelInfo); % lookup information on channel location in cap
                 
+                %SAVE
                 if preproc.(pipeLine{step})(2)
-                    [saveDir, procFile] = prepSave(paths, rawFile, pipeLine, step, timeStamp);
-                    EEG.setname = [paths.expID ': ' pipeLine{step}(4:end)];
-                    EEG.filename = [procFile '.mat'];
-                    EEG.filepath = saveDir;
+                    [saveDir, procFile, EEG] = prepSave(EEG, paths, rawFile, pipeLine, step, timeStamp);
                     fprintf('    Saving file %s...\n', procFile);
                     save(fullfile(saveDir, procFile), 'EEG', 'paths', 'preproc', 'trig');
                 end
@@ -172,6 +171,7 @@ for iSub = 1:length(paths.subs2process)
             
             if preproc.(pipeLine{step})(1)
                 
+                %LOAD
                 if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
                     [EEG, preproc] = loadEEG(paths, rawFile, preproc, step);
                     loadFlag = true;
@@ -181,11 +181,9 @@ for iSub = 1:length(paths.subs2process)
                 
                 EEG = pop_eegfilt(EEG, preproc.highPass, []); % filter with low-cutoff at specified value (only high-pass, so no high cutoff)
                 
-                if preproc.(pipeLine{step})(2) % if EEG data should be saved to disk after this step
-                    [saveDir, procFile] = prepSave(paths, rawFile, pipeLine, step, timeStamp);
-                    EEG.setname = [paths.expID ': ' pipeLine{step}(4:end)];
-                    EEG.filename = [procFile '.mat'];
-                    EEG.filepath = saveDir;
+                %SAVE
+                if preproc.(pipeLine{step})(2)
+                    [saveDir, procFile, EEG] = prepSave(EEG, paths, rawFile, pipeLine, step, timeStamp);
                     fprintf('    Saving file %s...\n', procFile);
                     save(fullfile(saveDir, procFile), 'EEG', 'paths', 'preproc', 'trig');
                 end
@@ -196,6 +194,7 @@ for iSub = 1:length(paths.subs2process)
             
             if preproc.(pipeLine{step})(1)
                 
+                %LOAD
                 if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
                     [EEG, preproc] = loadEEG(paths, rawFile, preproc, step);
                     loadFlag = true;
@@ -257,11 +256,9 @@ for iSub = 1:length(paths.subs2process)
                     sum([EEG.event.type] == trig_noblink_short), sum([EEG.event.type] == trig_noblink_long), ...
                     sum([EEG.event.type] == trig_blink_short), sum([EEG.event.type] == trig_blink_long))
                 
-                if preproc.(pipeLine{step})(2) % if EEG data should be saved to disk after this step
-                    [saveDir, procFile] = prepSave(paths, rawFile, pipeLine, step, timeStamp);
-                    EEG.setname = [paths.expID ': ' pipeLine{step}(4:end)];
-                    EEG.filename = [procFile '.mat'];
-                    EEG.filepath = saveDir;
+                %SAVE
+                if preproc.(pipeLine{step})(2)
+                    [saveDir, procFile, EEG] = prepSave(EEG, paths, rawFile, pipeLine, step, timeStamp);
                     fprintf('    Saving file %s...\n', procFile);
                     save(fullfile(saveDir, procFile), 'EEG', 'paths', 'preproc', 'trig');
                 end
@@ -271,7 +268,8 @@ for iSub = 1:length(paths.subs2process)
             step = 8;
             
             if preproc.(pipeLine{step})(1)
-                
+                 
+                 %LOAD
                  if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
                     [EEG, preproc] = loadEEG(paths, rawFile, preproc, step);
                     loadFlag = true;
@@ -283,15 +281,12 @@ for iSub = 1:length(paths.subs2process)
                 chansZeroIdx = ismember({EEG.chanlocs.labels}, chansZero); % find indices in chanlocs structure
                 EEG.data(chansZeroIdx, :) = 0; % set all samples on these channels to zero
                  
-                 if preproc.(pipeLine{step})(2)
-                     [saveDir, procFile] = prepSave(paths, rawFile, pipeLine, step, timeStamp);
-                     EEG.setname = [paths.expID ': ' pipeLine{step}(4:end)];
-                     EEG.filename = [procFile '.mat'];
-                     EEG.filepath = saveDir;
-                     fprintf('    Saving file %s...\n', procFile);
-                     save(fullfile(saveDir, procFile), 'EEG', 'paths', 'preproc', 'trig');
-                 end
-                 
+                %SAVE
+                if preproc.(pipeLine{step})(2)
+                    [saveDir, procFile, EEG] = prepSave(EEG, paths, rawFile, pipeLine, step, timeStamp);
+                    fprintf('    Saving file %s...\n', procFile);
+                    save(fullfile(saveDir, procFile), 'EEG', 'paths', 'preproc', 'trig');
+                end
             end
             
             %% 9. Epoch
@@ -299,6 +294,7 @@ for iSub = 1:length(paths.subs2process)
             
             if preproc.(pipeLine{step})(1)
                 
+                %LOAD
                 if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
                     [EEG, preproc] = loadEEG(paths, rawFile, preproc, step);
                     loadFlag = true;
@@ -308,11 +304,9 @@ for iSub = 1:length(paths.subs2process)
                 
                 EEG = pop_epoch(EEG, preproc.zeroMarkers, preproc.epochTime1); % cut epochs using specified time zero and boundaries
                 
-                if preproc.(pipeLine{step})(2) % if EEG data should be saved to disk after this step
-                    [saveDir, procFile] = prepSave(paths, rawFile, pipeLine, step, timeStamp);
-                    EEG.setname = [paths.expID ': ' pipeLine{step}(4:end)];
-                    EEG.filename = [procFile '.mat'];
-                    EEG.filepath = saveDir;
+                %SAVE
+                if preproc.(pipeLine{step})(2)
+                    [saveDir, procFile, EEG] = prepSave(EEG, paths, rawFile, pipeLine, step, timeStamp);
                     fprintf('    Saving file %s...\n', procFile);
                     save(fullfile(saveDir, procFile), 'EEG', 'paths', 'preproc', 'trig');
                 end
@@ -323,6 +317,7 @@ for iSub = 1:length(paths.subs2process)
             
             if preproc.(pipeLine{step})(1)
                 
+                %LOAD
                 if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
                     [EEG, preproc] = loadEEG(paths, rawFile, preproc, step);
                     loadFlag = true;
@@ -332,11 +327,9 @@ for iSub = 1:length(paths.subs2process)
                 
                 EEG = pop_rmbase(EEG, preproc.baseTime); % subtract average of baseline period from the epoch
                 
-                if preproc.(pipeLine{step})(2) % if EEG data should be saved to disk after this step
-                    [saveDir, procFile] = prepSave(paths, rawFile, pipeLine, step, timeStamp);
-                    EEG.setname = [paths.expID ': ' pipeLine{step}(4:end)];
-                    EEG.filename = [procFile '.mat'];
-                    EEG.filepath = saveDir;
+                %SAVE
+                if preproc.(pipeLine{step})(2)
+                    [saveDir, procFile, EEG] = prepSave(EEG, paths, rawFile, pipeLine, step, timeStamp);
                     fprintf('    Saving file %s...\n', procFile);
                     save(fullfile(saveDir, procFile), 'EEG', 'paths', 'preproc', 'trig');
                 end
@@ -347,6 +340,7 @@ for iSub = 1:length(paths.subs2process)
             
             if preproc.(pipeLine{step})(1)
                 
+                %LOAD
                 if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
                     [EEG, preproc] = loadEEG(paths, rawFile, preproc, step);
                     loadFlag = true;
@@ -366,11 +360,9 @@ for iSub = 1:length(paths.subs2process)
                     dlmwrite(fullfile(paths.procDir, [rawFile '_' 'rejectedtrials' '_' timeStamp '.txt']), rejectedTrials, 'delimiter', '\t')
                 end
 
+                %SAVE
                 if preproc.(pipeLine{step})(2)
-                    [saveDir, procFile] = prepSave(paths, rawFile, pipeLine, step, timeStamp);
-                    EEG.setname = [paths.expID ': ' pipeLine{step}(4:end)];
-                    EEG.filename = [procFile '.mat'];
-                    EEG.filepath = saveDir;
+                    [saveDir, procFile, EEG] = prepSave(EEG, paths, rawFile, pipeLine, step, timeStamp);
                     fprintf('    Saving file %s...\n', procFile);
                     save(fullfile(saveDir, procFile), 'EEG', 'paths', 'preproc', 'trig');
                 end
@@ -382,6 +374,7 @@ for iSub = 1:length(paths.subs2process)
             
             if preproc.(pipeLine{step})(1)
                 
+                 %LOAD
                  if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
                     [EEG, preproc] = loadEEG(paths, rawFile, preproc, step);
                     loadFlag = true;
@@ -393,24 +386,21 @@ for iSub = 1:length(paths.subs2process)
                     chansBadIdx = ismember({EEG.chanlocs.labels}, chansBad); % find indices in chanlocs structure
                     EEG.data(chansBadIdx, :) = 0; % set all samples on these channels to zero
                 end
-                 
-                 if preproc.(pipeLine{step})(2)
-                     [saveDir, procFile] = prepSave(paths, rawFile, pipeLine, step, timeStamp);
-                     EEG.setname = [paths.expID ': ' pipeLine{step}(4:end)];
-                     EEG.filename = [procFile '.mat'];
-                     EEG.filepath = saveDir;
-                     fprintf('    Saving file %s...\n', procFile);
-                     save(fullfile(saveDir, procFile), 'EEG', 'paths', 'preproc', 'trig');
-                 end
-                 
+                
+                %SAVE
+                if preproc.(pipeLine{step})(2)
+                    [saveDir, procFile, EEG] = prepSave(EEG, paths, rawFile, pipeLine, step, timeStamp);
+                    fprintf('    Saving file %s...\n', procFile);
+                    save(fullfile(saveDir, procFile), 'EEG', 'paths', 'preproc', 'trig');
+                end 
             end
-            
-            
+
             %% 13. Interpolate channels (all epochs)
             step = 13;
             
             if preproc.(pipeLine{step})(1)
                 
+                %LOAD
                 if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
                     [EEG, preproc] = loadEEG(paths, rawFile, preproc, step);
                     loadFlag = true;
@@ -446,11 +436,9 @@ for iSub = 1:length(paths.subs2process)
                         error('At least one channel is both specified as "to-be interpolated" and "to-be excluded from interpolation"!')
                     end
                     
+                    %SAVE
                     if preproc.(pipeLine{step})(2)
-                        [saveDir, procFile] = prepSave(paths, rawFile, pipeLine, step, timeStamp);
-                        EEG.setname = [paths.expID ': ' pipeLine{step}(4:end)];
-                        EEG.filename = [procFile '.mat'];
-                        EEG.filepath = saveDir;
+                        [saveDir, procFile, EEG] = prepSave(EEG, paths, rawFile, pipeLine, step, timeStamp);
                         fprintf('    Saving file %s...\n', procFile);
                         save(fullfile(saveDir, procFile), 'EEG', 'paths', 'preproc', 'trig');
                     end
@@ -462,6 +450,7 @@ for iSub = 1:length(paths.subs2process)
             
             if preproc.(pipeLine{step})(1)
                 
+                %LOAD
                 if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
                     [EEG, preproc] = loadEEG(paths, rawFile, preproc, step);
                     loadFlag = true;
@@ -505,11 +494,9 @@ for iSub = 1:length(paths.subs2process)
                         error('At least one channel is both specified as "to-be interpolated" and "to-be excluded from interpolation"!')
                     end
                     
+                    %SAVE
                     if preproc.(pipeLine{step})(2)
-                        [saveDir, procFile] = prepSave(paths, rawFile, pipeLine, step, timeStamp);
-                        EEG.setname = [paths.expID ': ' pipeLine{step}(4:end)];
-                        EEG.filename = [procFile '.mat'];
-                        EEG.filepath = saveDir;
+                        [saveDir, procFile, EEG] = prepSave(EEG, paths, rawFile, pipeLine, step, timeStamp);
                         fprintf('    Saving file %s...\n', procFile);
                         save(fullfile(saveDir, procFile), 'EEG', 'paths', 'preproc', 'trig');
                     end
@@ -521,6 +508,7 @@ for iSub = 1:length(paths.subs2process)
             
             if preproc.(pipeLine{step})(1)
                 
+                %LOAD
                 if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
                     [EEG, preproc] = loadEEG(paths, rawFile, preproc, step);
                     loadFlag = true;
@@ -575,11 +563,9 @@ for iSub = 1:length(paths.subs2process)
                     
                 EEG = pop_select(EEG, 'notrial', rejectedTrials);
                 
+                %SAVE
                 if preproc.(pipeLine{step})(2)
-                    [saveDir, procFile] = prepSave(paths, rawFile, pipeLine, step, timeStamp);
-                    EEG.setname = [paths.expID ': ' pipeLine{step}(4:end)];
-                    EEG.filename = [procFile '.mat'];
-                    EEG.filepath = saveDir;
+                    [saveDir, procFile, EEG] = prepSave(EEG, paths, rawFile, pipeLine, step, timeStamp);
                     fprintf('    Saving file %s...\n', procFile);
                     save(fullfile(saveDir, procFile), 'EEG', 'paths', 'preproc', 'trig');
                 end
@@ -590,6 +576,7 @@ for iSub = 1:length(paths.subs2process)
             
             if preproc.(pipeLine{step})(1)
                 
+                %LOAD
                 if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
                     [EEG, preproc] = loadEEG(paths, rawFile, preproc, step);
                     loadFlag = true;
@@ -612,11 +599,9 @@ for iSub = 1:length(paths.subs2process)
                 
                 EEG = pop_reref(EEG, [], 'exclude', [extChanIdx chansZeroIdx chansBadIdx]);
                 
+                %SAVE
                 if preproc.(pipeLine{step})(2)
-                    [saveDir, procFile] = prepSave(paths, rawFile, pipeLine, step, timeStamp);
-                    EEG.setname = [paths.expID ': ' pipeLine{step}(4:end)];
-                    EEG.filename = [procFile '.mat'];
-                    EEG.filepath = saveDir;
+                    [saveDir, procFile, EEG] = prepSave(EEG, paths, rawFile, pipeLine, step, timeStamp);
                     fprintf('    Saving file %s...\n', procFile);
                     save(fullfile(saveDir, procFile), 'EEG', 'paths', 'preproc', 'trig');
                 end
@@ -627,6 +612,7 @@ for iSub = 1:length(paths.subs2process)
             
             if preproc.(pipeLine{step})(1)
                 
+                %LOAD
                 if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
                     [EEG, preproc] = loadEEG(paths, rawFile, preproc, step);
                     loadFlag = true;
@@ -637,6 +623,7 @@ for iSub = 1:length(paths.subs2process)
                 if strcmp(preproc.icaType, 'jader')
                     EEG = pop_runica(EEG,'icatype','jader','dataset',1,'options',{40}); % run ICA
                 elseif strcmp(preproc.icaType, 'runica')
+
                     EEG=pop_runica(EEG,'icatype','runica','dataset',1,'options',{'extended',1});
                 else
                     error('Unrecognized ICA type option "%s"!', preproc.icaType)
@@ -644,11 +631,9 @@ for iSub = 1:length(paths.subs2process)
                 
                 EEG.icaact = [];
                 
+                %SAVE
                 if preproc.(pipeLine{step})(2)
-                    [saveDir, procFile] = prepSave(paths, rawFile, pipeLine, step, timeStamp);
-                    EEG.setname = [paths.expID ': ' pipeLine{step}(4:end)];
-                    EEG.filename = [procFile '.mat'];
-                    EEG.filepath = saveDir;
+                    [saveDir, procFile, EEG] = prepSave(EEG, paths, rawFile, pipeLine, step, timeStamp);
                     fprintf('    Saving file %s...\n', procFile);
                     save(fullfile(saveDir, procFile), 'EEG', 'paths', 'preproc', 'trig');
                 end
@@ -659,6 +644,7 @@ for iSub = 1:length(paths.subs2process)
            
             if preproc.(pipeLine{step})(1)
                 
+                %LOAD
                 if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
                     [EEG, preproc] = loadEEG(paths, rawFile, preproc, step);
                     loadFlag = true;
@@ -676,11 +662,9 @@ for iSub = 1:length(paths.subs2process)
                     dlmwrite(fullfile(paths.procDir, [rawFile '_' 'rejectedICs' '_' timeStamp '.txt']), rejectedICs, 'delimiter', '\t')
                 end
                 
+                %SAVE
                 if preproc.(pipeLine{step})(2)
-                    [saveDir, procFile] = prepSave(paths, rawFile, pipeLine, step, timeStamp);
-                    EEG.setname = [paths.expID ': ' pipeLine{step}(4:end)];
-                    EEG.filename = [procFile '.mat'];
-                    EEG.filepath = saveDir;
+                    [saveDir, procFile, EEG] = prepSave(EEG, paths, rawFile, pipeLine, step, timeStamp);
                     fprintf('    Saving file %s...\n', procFile);
                     save(fullfile(saveDir, procFile), 'EEG', 'paths', 'preproc', 'trig');
                 end
@@ -692,6 +676,7 @@ for iSub = 1:length(paths.subs2process)
             
             if preproc.(pipeLine{step})(1)
                 
+                %LOAD
                 if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
                     [EEG, preproc] = loadEEG(paths, rawFile, preproc, step);
                     loadFlag = true;
@@ -713,11 +698,9 @@ for iSub = 1:length(paths.subs2process)
 
                 EEG = pop_subcomp(EEG, rejectedICs);
                 
+                %SAVE
                 if preproc.(pipeLine{step})(2)
-                    [saveDir, procFile] = prepSave(paths, rawFile, pipeLine, step, timeStamp);
-                    EEG.setname = [paths.expID ': ' pipeLine{step}(4:end)];
-                    EEG.filename = [procFile '.mat'];
-                    EEG.filepath = saveDir;
+                    [saveDir, procFile, EEG] = prepSave(EEG, paths, rawFile, pipeLine, step, timeStamp);
                     fprintf('    Saving file %s...\n', procFile);
                     save(fullfile(saveDir, procFile), 'EEG', 'paths', 'preproc', 'trig');
                 end
@@ -738,10 +721,7 @@ for iSub = 1:length(paths.subs2process)
                 EEG = pop_select(EEG, 'nochannel', {'HEOG', 'VEOG', 'EARREF'});
                 
                 if preproc.(pipeLine{step})(2)
-                    [saveDir, procFile] = prepSave(paths, rawFile, pipeLine, step, timeStamp);
-                    EEG.setname = [paths.expID ': ' pipeLine{step}(4:end)];
-                    EEG.filename = [procFile '.mat'];
-                    EEG.filepath = saveDir;
+                    [saveDir, procFile, EEG] = prepSave(EEG, paths, rawFile, pipeLine, step, timeStamp);
                     fprintf('    Saving file %s...\n', procFile);
                     save(fullfile(saveDir, procFile), 'EEG', 'paths', 'preproc', 'trig');
                 end
@@ -752,6 +732,7 @@ for iSub = 1:length(paths.subs2process)
            
            if preproc.(pipeLine{step})(1)
                
+               %LOAD
                if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
                    [EEG, preproc] = loadEEG(paths, rawFile, preproc, step);
                    loadFlag = true;
@@ -763,11 +744,9 @@ for iSub = 1:length(paths.subs2process)
                % channels be excluded too?!)
                EEG.data = laplacian_perrinX(EEG.data,[EEG.chanlocs.X],[EEG.chanlocs.Y],[EEG.chanlocs.Z]);
                
+               %SAVE
                if preproc.(pipeLine{step})(2)
-                   [saveDir, procFile] = prepSave(paths, rawFile, pipeLine, step, timeStamp);
-                   EEG.setname = [paths.expID ': ' pipeLine{step}(4:end)];
-                   EEG.filename = [procFile '.mat'];
-                   EEG.filepath = saveDir;
+                   [saveDir, procFile, EEG] = prepSave(EEG, paths, rawFile, pipeLine, step, timeStamp);
                    fprintf('    Saving file %s...\n', procFile);
                    save(fullfile(saveDir, procFile), 'EEG', 'paths', 'preproc', 'trig');
                end
@@ -778,6 +757,7 @@ for iSub = 1:length(paths.subs2process)
            
            if preproc.(pipeLine{step})
                
+               %LOAD
                if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
                    [EEG, preproc] = loadEEG(paths, rawFile, preproc, step);
                    loadFlag = true;
@@ -795,10 +775,13 @@ for iSub = 1:length(paths.subs2process)
                condition_labels(4,:) = trig.conditions(strcmp([trig.tDCS{sessionIdx} '_' trig.block{blockIdx} '_' 'blink_long'], trig.conditions(:,1)),:);
                
                % Always save data to disk
-               [saveDir, procFile] = prepSave(paths, rawFile, pipeLine, step, timeStamp);
+               [saveDir, procFile, EEG] = prepSave(EEG, paths, rawFile, pipeLine, step, timeStamp);
                ALLEEG=EEG;
                for iCond = 1:size(condition_labels,1)
+                  try
                    ALLEEG(iCond) = pop_epoch(EEG,condition_labels(iCond,2), preproc.epochTime2, 'newname', [paths.expID ': ' condition_labels{iCond,1}]);
+                  catch err
+                  end
                    ALLEEG(iCond).filename = [procFile '.mat'];
                    ALLEEG(iCond).filepath = saveDir;
                end
