@@ -103,6 +103,7 @@ paths.procDir = fullfile('data', 'main', 'processed'); % processed eeg data
 
 paths.srcDir = fullfile('src', 'eeg', 'preproc'); % directory containing all preprocessing code for the project
 paths.libDir = fullfile(paths.srcDir, 'lib');
+paths.funcDir = fullfile(paths.srcDir, 'func');
 paths.eeglabOld = 'eeglab8_0_3_5b'; %old version of eeglab, used for loading data (which can fail in newer versions) and on old matlab versions
 paths.eeglabNew = 'eeglab13_4_4b'; % new version of eeglab, to use with new versions of matlab
 
@@ -111,7 +112,7 @@ paths.sessionID = {'B','D'}; % indicator for stimulation type: B = Anodal, D = C
 paths.blockID = {'pre','tDCS','post'}; % indicator for block (20 minutes): pre, during ("tDCS"), or post-tDCS 
 
 % Add folders to matlab path
-addpath(paths.srcDir); % add preprocessing code for project
+addpath(paths.funcDir); % add preprocessing code for project
 addpath(paths.libDir); % add general preprocessing code
 
 %% Triggers
