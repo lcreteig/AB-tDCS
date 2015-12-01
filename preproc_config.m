@@ -1,12 +1,10 @@
 function [preproc, paths, trig] = preproc_config(subjects, sessions, blocks)
-%preproc_config
-%
-% Defines preprocessing parameters, settings, file locations, etc.
+%PREPROC_CONFIG: Defines preprocessing parameters, settings, file locations, etc.
 % Call this function first, and then run the main preprocessing script
 % (preprocess.m)
 %
 % Usage:
-% [preproc, paths, trig] = preproc_config(subjects, sessions, blocks)
+% [preproc, paths, trig] = PREPROC_CONFIG(subjects, sessions, blocks)
 %
 % Inputs:
 %
@@ -27,10 +25,9 @@ function [preproc, paths, trig] = preproc_config(subjects, sessions, blocks)
 %
 % -trigs        structure containing info on conditions and EEG triggers.
 %
+% See also PREPROCESS
 
-%leonreteig@gmail.com
-
-% subjects = {'S01', 'S02', 'S03', 'S01', 'S05', 'S06', 'S07', 'S08',
+% subjects = {'S01', 'S02', 'S03', 'S05', 'S06', 'S07', 'S08',
 % 'S09', 'S10','S11', 'S12', 'S13', 'S15', 'S16', 'S17', 'S18', 'S19', 'S20',
 % 'S21'};
 %
@@ -43,16 +40,16 @@ function [preproc, paths, trig] = preproc_config(subjects, sessions, blocks)
 % Lists all pre-processing steps in the order they will be carried out
 % First element: if true, perform this step. 2nd element: if true, write EEG data to disk afterwards
 
-preproc.do_importdata = 0; % 1. import the data from the bdf files into EEGlab
-preproc.do_reref = [0 0]; % 2. re-reference the data to mastoids
-preproc.do_bipolar = [0 0]; % 3. bipolarize external channels (subtract pairs from each other, e.g. both HEOG channels)
-preproc.do_removechans = [0 0]; % 4. remove unused channels from data set
-preproc.do_chanlookup = [0 0]; % 5. import standard channel locations
-preproc.do_filter = [0 1]; % 6. high-pass filter the data
+preproc.do_importdata = 1; % 1. import the data from the bdf files into EEGlab
+preproc.do_reref = [1 0]; % 2. re-reference the data to mastoids
+preproc.do_bipolar = [1 0]; % 3. bipolarize external channels (subtract pairs from each other, e.g. both HEOG channels)
+preproc.do_removechans = [1 0]; % 4. remove unused channels from data set
+preproc.do_chanlookup = [1 0]; % 5. import standard channel locations
+preproc.do_filter = [0 0]; % 6. high-pass filter the data
 
-preproc.do_recodeTrigs = [1 0]; % 7. recode original marker values to more meaningful ones for analysis
+preproc.do_recodeTrigs = [0 0]; % 7. recode original marker values to more meaningful ones for analysis
 preproc.do_zerochans = [0 0]; % 8. set all values at unused channels (blocked by tDCS electrodes) to zero.
-preproc.do_epoch = [1 0]; % 9. split continous data into epochs (not yet separated per condition)
+preproc.do_epoch = [0 0]; % 9. split continous data into epochs (not yet separated per condition)
 preproc.do_baseline = [0 0]; % 10. subtract a (pre-stimulus) baseline from each epoch
 
 preproc.do_trialrej = [0 0]; % 11. manually identify trials for rejection and save trial indices to file
@@ -63,11 +60,11 @@ preproc.do_removetrials = [0 0]; % 15. remove trials previously identified for r
 preproc.do_averef = [0 0]; % 16. re-reference the data to the common average
 preproc.do_ica = [0 1]; % 17. run independent component analysis
 
-preproc.do_plotIC = 0; % 18. plot results of independent component analyis.
+preproc.do_plotIC = [0 1]; % 18. plot results of independent component analyis.
 preproc.do_removeIC = [0 0]; % 19. subtract marked components from the data
 preproc.do_removebipolars = [0 0]; % 20. drop bipolars from the dataset, leaving only the leave scalp channels
 preproc.do_laplacian = [0 0]; % 21. apply scalp laplacian
-preproc.do_conditions = 1; % 22. re-epoch into separate conditions
+preproc.do_conditions = 0; % 22. re-epoch into separate conditions
 
 %% Inputs
 
@@ -84,7 +81,7 @@ end
 paths.subs2process = subjects; % list of all subjects to process
 paths.sessions2process = sessions; % list of all sessions to process
 paths.blocks2process = blocks; % list of all blocks to process
-paths.sendMail = true; % send e-mail when preprocessing script finishes or crashes
+paths.sendMail = false; % send e-mail when preprocessing script finishes or crashes
 
 %% paths
 
@@ -93,7 +90,7 @@ paths.sendMail = true; % send e-mail when preprocessing script finishes or crash
 if ispc
         drive = 'Z:'; % default prefix for PCs
     else
-        drive = '/Volumes/students$/'; % % default prefix for macs
+        drive = '/Volumes/students$/'; % default prefix for macs
 end
 
 %directories for storing EEG data
@@ -148,8 +145,11 @@ preproc.refChans = {'EXG3','EXG4'}; % names of reference channels (earlobes)
 %% 3. Bipolarize external channels
 
 preproc.veogChans = {'EXG1', 'EXG2'}; % names of vertical EOG channels (above and below left eye)
+preproc.veogLabel = 'VEOG'; % name of new bipolar channel
 preproc.earChans = {'EXG3', 'EXG4'};
+preproc.earLabel = 'EARREF';
 preproc.heogChans = {'EXG5', 'EXG6'}; % names of horizontal EOG channels (next to outer canthi)
+preproc.heogLabel = 'HEOG';
 
 %% 4. Remove unused channels
 
@@ -297,7 +297,7 @@ preproc.baseTime = [-200 0]; % time range in ms to use for baseline subtraction,
 
 %% 17. Independent components analysis
 
-preproc.icaType = 'jader'; % either 'runica' to run the most standard ICA algorithm,
+preproc.icaType = 'runica'; % either 'runica' to run the most standard ICA algorithm,
 % or 'jader' to run a faster version (which first uses PCA).
 
 %% 18. Plot independent components

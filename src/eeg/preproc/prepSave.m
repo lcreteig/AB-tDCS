@@ -1,4 +1,24 @@
-function [saveDir, procFile, EEG] = prepSave(EEG,paths, rawFile, pipeLine, step, timeStamp)
+function [saveDir, procFile, EEG] = prepSave(EEG, paths, rawFile, pipeLine, step, timeStamp)
+%PREPSAVE: Build filenames and directories for to-be saved EEG data
+%
+% Usage: [saveDir, procFile, EEG] = PREPSAVE(EEG, paths, rawFile, pipeLine, step, timeStamp)
+%
+% Inputs:
+%   - EEG: EEGlab structure that was previously saved
+%   - paths: structure with file/script names and paths
+%   - rawFile: string containing name of this subject/session/block combination (raw data file)
+%   - pipeLine: cell array of strings with names of all preprocessing steps
+%   - step: number of current preprocessing step
+%   - timeStamp: string with time the preprocessing script started
+%
+% Outputs:
+%   - saveDir: string with directory EEG data should be saved in.
+%   - procFile: string with file name of to-be saved EEG data
+%   - EEG: EEGlab structure with updated metadata
+%
+% Called in preprocess
+%
+% See also PREPROCESS, PREPROC_CONFIG
 
 stepName = pipeLine{step}(4:end); % get name of current preprocessing step
 procFile = [rawFile '_' stepName]; % append to base file name
