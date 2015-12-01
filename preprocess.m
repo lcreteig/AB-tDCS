@@ -561,13 +561,13 @@ for iSub = 1:length(paths.subs2process)
                fprintf('    Saving file %s...\n', procFile);
                save(fullfile(saveDir, procFile), 'ALLEEG', 'paths', 'preproc', 'trig', 'conditionLabels');
            end
-           
-           if paths.sendMail
-               mail_from_matlab(sprintf('Preprocessing script finished!\n Final preprocessed file was: "%s"', procFile))
-           end
-            
+                    
         end
     end
+end
+
+if paths.sendMail
+    mail_from_matlab(sprintf('Preprocessing script finished!\n Final preprocessed file was: "%s"', procFile))
 end
 
 catch err

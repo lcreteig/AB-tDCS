@@ -1,10 +1,10 @@
-function [preproc, paths, trig] = preproc_config(subjects, sessions, blocks)
+function [preproc, paths, trig] = preproc_config(subjects, sessions, blocks, sendMail)
 %PREPROC_CONFIG: Defines preprocessing parameters, settings, file locations, etc.
 % Call this function first, and then run the main preprocessing script
 % (preprocess.m)
 %
 % Usage:
-% [preproc, paths, trig] = PREPROC_CONFIG(subjects, sessions, blocks)
+% [preproc, paths, trig] = PREPROC_CONFIG(subjects, sessions, blocks, sendMail)
 %
 % Inputs:
 %
@@ -17,6 +17,10 @@ function [preproc, paths, trig] = preproc_config(subjects, sessions, blocks)
 % -blocks       string (e.g. 'pre') or cell array of string (e.g.
 %               {'pre','tDCS','post'}) containing name(s) of blocks(s) to 
 %               be preprocessed.
+%
+% -sendMail     either false or true, to send an e-mail when preprocessing
+%               script finished (see lib/mail_from_matlab.m)
+%
 % Outputs:
 %
 % -preproc      structure with preprocessing parameters.
@@ -81,7 +85,7 @@ end
 paths.subs2process = subjects; % list of all subjects to process
 paths.sessions2process = sessions; % list of all sessions to process
 paths.blocks2process = blocks; % list of all blocks to process
-paths.sendMail = false; % send e-mail when preprocessing script finishes or crashes
+paths.sendMail = sendMail; % send e-mail when preprocessing script finishes or crashes
 
 %% paths
 
