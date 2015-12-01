@@ -1,0 +1,2 @@
+Fixed a bug in reref.m from eeglab8_0_3_5b (1001, https://sccn.ucsd.edu/bugzilla/show_bug.cgi?id=1001). I’ve placed a modified version of reref.m in the top eeglab8_0_3_5b folder, so it has precedence over the one with the bug. The bug can under specific circumstances cause reref.m to pick a different reference channel than specified, if some channels should also be excluded (see bugzilla page for details). Lines 306-415 of the original have been replaced with new code, as per the suggestion on the bugzilla page.
+
