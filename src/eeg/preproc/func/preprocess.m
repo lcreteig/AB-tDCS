@@ -43,15 +43,15 @@ for iSub = 1:length(paths.subs2process)
                 EEG.condition = currBlock;
             end
             
-            %% 2. Re-reference
-            step = 2; % mark that we're now at the next preprocessing step
+            %% 2. Cut out data segment
+            step = 2;
             
-            if preproc.(pipeLine{step})(1)
+             if preproc.(pipeLine{step})(1)
                 
                 %PROCESS
-                fprintf('    Re-referencing...\n')
-                % re-reference, keeping ref channels in the data set, excluding other externals
-                EEG = preproc_reref(EEG, preproc.refChans, [preproc.heogChans preproc.veogChans]); 
+                fprintf('    Selecting continuous data segment...\n')
+                % cut-out segment of data before end of ramp-up and after end of ramp-down
+                EEG = preproc_segment_data(EEG, trig, currSub, currBlock, currSession);
                 
                 %SAVE
                 if preproc.(pipeLine{step})(2) % if EEG data should be saved to disk after this step
@@ -61,8 +61,26 @@ for iSub = 1:length(paths.subs2process)
                 end
             end
             
-            %% 3. Bipolarize external channels
-            step = 3;
+            %% 3. Re-reference
+            step = 3; % mark that we're now at the next preprocessing step
+            
+            if preproc.(pipeLine{step})(1)
+                
+                %PROCESS
+                fprintf('    Re-referencing...\n')
+                % re-reference, keeping ref channels in the data set, excluding other externals
+                EEG = preproc_reref(EEG, preproc.refChans, [preproc.heogChans preproc.veogChans]); 
+                
+                %SAVE
+                if preproc.(pipeLine{step})(2) 
+                    [saveDir, procFile, EEG] = prepSave(EEG, paths, rawFile, pipeLine, step, timeStamp);
+                    fprintf('    Saving file %s...\n', procFile);
+                    save(fullfile(saveDir, procFile), 'EEG', 'paths', 'preproc', 'trig');
+                end
+            end
+            
+            %% 4. Bipolarize external channels
+            step = 4;
             
             if preproc.(pipeLine{step})(1)
                 
@@ -86,8 +104,8 @@ for iSub = 1:length(paths.subs2process)
                 end
             end
             
-            %% 4. Remove unused channels
-            step = 4;
+            %% 5. Remove unused channels
+            step = 5;
             
             if preproc.(pipeLine{step})(1)
                 
@@ -109,8 +127,8 @@ for iSub = 1:length(paths.subs2process)
                 end
             end
             
-            %% 5. Channel info lookup
-            step = 5;
+            %% 6. Channel info lookup
+            step = 6;
             
             if preproc.(pipeLine{step})(1)
                 
@@ -132,8 +150,8 @@ for iSub = 1:length(paths.subs2process)
                 end
             end
             
-            %% 6. Filter
-            step = 6;
+            %% 7. Filter
+            step = 7;
             
             if preproc.(pipeLine{step})(1)
                 
@@ -155,8 +173,8 @@ for iSub = 1:length(paths.subs2process)
                 end
             end
             
-            %% 7. Recode triggers
-            step = 7;
+            %% 8. Recode triggers
+            step = 8;
             
             if preproc.(pipeLine{step})(1)
                 
@@ -179,8 +197,8 @@ for iSub = 1:length(paths.subs2process)
                 end
             end
             
-            %% 8. Set channels to zero
-            step = 8;
+            %% 9. Set channels to zero
+            step = 9;
             
             if preproc.(pipeLine{step})(1)
                  
@@ -202,8 +220,8 @@ for iSub = 1:length(paths.subs2process)
                 end
             end
             
-            %% 9. Epoch
-            step = 9;
+            %% 10. Epoch
+            step = 10;
             
             if preproc.(pipeLine{step})(1)
                 
@@ -225,8 +243,8 @@ for iSub = 1:length(paths.subs2process)
                 end
             end
             
-            %% 10. Baseline
-            step = 10;
+            %% 11. Baseline
+            step = 11;
             
             if preproc.(pipeLine{step})(1)
                 
@@ -248,8 +266,8 @@ for iSub = 1:length(paths.subs2process)
                 end
             end
             
-            %% 11. Reject trials
-            step = 11;
+            %% 12. Reject trials
+            step = 12;
             
             if preproc.(pipeLine{step})(1)
                 
@@ -283,8 +301,8 @@ for iSub = 1:length(paths.subs2process)
                 
             end
             
-           %% 12. Mark bad channels
-           step = 12;
+           %% 13. Mark bad channels
+           step = 13;
             
             if preproc.(pipeLine{step})(1)
                 
@@ -307,8 +325,8 @@ for iSub = 1:length(paths.subs2process)
                 end 
             end
 
-            %% 13. Interpolate channels (all epochs)
-            step = 13;
+            %% 14. Interpolate channels (all epochs)
+            step = 14;
             
             if preproc.(pipeLine{step})(1)
                 
@@ -334,8 +352,8 @@ for iSub = 1:length(paths.subs2process)
                 end
             end
                  
-            %% 14. Interpolate channels (single epochs) 
-            step = 14;
+            %% 15. Interpolate channels (single epochs) 
+            step = 15;
             
             if preproc.(pipeLine{step})(1)
                 
@@ -361,8 +379,8 @@ for iSub = 1:length(paths.subs2process)
                 end
             end
             
-            %% 15. Remove rejected trials 
-            step = 15;
+            %% 16. Remove rejected trials 
+            step = 16;
             
             if preproc.(pipeLine{step})(1)
                 
@@ -383,8 +401,8 @@ for iSub = 1:length(paths.subs2process)
                 end
             end
             
-            %% 16. Average reference
-            step = 16;
+            %% 17. Average reference
+            step = 17;
             
             if preproc.(pipeLine{step})(1)
                 
@@ -407,8 +425,8 @@ for iSub = 1:length(paths.subs2process)
                 end
             end
              
-            %% 17. Independent components analysis
-            step = 17;
+            %% 18. Independent components analysis
+            step = 18;
             
             if preproc.(pipeLine{step})(1)
                 
@@ -430,8 +448,8 @@ for iSub = 1:length(paths.subs2process)
                 end
             end
             
-           %% 18. Plot independent components
-           step = 18;
+           %% 19. Plot independent components
+           step = 19;
            
             if preproc.(pipeLine{step})(1)
                 
@@ -464,8 +482,8 @@ for iSub = 1:length(paths.subs2process)
                 
             end
             
-            %% 19. Remove independent components
-            step = 19;
+            %% 20. Remove independent components
+            step = 20;
             
             if preproc.(pipeLine{step})(1)
                 
@@ -488,8 +506,8 @@ for iSub = 1:length(paths.subs2process)
                 end
             end
             
-            %% 20. Remove bipolar channels
-            step = 20;
+            %% 21. Remove bipolar channels
+            step = 21;
             
             if preproc.(pipeLine{step})(1)
                 
@@ -511,8 +529,8 @@ for iSub = 1:length(paths.subs2process)
                 end
             end
             
-           %% 21. Laplacian
-           step = 21;
+           %% 22. Laplacian
+           step = 22;
            
            if preproc.(pipeLine{step})(1)
                
@@ -536,8 +554,8 @@ for iSub = 1:length(paths.subs2process)
                end
            end
            
-           %% 22. Separate into conditions
-           step = 22;
+           %% 23. Separate into conditions
+           step = 23;
            
            if preproc.(pipeLine{step})
                
@@ -549,7 +567,7 @@ for iSub = 1:length(paths.subs2process)
                
                %PROCESS
                fprintf('    Separating into conditions...\n')
-               [ALLEEG, conditionLabels] = prepoc_conditions(EEG, currSession, currBlock, trig, preproc.epochTime2); %re-epoch data into separate EEG structures
+               [ALLEEG, conditionLabels] = preproc_conditions(EEG, currSession, currBlock, trig, preproc.epochTime2); %re-epoch data into separate EEG structures
 
                % Always save data to disk
                [saveDir, procFile, EEG] = prepSave(EEG, paths, rawFile, pipeLine, step, timeStamp);
