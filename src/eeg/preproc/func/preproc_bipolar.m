@@ -1,5 +1,5 @@
 function EEG = preproc_bipolar(EEG, heogChans, heogLabel, veogChans, veogLabel, earChans, earLabel)
-% PREPROC_BIPOLAR: Make pairs of external channels into one bipolar channel, 
+% PREPROC_BIPOLAR: Make pairs of external channels into one bipolar channel,
 % by subtracting the two members of a pair
 %
 % Usage: EEG = PREPROC_BIPOLAR(EEG, heogChans, heogLabel, veogChans, veogLabel, earChans, earLabel)
@@ -38,7 +38,13 @@ EEG.data(veogIdx(1),:) = EEG.data(veogIdx(1),:) - EEG.data(veogIdx(2),:);
 EEG.chanlocs(veogIdx(1)).labels = veogLabel;
 
 % Reference channels (earlobes)
-EEG.data(refIdx(1),:) = EEG.data(refIdx(1),:) - EEG.data(refIdx(2),:);
-EEG.chanlocs(refIdx(1)).labels = earLabel;
+if strcmp(EEG.subject, 'S11') && strcmp(EEG.session, 'B') && strcmp(EEG.condition, 'tDCS') % for this file, EXG4 was bad, so don't actually bipolarize the channel
+    refIdx(1) = find(strcmp('EXG3', {EEG.chanlocs.labels}));
+    refIdx(2) = find(strcmp('EXG4', {EEG.chanlocs.labels}));
+    EEG.chanlocs(refIdx(1)).labels = earLabel;
+else
+    EEG.data(refIdx(1),:) = EEG.data(refIdx(1),:) - EEG.data(refIdx(2),:);
+    EEG.chanlocs(refIdx(1)).labels = earLabel;
+end
 
 EEG = pop_select(EEG, 'nochannel', [heogIdx(2), veogIdx(2), refIdx(2)]); % remove the now redundant 2nd member of each pair from the dataset

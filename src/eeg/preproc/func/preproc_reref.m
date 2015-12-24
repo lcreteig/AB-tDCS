@@ -17,6 +17,11 @@ function EEG = preproc_reref(EEG, refChans, exclChans)
 %
 % See also PREPROCESS, PREPROC_CONFIG, POP_REREF
 
-[~,refChanIdx] = ismember(refChans, {EEG.chanlocs.labels}); % indices of reference channels (earlobes)
+if strcmp(EEG.subject, 'S11') && strcmp(EEG.session, 'B') && strcmp(EEG.condition, 'tDCS') % for this file, EXG4 was bad, so use only 1 channel as a reference
+    [~,refChanIdx] = find(strcmp('EXG3', {EEG.chanlocs.labels})); 
+else
+    [~,refChanIdx] = ismember(refChans, {EEG.chanlocs.labels}); % indices of reference channels (earlobes)
+end
+
 [~,exclChanIdx] = ismember(exclChans, {EEG.chanlocs.labels}); % indices of channels to exclude from reference (eye channels)
 EEG = pop_reref(EEG, refChanIdx, 'keepref', 'on', 'exclude', exclChanIdx); % re-reference, keeping ref channels in the data set

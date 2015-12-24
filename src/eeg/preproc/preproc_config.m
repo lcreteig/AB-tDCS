@@ -38,6 +38,10 @@ function [preproc, paths, trig] = preproc_config(subjects, sessions, blocks, sen
 % sessions = {'B', 'D'};
 %
 % blocks = {'pre','tDCS','post'};
+%
+% Exceptions handled:
+% S11, B, tDCS: modified preproc_reref and preproc_bipolar to use only
+% EXG3, as EXG4 was bad.
 
 %% Pipeline
 
