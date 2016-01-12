@@ -45,7 +45,7 @@ noblink_long_idx= zeros(1,EEG.trials);
 blink_short_idx = zeros(1,EEG.trials);
 blink_long_idx = zeros(1,EEG.trials);
 for iTrial = 1:EEG.trials
-    epochEvents = [EEG.epoch(iTrial).eventtype{:}]; % get all markers in this epoch
+    epochEvents = EEG.epoch(iTrial).eventtype(:); % get all markers in this epoch
     if ismember(trig_noblink_short, epochEvents) % if one of these is the noblink_short marker
         noblink_short_idx(iTrial) = 1; % add to index list
     elseif ismember(trig_noblink_long, epochEvents)

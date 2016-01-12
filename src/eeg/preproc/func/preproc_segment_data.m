@@ -23,7 +23,7 @@ if strcmp(currBlock, 'tDCS')
     endTime = data_timerange(currSub, currSession); % get time before the ramp-down artifact
     
     if ~isempty(endTime) % if there was a ramp-down artifact present
-        startTrig = find([EEG.event.type] == trig.startEEG, 1); % find event corresponding to start of the task
+        startTrig = find([EEG.event.type] == str2double(trig.startEEG), 1); % find event corresponding to start of the task
         startTime = (EEG.event(startTrig).latency - 1)/EEG.srate; % convert index to seconds
         EEG = pop_select(EEG, 'time', [startTime-10*(1/EEG.srate) endTime]); % keep data segment from start till specified end, discard rest
     end

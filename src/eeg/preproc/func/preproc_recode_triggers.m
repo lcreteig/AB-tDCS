@@ -27,18 +27,26 @@ trig_noblink_long = trig.conditions{strcmp([trig.tDCS{sessionIdx} '_' trig.block
 trig_blink_short = trig.conditions{strcmp([trig.tDCS{sessionIdx} '_' trig.block{blockIdx} '_' 'blink_short'], trig.conditions(:,1)),2}; % get trigger corresponding to 'blink_short' condition
 trig_blink_long = trig.conditions{strcmp([trig.tDCS{sessionIdx} '_' trig.block{blockIdx} '_' 'blink_long'], trig.conditions(:,1)),2}; % get trigger corresponding to 'blink_long' condition
 
-T1idx = find([EEG.event.type] == trig.T1); % index of events representing T1 onset
-T1idxPad = [1 T1idx length([EEG.event.type])]; %include first and last of all events for looping
+% force event markers to be strings in all cases (only in tDCS blocks they are strings by default, 
+% due to 'boundary' events inserted by selection of subset of the continous data).
+for i = 1:length({EEG.event.type})
+    if ~ischar(EEG.event(i).type)
+        EEG.event(i).type = num2str(EEG.event(i).type);
+    end
+end
+
+T1idx = find(strcmp(trig.T1, {EEG.event.type})); % find all indices of T1 markers
+T1idxPad = [1 T1idx length({EEG.event.type})]; %include first and last of all events for looping
 
 missingTriggers = 1;
 for iEvent = 2:length(T1idxPad)-1 % for every T1
     
-    lagMrks = [EEG.event(T1idxPad(iEvent-1):T1idxPad(iEvent)).type]; % find markers between current and previous T1 (or beginning of 1st trial)
-    lagIdx = T1idxPad(iEvent-1) + find(lagMrks == trig.streamLag3 | lagMrks == trig.streamLag8) -1; % from these, find the marker signalling stream onset
+    lagMrks = {EEG.event(T1idxPad(iEvent-1):T1idxPad(iEvent)).type}; % get all markers between current T1 and previous T1 (or data start)
+    lagIdx = T1idxPad(iEvent-1) + find(strcmp(trig.streamLag3, lagMrks) | strcmp(trig.streamLag8, lagMrks)) -1; % from these, find the marker signalling stream onset
     
-    ansMrks = [EEG.event(T1idxPad(iEvent):T1idxPad(iEvent+1)).type]; % find markers between current and next T1 (or end of last trial)
-    T1ansIdx = T1idxPad(iEvent) + find(ansMrks == trig.T2QT1corr)-1; % from these, find the marker signalling T1 was answered correctly
-    T2ansIdx = T1idxPad(iEvent) + find(ansMrks == trig.itiT2err | ansMrks == trig.itiT2corr)-1; % also find the marker signalling T2 answer
+    ansMrks = {EEG.event(T1idxPad(iEvent):T1idxPad(iEvent+1)).type}; % get all markers between current and next T1 (or data end)
+    T1ansIdx = T1idxPad(iEvent) + find(strcmp(trig.T2QT1corr, ansMrks))-1; % from these, find the marker signalling T1 was answered correctly
+    T2ansIdx = T1idxPad(iEvent) + find(strcmp(trig.itiT2err, ansMrks) | strcmp(trig.itiT2corr, ansMrks))-1; % also find the marker signalling T2 answer
     
     % if any of these markers are missing (e.g. due to a conflict on the parallel port):
     % not enough information to analyze current trial, so skip
@@ -49,16 +57,16 @@ for iEvent = 2:length(T1idxPad)-1 % for every T1
         continue % also skip if T1 was answered incorrectly
     else % get the stream onset and T2 marker values
         lag = EEG.event(lagIdx).type;
-        T2ans = EEG.event(T2ansIdx).type;
+        T2ans = EEG.event(T2ansIdx).type;    
     end
-    
-    if T2ans == trig.itiT2corr && lag == trig.streamLag3 % if on present T1 correct trial: T2 correct, lag 3
+
+    if strcmp(T2ans, trig.itiT2corr) && strcmp(lag, trig.streamLag3) % if on present T1 correct trial: T2 correct, lag 3
         EEG.event(T1idxPad(iEvent)).type = trig_noblink_short; % assign matching trigger to T1 onset
-    elseif T2ans == trig.itiT2corr && lag == trig.streamLag8 % if on present T1 correct trial: T2 correct, lag 8
+    elseif strcmp(T2ans, trig.itiT2corr) && strcmp(lag, trig.streamLag8) % if on present T1 correct trial: T2 correct, lag 8
         EEG.event(T1idxPad(iEvent)).type = trig_noblink_long;
-    elseif T2ans == trig.itiT2err && lag == trig.streamLag3 % if on present T1 correct trial: T2 incorrect, lag 3
+    elseif strcmp(T2ans, trig.itiT2err) && strcmp(lag, trig.streamLag3) % if on present T1 correct trial: T2 incorrect, lag 3
         EEG.event(T1idxPad(iEvent)).type = trig_blink_short;
-    elseif T2ans == trig.itiT2err && lag == trig.streamLag8 % if on present T1 correct trial: T2 incorrect, lag 8
+    elseif strcmp(T2ans, trig.itiT2err) && strcmp(lag, trig.streamLag8) % if on present T1 correct trial: T2 incorrect, lag 8
         EEG.event(T1idxPad(iEvent)).type = trig_blink_long;
     end
 end
@@ -69,6 +77,6 @@ fprintf(['Total number of trials: %i\n'...
     'noblink_short trials: %i\n' ...
     'noblink_long trials: %i\n' ...
     'blink_short trials: %i\n' ...
-    'noblink_long trials: %i\n'], length(T1idx), missingTriggers, length(T1idx) - missingTriggers - sum([EEG.event.type] == trig.T1), ...
-    sum([EEG.event.type] == trig_noblink_short), sum([EEG.event.type] == trig_noblink_long), ...
-    sum([EEG.event.type] == trig_blink_short), sum([EEG.event.type] == trig_blink_long))
+    'noblink_long trials: %i\n'], length(T1idx), missingTriggers, length(T1idx) - missingTriggers - sum(strcmp(trig.T1, {EEG.event.type})), ...
+    sum(strcmp(trig_noblink_short, {EEG.event.type})), sum(strcmp(trig_noblink_long, {EEG.event.type})), ...
+    sum(strcmp(trig_blink_short, {EEG.event.type} )), sum(strcmp(trig_blink_long, {EEG.event.type})))

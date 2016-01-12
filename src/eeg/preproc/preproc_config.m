@@ -54,12 +54,12 @@ preproc.do_reref = [1 0]; % 3. re-reference the data to mastoids
 preproc.do_bipolar = [1 0]; % 4. bipolarize external channels (subtract pairs from each other, e.g. both HEOG channels)
 preproc.do_removechans = [1 0]; % 5. remove unused channels from data set
 preproc.do_chanlookup = [1 0]; % 6. import standard channel locations
-preproc.do_filter = [1 1]; % 7. high-pass filter the data
+preproc.do_filter = [0 1]; % 7. high-pass filter the data
 
-preproc.do_recodeTrigs = [0 0]; % 8. recode original marker values to more meaningful ones for analysis
-preproc.do_zerochans = [0 0]; % 9. set all values at unused channels (blocked by tDCS electrodes) to zero.
-preproc.do_epoch = [0 0]; % 10. split continous data into epochs (not yet separated per condition)
-preproc.do_baseline = [0 0]; % 11. subtract a (pre-stimulus) baseline from each epoch
+preproc.do_recodeTrigs = [1 0]; % 8. recode original marker values to more meaningful ones for analysis
+preproc.do_zerochans = [1 0]; % 9. set all values at unused channels (blocked by tDCS electrodes) to zero.
+preproc.do_epoch = [1 0]; % 10. split continous data into epochs (not yet separated per condition)
+preproc.do_baseline = [1 0]; % 11. subtract a (pre-stimulus) baseline from each epoch
 
 preproc.do_trialrej = [0 0]; % 12. manually identify trials for rejection and save trial indices to file
 preproc.do_badchans = [0 0]; % 13. mark additional channels as bad (that should not be interpolated) after data inspection
@@ -73,7 +73,7 @@ preproc.do_plotIC = [0 1]; % 19. plot results of independent component analyis.
 preproc.do_removeIC = [0 0]; % 20. subtract marked components from the data
 preproc.do_removebipolars = [0 0]; % 21. drop bipolars from the dataset, leaving only the leave scalp channels
 preproc.do_laplacian = [0 0]; % 22. apply scalp laplacian
-preproc.do_conditions = 0; % 23. re-epoch into separate conditions
+preproc.do_conditions = 1; % 23. re-epoch into separate conditions
 
 %% Inputs
 
@@ -122,29 +122,29 @@ addpath(paths.libDir); % add general preprocessing code
 
 %% Triggers
 
-trig.startEEG = 254; % start EEG recording, start of block after a break
+trig.startEEG = '254'; % start EEG recording, start of block after a break
 
-trig.preFix = 10; % pre-stream fixation cross (1500 ms)
+trig.preFix = '10'; % pre-stream fixation cross (1500 ms)
 
 % stream onset (15 letters, 91.66 ms each = 1375 ms in total)
-trig.streamLag3 = 23; % lag 3 trial
-trig.streamLag8 = 28; % lag 8 trial
+trig.streamLag3 = '23'; % lag 3 trial
+trig.streamLag8 = '28'; % lag 8 trial
 
-trig.T1 = 31; % T1 (91.66 ms)
-trig.T2 = 32; % T2 (91.66 ms)
+trig.T1 = '31'; % T1 (91.66 ms)
+trig.T2 = '32'; % T2 (91.66 ms)
 
-trig.postFix = 40; % post-stream fixation cross (1000 ms)
+trig.postFix = '40'; % post-stream fixation cross (1000 ms)
 
 % Questions (self-paced)
-trig.T1Q = 50; % T1 question
-trig.T2QT1err = 60; % T2 question | T1 question answered incorrectly
-trig.T2QT1corr = 61; % T2 question | T1 question answered correctly
+trig.T1Q = '50'; % T1 question
+trig.T2QT1err = '60'; % T2 question | T1 question answered incorrectly
+trig.T2QT1corr = '61'; % T2 question | T1 question answered correctly
 
 % ITI (250 ms, followed by preFix)
-trig.itiT2err = 70; % Inter-trial interval onset | T2 question answered incorrectly
-trig.itiT2corr = 71; % Inter-trial interval onset | T2 question answered correctly
+trig.itiT2err = '70'; % Inter-trial interval onset | T2 question answered incorrectly
+trig.itiT2corr = '71'; % Inter-trial interval onset | T2 question answered correctly
 
-trig.pauseEEG = 255; % Pause EEG recording (task finished)
+trig.pauseEEG = '255'; % Pause EEG recording (task finished)
 
 %% 1. Import data
 
@@ -214,7 +214,7 @@ for iSession = 1:length(trig.session)
         for iBlink = 1:length(trig.T2correct)
             for iLag = 1:length(trig.lag)
                 trig.conditions{iCond,1} = [trig.tDCS{iSession} '_' trig.block{iBlock} '_' trig.T2correct{iBlink} '_' trig.lag{iLag}]; % specify full condition label
-                trig.conditions{iCond,2} = str2double([num2str(trig.T1) trig.tDCScode{iSession} trig.blockCode{iBlock} trig.T2correctCode{iBlink} trig.lagCode{iLag}]); % specify full trigger
+                trig.conditions{iCond,2} = [trig.T1 trig.tDCScode{iSession} trig.blockCode{iBlock} trig.T2correctCode{iBlink} trig.lagCode{iLag}]; % specify full trigger
                 iCond = iCond + 1;
             end
         end
