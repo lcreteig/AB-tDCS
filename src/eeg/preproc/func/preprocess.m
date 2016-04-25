@@ -43,7 +43,7 @@ for iSub = 1:length(paths.subs2process)
             end
             
             %% 2. Cut out data segment
-            step = 2;
+            step = 2; % mark that we're now at the next preprocessing step
             
              if preproc.(pipeLine{step})(1)
                 
@@ -77,9 +77,27 @@ for iSub = 1:length(paths.subs2process)
                     save(fullfile(saveDir, procFile), 'EEG', 'paths', 'preproc', 'trig'); %save variables to disk
                 end
              end
+             
+            %% 4. Add buffers
+            step = 4;
             
-            %% 4. Re-reference
-            step = 4; % mark that we're now at the next preprocessing step
+             if preproc.(pipeLine{step})(1)
+                
+                %PROCESS
+                fprintf('    Adding buffer zones...\n')
+                % add buffers to start and end of channel data
+                EEG = preproc_buffer(EEG, preproc.bufferLength);
+                
+                %SAVE
+                if preproc.(pipeLine{step})(2) % if EEG data should be saved to disk after this step
+                    [saveDir, procFile, EEG] = prepSave(EEG, paths, rawFile, pipeLine, step, timeStamp); % build directory and file name
+                    fprintf('    Saving file %s...\n', procFile);
+                    save(fullfile(saveDir, procFile), 'EEG', 'paths', 'preproc', 'trig'); %save variables to disk
+                end
+             end
+            
+            %% 5. Re-reference
+            step = 5; 
             
             if preproc.(pipeLine{step})(1)
                 
@@ -96,8 +114,8 @@ for iSub = 1:length(paths.subs2process)
                 end
             end
             
-            %% 5. Bipolarize external channels
-            step = 5;
+            %% 6. Bipolarize external channels
+            step = 6;
             
             if preproc.(pipeLine{step})(1)
                 
@@ -121,8 +139,8 @@ for iSub = 1:length(paths.subs2process)
                 end
             end
             
-            %% 6. Remove unused channels
-            step = 6;
+            %% 7. Remove unused channels
+            step = 7;
             
             if preproc.(pipeLine{step})(1)
                 
@@ -144,8 +162,8 @@ for iSub = 1:length(paths.subs2process)
                 end
             end
             
-            %% 7. Channel info lookup
-            step = 7;
+            %% 8. Channel info lookup
+            step = 8;
             
             if preproc.(pipeLine{step})(1)
                 
@@ -167,8 +185,8 @@ for iSub = 1:length(paths.subs2process)
                 end
             end
             
-            %% 8. Filter
-            step = 8;
+            %% 9. Filter
+            step = 9;
             
             if preproc.(pipeLine{step})(1)
                 
@@ -190,8 +208,8 @@ for iSub = 1:length(paths.subs2process)
                 end
             end
             
-            %% 9. Recode triggers
-            step = 9;
+            %% 10. Recode triggers
+            step = 10;
             
             if preproc.(pipeLine{step})(1)
                 
@@ -214,8 +232,8 @@ for iSub = 1:length(paths.subs2process)
                 end
             end
             
-            %% 10. Set channels to zero
-            step = 10;
+            %% 11. Set channels to zero
+            step = 11;
             
             if preproc.(pipeLine{step})(1)
                  
@@ -237,8 +255,8 @@ for iSub = 1:length(paths.subs2process)
                 end
             end
             
-            %% 11. Epoch
-            step = 11;
+            %% 12. Epoch
+            step = 12;
             
             if preproc.(pipeLine{step})(1)
                 
@@ -260,8 +278,8 @@ for iSub = 1:length(paths.subs2process)
                 end
             end
             
-            %% 12. Baseline
-            step = 12;
+            %% 13. Baseline
+            step = 13;
             
             if preproc.(pipeLine{step})(1)
                 
@@ -283,8 +301,8 @@ for iSub = 1:length(paths.subs2process)
                 end
             end
             
-            %% 13. Reject trials
-            step = 13;
+            %% 14. Reject trials
+            step = 14;
             
             if preproc.(pipeLine{step})(1)
                 
@@ -318,8 +336,8 @@ for iSub = 1:length(paths.subs2process)
                 
             end
             
-           %% 14. Mark bad channels
-           step = 14;
+           %% 15. Mark bad channels
+           step = 15;
             
             if preproc.(pipeLine{step})(1)
                 
@@ -342,8 +360,8 @@ for iSub = 1:length(paths.subs2process)
                 end 
             end
 
-            %% 15. Interpolate channels (all epochs)
-            step = 15;
+            %% 16. Interpolate channels (all epochs)
+            step = 16;
             
             if preproc.(pipeLine{step})(1)
                 
@@ -369,8 +387,8 @@ for iSub = 1:length(paths.subs2process)
                 end
             end
                  
-            %% 16. Interpolate channels (single epochs) 
-            step = 16;
+            %% 17. Interpolate channels (single epochs) 
+            step = 17;
             
             if preproc.(pipeLine{step})(1)
                 
@@ -396,8 +414,8 @@ for iSub = 1:length(paths.subs2process)
                 end
             end
             
-            %% 17. Remove rejected trials 
-            step = 17;
+            %% 18. Remove rejected trials 
+            step = 18;
             
             if preproc.(pipeLine{step})(1)
                 
@@ -418,8 +436,8 @@ for iSub = 1:length(paths.subs2process)
                 end
             end
             
-            %% 18. Average reference
-            step = 18;
+            %% 19. Average reference
+            step = 19;
             
             if preproc.(pipeLine{step})(1)
                 
@@ -442,8 +460,8 @@ for iSub = 1:length(paths.subs2process)
                 end
             end
              
-            %% 19. Independent components analysis
-            step = 19;
+            %% 20. Independent components analysis
+            step = 20;
             
             if preproc.(pipeLine{step})(1)
                 
@@ -465,8 +483,8 @@ for iSub = 1:length(paths.subs2process)
                 end
             end
             
-           %% 20. Plot independent components
-           step = 20;
+           %% 21. Plot independent components
+           step = 21;
            
             if preproc.(pipeLine{step})(1)
                 
@@ -499,8 +517,8 @@ for iSub = 1:length(paths.subs2process)
                 
             end
             
-            %% 21. Remove independent components
-            step = 21;
+            %% 22. Remove independent components
+            step = 22;
             
             if preproc.(pipeLine{step})(1)
                 
@@ -523,8 +541,8 @@ for iSub = 1:length(paths.subs2process)
                 end
             end
             
-            %% 22. Remove bipolar channels
-            step = 22;
+            %% 23. Remove bipolar channels
+            step = 23;
             
             if preproc.(pipeLine{step})(1)
                 
@@ -546,8 +564,8 @@ for iSub = 1:length(paths.subs2process)
                 end
             end
             
-           %% 23. Laplacian
-           step = 23;
+           %% 24. Laplacian
+           step = 24;
            
            if preproc.(pipeLine{step})(1)
                
@@ -571,8 +589,8 @@ for iSub = 1:length(paths.subs2process)
                end
            end
            
-           %% 24. Separate into conditions
-           step = 24;
+           %% 25. Separate into conditions
+           step = 25;
            
            if preproc.(pipeLine{step})
                
