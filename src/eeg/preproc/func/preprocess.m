@@ -657,7 +657,6 @@ for iSub = 1:length(paths.subs2process)
                % Always save data to disk
                [saveDir, procFile, EEG] = prepSave(EEG, paths, rawFile, pipeLine, step, timeStamp);
                for iCond = 1:size(conditionLabels,1)
-                   ALLEEG(iCond).setname = [paths.expID ': ' conditionLabels(iCond,1)];
                    ALLEEG(iCond).filename = [procFile '.mat'];
                    ALLEEG(iCond).filepath = saveDir;
                end

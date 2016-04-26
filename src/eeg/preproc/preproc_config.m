@@ -58,7 +58,7 @@ preproc.do_removechans = [1 0];    % 7. remove unused channels from data set
 preproc.do_chanlookup = [0 0];     % 8. import standard channel locations
 preproc.do_filter = [0 1];         % 9. high-pass filter the data
 
-preproc.do_recodeTrigs = [0 0];    % 10. recode original marker values to more meaningful ones for analysis
+preproc.do_recodeTrigs = [1 0];    % 10. recode original marker values to more meaningful ones for analysis
 preproc.do_zerochans = [1 1];      % 11. set all values at unused channels (blocked by tDCS electrodes) to zero
 preproc.do_epoch = [1 0];          % 12. split continous data into small epochs for trial rejection (not yet separated per condition)
 preproc.do_baseline = [1 0];       % 13. subtract a (pre-stimulus) baseline from each epoch
@@ -224,52 +224,79 @@ trig.tDCScode = {'1', '2'};
 trig.block = paths.blockID;
 trig.blockCode = {'1', '2', '3'};
 
-trig.T2correct = {'noblink', 'blink'};
-trig.T2correctCode = {'1', '0'};
-
 trig.lag = {'short', 'long'};
 trig.lagCode = {'3', '8'};
 
-trig.conditions = cell(prod([numel(trig.lag) numel(trig.T2correct) numel(trig.block) numel(trig.session)] ),2);
+trig.T1correct = {'T1corr', 'T1err'};
+trig.T1correctCode = {'1', '0'};
+
+trig.T2correct = {'T2corr', 'T2err'};
+trig.T2correctCode = {'1', '0'};
+
+trig.conditions = cell(prod([numel(trig.lag) numel(trig.T2correct) numel(trig.T1correct) numel(trig.block) numel(trig.session)] ),2);
 iCond = 1;
 for iSession = 1:length(trig.session)
     for iBlock = 1:length(trig.block)
-        for iBlink = 1:length(trig.T2correct)
-            for iLag = 1:length(trig.lag)
-                trig.conditions{iCond,1} = [trig.tDCS{iSession} '_' trig.block{iBlock} '_' trig.T2correct{iBlink} '_' trig.lag{iLag}]; % specify full condition label
-                trig.conditions{iCond,2} = [trig.T1 trig.tDCScode{iSession} trig.blockCode{iBlock} trig.T2correctCode{iBlink} trig.lagCode{iLag}]; % specify full trigger
-                iCond = iCond + 1;
+        for iLag = 1:length(trig.lag)
+            for iT1 = 1:length(trig.T1correct)
+                for iT2 = 1:length(trig.T2correct)
+                    trig.conditions{iCond,1} = [trig.tDCS{iSession} '_' trig.block{iBlock} '_' trig.lag{iLag} '_' trig.T1correct{iT1} '_' trig.T2correct{iT2}]; % specify full condition label
+                    trig.conditions{iCond,2} = [trig.T1 trig.tDCScode{iSession} trig.blockCode{iBlock} trig.lagCode{iLag} trig.T1correctCode{iT1} trig.T2correctCode{iT2}]; % specify full trigger
+                    iCond = iCond + 1;
+                end
             end
         end
     end
 end
 
-% trig.conditions{1,:}=
-%     'anodal_pre_noblink_short'
-%     'anodal_pre_noblink_long'
-%     'anodal_pre_blink_short'
-%     'anodal_pre_blink_long'
-%     'anodal_tDCS_noblink_short'
-%     'anodal_tDCS_noblink_long'
-%     'anodal_tDCS_blink_short'
-%     'anodal_tDCS_blink_long'
-%     'anodal_post_noblink_short'
-%     'anodal_post_noblink_long'
-%     'anodal_post_blink_short'
-%     'anodal_post_blink_long'
-%     'cathodal_pre_noblink_short'
-%     'cathodal_pre_noblink_long'
-%     'cathodal_pre_blink_short'
-%     'cathodal_pre_blink_long'
-%     'cathodal_tDCS_noblink_short'
-%     'cathodal_tDCS_noblink_long'
-%     'cathodal_tDCS_blink_short'
-%     'cathodal_tDCS_blink_long'
-%     'cathodal_post_noblink_short'
-%     'cathodal_post_noblink_long'
-%     'cathodal_post_blink_short'
-%     'cathodal_post_blink_long' 
-%     };
+%     'anodal_pre_short_T1corr_T2corr'       '3111311'
+%     'anodal_pre_short_T1corr_T2err'        '3111310'
+%     'anodal_pre_short_T1err_T2corr'        '3111301'
+%     'anodal_pre_short_T1err_T2err'         '3111300'
+%     'anodal_pre_long_T1corr_T2corr'        '3111811'
+%     'anodal_pre_long_T1corr_T2err'         '3111810'
+%     'anodal_pre_long_T1err_T2corr'         '3111801'
+%     'anodal_pre_long_T1err_T2err'          '3111800'
+%     'anodal_tDCS_short_T1corr_T2corr'      '3112311'
+%     'anodal_tDCS_short_T1corr_T2err'       '3112310'
+%     'anodal_tDCS_short_T1err_T2corr'       '3112301'
+%     'anodal_tDCS_short_T1err_T2err'        '3112300'
+%     'anodal_tDCS_long_T1corr_T2corr'       '3112811'
+%     'anodal_tDCS_long_T1corr_T2err'        '3112810'
+%     'anodal_tDCS_long_T1err_T2corr'        '3112801'
+%     'anodal_tDCS_long_T1err_T2err'         '3112800'
+%     'anodal_post_short_T1corr_T2corr'      '3113311'
+%     'anodal_post_short_T1corr_T2err'       '3113310'
+%     'anodal_post_short_T1err_T2corr'       '3113301'
+%     'anodal_post_short_T1err_T2err'        '3113300'
+%     'anodal_post_long_T1corr_T2corr'       '3113811'
+%     'anodal_post_long_T1corr_T2err'        '3113810'
+%     'anodal_post_long_T1err_T2corr'        '3113801'
+%     'anodal_post_long_T1err_T2err'         '3113800'
+%     'cathodal_pre_short_T1corr_T2corr'     '3121311'
+%     'cathodal_pre_short_T1corr_T2err'      '3121310'
+%     'cathodal_pre_short_T1err_T2corr'      '3121301'
+%     'cathodal_pre_short_T1err_T2err'       '3121300'
+%     'cathodal_pre_long_T1corr_T2corr'      '3121811'
+%     'cathodal_pre_long_T1corr_T2err'       '3121810'
+%     'cathodal_pre_long_T1err_T2corr'       '3121801'
+%     'cathodal_pre_long_T1err_T2err'        '3121800'
+%     'cathodal_tDCS_short_T1corr_T2corr'    '3122311'
+%     'cathodal_tDCS_short_T1corr_T2err'     '3122310'
+%     'cathodal_tDCS_short_T1err_T2corr'     '3122301'
+%     'cathodal_tDCS_short_T1err_T2err'      '3122300'
+%     'cathodal_tDCS_long_T1corr_T2corr'     '3122811'
+%     'cathodal_tDCS_long_T1corr_T2err'      '3122810'
+%     'cathodal_tDCS_long_T1err_T2corr'      '3122801'
+%     'cathodal_tDCS_long_T1err_T2err'       '3122800'
+%     'cathodal_post_short_T1corr_T2corr'    '3123311'
+%     'cathodal_post_short_T1corr_T2err'     '3123310'
+%     'cathodal_post_short_T1err_T2corr'     '3123301'
+%     'cathodal_post_short_T1err_T2err'      '3123300'
+%     'cathodal_post_long_T1corr_T2corr'     '3123811'
+%     'cathodal_post_long_T1corr_T2err'      '3123810'
+%     'cathodal_post_long_T1err_T2corr'      '3123801'
+%     'cathodal_post_long_T1err_T2err'       '3123800'
 
 %% 11. Set channels to zero
 
@@ -305,7 +332,8 @@ preproc.baseTime = [-200 0]; % time range in ms to use for baseline subtraction,
 
 % Start: 1 second baseline before stream onset + 1.5 s buffer 
 % End: stream (1.375 s) + post-stream fixation (1 s) + 1.5 s buffer.
-preproc.epochTime2= [-1.5-1 1.375+1+1.5];
+
+preproc.epochTime2= [-1.5-1 1.375+1+1.5]*1.01; % Add a tiny bit to both bounds, so the final cut epochs fit within these
 
 %% 16. Mark bad channels
 

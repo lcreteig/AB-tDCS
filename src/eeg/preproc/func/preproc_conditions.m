@@ -24,17 +24,16 @@ function [ALLEEG, conditionLabels] = preproc_conditions(EEG, currSession, currBl
 
 sessionIdx = strcmpi(currSession, trig.session);
 blockIdx = strcmpi(currBlock, trig.block);
-conditionLabels = cell(4,2);
-% Extract part of full condition matrix that is relevant for this session/block combination (e.g. the 4 "anodal, pre" conditions)
-conditionLabels(1,:) = trig.conditions(strcmp([trig.tDCS{sessionIdx} '_' trig.block{blockIdx} '_' 'noblink_short'], trig.conditions(:,1)),:);
-conditionLabels(2,:) = trig.conditions(strcmp([trig.tDCS{sessionIdx} '_' trig.block{blockIdx} '_' 'noblink_long'], trig.conditions(:,1)),:);
-conditionLabels(3,:) = trig.conditions(strcmp([trig.tDCS{sessionIdx} '_' trig.block{blockIdx} '_' 'blink_short'], trig.conditions(:,1)),:);
-conditionLabels(4,:) = trig.conditions(strcmp([trig.tDCS{sessionIdx} '_' trig.block{blockIdx} '_' 'blink_long'], trig.conditions(:,1)),:);
+currFile = [trig.tDCS{sessionIdx} '_' trig.block{blockIdx}];
+
+% Extract only the relevant condition labels and triggers (e.g. the "anodal, pre" conditions)
+conditionLabels = trig.conditions(strncmp(currFile, trig.conditions(:,1), length(currFile)),:);
 
 ALLEEG=EEG;
 for iCond = 1:size(conditionLabels,1)
+    ALLEEG(iCond).setname = conditionLabels{iCond,1};
     try
         ALLEEG(iCond) = pop_epoch(EEG,conditionLabels(iCond,2), epochTime);
-    catch % prevent crash in case there are conditions with 0 trials (can happen for blink_long)
+    catch % prevent crash in case there are conditions with 0 trials (can happen for T1 errors / blinks in the long lag)
     end
 end
