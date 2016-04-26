@@ -68,4 +68,10 @@ fprintf(['Rejecting %i (%i%%) of %i trials in total.\n'...
     numel(intersect(find(blink_short_idx), rejectedTrials)), numel(find(blink_short_idx)) - numel(intersect(find(blink_short_idx), rejectedTrials)), ...
     numel(intersect(find(blink_long_idx), rejectedTrials)), numel(find(blink_long_idx)) - numel(intersect(find(blink_long_idx), rejectedTrials)) )
 
+% If not already in the EEG structure, add info on rejected trial indices
+if ~isfield(EEG, 'rejectedTrials') || isempty(EEG.rejectedTrials)
+   EEG.rejectedTrials = zeros(1:EEG.trials);
+   EEG.rejectedTrials(rejectedTrials) = 1;
+end
+
 EEG = pop_select(EEG, 'notrial', rejectedTrials); %actually remove the marked trials

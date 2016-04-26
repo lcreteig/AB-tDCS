@@ -29,4 +29,10 @@ else % if nothing works
     error('Could not find list of components to reject!')
 end
 
+% If not already in the EEG structure, add info on rejected components
+if ~isfield(EEG, 'rejectedICs') || isempty(EEG.rejectedICs)
+    EEG.rejectedICs = zeros(1,size(EEG.icaweights,1));
+    EEG.rejectedICs(rejectedICs) = 1;
+end
+
 EEG = pop_subcomp(EEG, rejectedICs); %subtract activity of marked components from the data
