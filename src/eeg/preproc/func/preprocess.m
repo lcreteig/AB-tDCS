@@ -64,6 +64,12 @@ for iSub = 1:length(paths.subs2process)
             step = 3;
             
              if preproc.(pipeLine{step})(1)
+                 
+                 %LOAD
+                 if ~preproc.(pipeLine{step-1})(1) && ~loadFlag % if the previous processing step should not be redone, and no data has been loaded yet
+                     [EEG, preproc] = loadEEG(paths.procDir, rawFile, preproc, step);
+                     loadFlag = true;
+                 end
                 
                 %PROCESS
                 fprintf('    Removing DC offset...\n')
@@ -82,7 +88,13 @@ for iSub = 1:length(paths.subs2process)
             step = 4;
             
              if preproc.(pipeLine{step})(1)
-                
+                 
+                 %LOAD
+                 if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
+                     [EEG, preproc] = loadEEG(paths.procDir, rawFile, preproc, step);
+                     loadFlag = true;
+                 end
+                 
                 %PROCESS
                 fprintf('    Adding buffer zones...\n')
                 % add buffers to start and end of channel data
@@ -100,6 +112,12 @@ for iSub = 1:length(paths.subs2process)
             step = 5; 
             
             if preproc.(pipeLine{step})(1)
+                
+                %LOAD
+                if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
+                    [EEG, preproc] = loadEEG(paths.procDir, rawFile, preproc, step);
+                    loadFlag = true;
+                end
                 
                 %PROCESS
                 fprintf('    Re-referencing...\n')
@@ -120,7 +138,7 @@ for iSub = 1:length(paths.subs2process)
             if preproc.(pipeLine{step})(1)
                 
                 %LOAD
-                if ~preproc.(pipeLine{step-1})(1) && ~loadFlag % if the previous processing step should not be redone, and no data has been loaded yet
+                if ~preproc.(pipeLine{step-1})(1) && ~loadFlag 
                     [EEG, preproc] = loadEEG(paths.procDir, rawFile, preproc, step);
                     loadFlag = true;
                 end
