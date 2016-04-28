@@ -84,6 +84,15 @@ for iEvent = 2:length(T1idxPad)-1 % for every T1
           EEG.event(T1idxPad(iEvent)).type = conditionLabels{strcmp([currFile '_' 'long_T1err_T2err'], conditionLabels(:,1)) ,2};
     end
     
+    % Events during ramp-down:
+    if strcmp(currBlock, 'tDCS')
+        trigTime = (EEG.event(T1idxPad(iEvent)).latency-1)/EEG.srate; % time trigger occurs in seconds
+        % if this is during the ramp-down (which lasts for 60 seconds)
+        if trigTime > (EEG.event(end).latency-1)/EEG.srate - 60 %  the final trigger in the dataset should be just before ramp-down end (cut out of data in previous step)
+            EEG.event(T1idxPad(iEvent)).type = [EEG.event(T1idxPad(iEvent)).type trig.rampdownCode]; % append value to trigger
+        end
+    end
+    
 end
 
 fprintf(['Total number of trials: %i\n'...

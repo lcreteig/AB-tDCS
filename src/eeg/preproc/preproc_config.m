@@ -49,22 +49,22 @@ function [preproc, paths, trig] = preproc_config(subjects, sessions, blocks, sen
 % First element: if true, perform this step. 2nd element: if true, write EEG data to disk afterwards
 
 preproc.do_importdata = 1;         % 1. import the data from the bdf files into EEGlab
-preproc.do_cutdata = [0 0];        % 2. select segment of continuous data to keep
+preproc.do_cutdata = [1 0];        % 2. select segment of continuous data to keep
 preproc.do_detrend = [1 0];        % 3. remove the DC component from each channel
 preproc.do_buffer = [1 0];         % 4. splice some mirrored data to either end, to accomodate filter edge artefacts
 preproc.do_reref = [1 0];          % 5. re-reference the data to earlobes
-preproc.do_bipolar = [0 0];        % 6. bipolarize external channels (subtract pairs from each other, e.g. both HEOG channels)
+preproc.do_bipolar = [1 0];        % 6. bipolarize external channels (subtract pairs from each other, e.g. both HEOG channels)
 preproc.do_removechans = [1 0];    % 7. remove unused channels from data set
-preproc.do_chanlookup = [0 0];     % 8. import standard channel locations
+preproc.do_chanlookup = [1 0];     % 8. import standard channel locations
 preproc.do_filter = [0 1];         % 9. high-pass filter the data
 
 preproc.do_recodeTrigs = [1 0];    % 10. recode original marker values to more meaningful ones for analysis
 preproc.do_zerochans = [1 1];      % 11. set all values at unused channels (blocked by tDCS electrodes) to zero
-preproc.do_epoch = [1 0];          % 12. split continous data into small epochs for trial rejection (not yet separated per condition)
-preproc.do_baseline = [1 0];       % 13. subtract a (pre-stimulus) baseline from each epoch
+preproc.do_epoch = [0 0];          % 12. split continous data into small epochs for trial rejection (not yet separated per condition)
+preproc.do_baseline = [0 0];       % 13. subtract a (pre-stimulus) baseline from each epoch
 
 preproc.do_trialrej = [0 0];       % 14. manually identify trials for rejection and save trial indices
-preproc.do_reepoch = [1 0];        % 15. re-cut data to larger epochs (including buffers)
+preproc.do_reepoch = [0 0];        % 15. re-cut data to larger epochs (including buffers)
 preproc.do_badchans = [0 0];       % 16. zero-out additional bad channels (that should not be interpolated) after data inspection
 preproc.do_interpchans = [0 0];    % 17. interpolate all points of channels
 preproc.do_interpepochs = [0 0];   % 18. interpolate channel on a single epoch
@@ -232,6 +232,10 @@ trig.T1correctCode = {'1', '0'};
 
 trig.T2correct = {'T2corr', 'T2err'};
 trig.T2correctCode = {'1', '0'};
+
+% append an extra number to trials occuring during the ramp-down period, as
+% this data could possibly contain (more) artifacts.
+trig.rampdownCode = '9'; 
 
 trig.conditions = cell(prod([numel(trig.lag) numel(trig.T2correct) numel(trig.T1correct) numel(trig.block) numel(trig.session)] ),2);
 iCond = 1;
