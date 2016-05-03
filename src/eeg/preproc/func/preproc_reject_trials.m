@@ -33,7 +33,7 @@ end
 
 % If not already in the EEG structure, add info on rejected trial indices
 if ~isfield(EEG, 'rejectedTrials') || isempty(EEG.rejectedTrials)
-   EEG.rejectedTrials = zeros(1:EEG.trials);
+   EEG.rejectedTrials = zeros(1,EEG.trials);
    EEG.rejectedTrials(rejectedTrials) = 1;
 end
 
