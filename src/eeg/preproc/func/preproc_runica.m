@@ -1,11 +1,14 @@
-function EEG = preproc_runica(EEG, icaType)
+function EEG = preproc_runica(EEG, preproc, currSub, currSession, currBlock)
 % PREPROC_RUNICA: Run independent component analysis on EEG data.
 %
-% Usage: EEG = PREPROC_RUNICA(EEG, icaType)
+% Usage: EEG = PREPROC_RUNICA(EEG, preproc, currSub, currSession, currBlock)
 %
 % Inputs:
 %   - EEG: EEGlab structure with EEG data.
-%   - icaType: Either 'jader' (faster) or 'runica' (extended)
+%   - preproc: structure with preprocessing parameters
+%   - currSub: string with subject ID of file (e.g. 'S01' or 'S18')
+%   - currSession: string with tDCS code of file ('B' or 'D')
+%   - currBlock: string with block of file ('pre', 'tDCS', or 'post')
 %
 % Outputs:
 %   - EEG: EEGlab structure with independent components in addition to
@@ -15,12 +18,20 @@ function EEG = preproc_runica(EEG, icaType)
 %
 % See also POP_RUNICA, PREPROCESS, PREPROC_CONFIG,
 
-if strcmp(icaType, 'jader')
-    EEG = pop_runica(EEG,'icatype','jader','dataset',1,'options',{40});
-elseif strcmp(icaType, 'runica')
-    EEG=pop_runica(EEG,'icatype','runica','dataset',1,'options',{'extended',1});
+% Exclude zero'd-out channels from ICA
+chansZero = blocked_chans(currSub, currSession); % blocked channels
+chansBad = bad_chans(currSub, currSession, currBlock); % otherwise bad channels
+
+% Create list of all channels to include in the ICA
+chansICA = setdiff({EEG.chanlocs.labels}, [chansZero chansBad preproc.earLabel]); % also exclude reference channels
+chansICAidx = find(ismember({EEG.chanlocs.labels}, chansICA));
+
+if strcmp(preproc.icaType, 'jader')
+    EEG = pop_runica(EEG, 'icatype', 'jader', 'dataset', 1, 'options', {40}, 'chanind', chansICAidx);
+elseif strcmp(preproc.icaType, 'runica')
+    EEG=pop_runica(EEG, 'icatype', 'runica', 'dataset', 1, 'options', {'extended',1}, 'chanind', chansICAidx);
 else
-    error('Unrecognized ICA type option "%s"!', icaType)
+    error('Unrecognized ICA type option "%s"!', preproc.icaType)
 end
 
 EEG.icaact = []; % delete the ICA activation matrix. It takes up a lot of

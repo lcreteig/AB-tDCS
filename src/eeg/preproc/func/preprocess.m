@@ -522,7 +522,7 @@ for iSub = 1:length(paths.subs2process)
                 
                 %PROCESS
                 fprintf('    Running independent component analysis...\n')
-                EEG = preproc_runica(EEG, preproc.icaType);
+                EEG = preproc_runica(EEG, preproc, currSub, currSession, currBlock);
                 
                 %SAVE
                 if preproc.(pipeLine{step})(2)
