@@ -23,5 +23,7 @@ else
     [~,refChanIdx] = ismember(refChans, {EEG.chanlocs.labels}); % indices of reference channels (earlobes)
 end
 
+EEG.data = double(EEG.data);
 [~,exclChanIdx] = ismember(exclChans, {EEG.chanlocs.labels}); % indices of channels to exclude from reference (eye channels)
 EEG = pop_reref(EEG, refChanIdx, 'keepref', 'on', 'exclude', exclChanIdx); % re-reference, keeping ref channels in the data set
+EEG.data = single(EEG.data);

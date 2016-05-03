@@ -74,7 +74,7 @@ for iSub = 1:length(paths.subs2process)
                 %PROCESS
                 fprintf('    Removing DC offset...\n')
                 % remove the overall mean from each channel
-                EEG.data = bsxfun(@minus, EEG.data, mean(EEG.data,2));
+                EEG.data = single(bsxfun(@minus, double(EEG.data), mean(double(EEG.data),2))); % double precision to prevent round-off errors in "mean"
                 
                 %SAVE
                 if preproc.(pipeLine{step})(2) % if EEG data should be saved to disk after this step
