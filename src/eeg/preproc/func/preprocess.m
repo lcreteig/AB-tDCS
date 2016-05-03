@@ -12,8 +12,7 @@ for iSub = 1:length(paths.subs2process)
             preproc = preprocOrig; % new loop iteration; use original preprocessing parameter structure
             loadFlag = false; % new loop iteration; no file loaded yet
             
-            % Check for matlab/eeglab incompatibility
-            checkVersion(fullfile(paths.srcDir, paths.eeglabNew), fullfile(paths.srcDir, paths.eeglabOld));
+            eeglab; % bring up eeglab GUI (in new version: add subfolders to path)
             
             %% 1. Import data
             step = 1; % counter: increases by one at every preprocessing step

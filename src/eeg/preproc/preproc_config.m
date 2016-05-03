@@ -1,4 +1,4 @@
-function [preproc, paths, trig] = preproc_config(subjects, sessions, blocks, sendMail)
+function [preproc, paths, trig] = preproc_config(subjects, sessions, blocks, eeglabVersion, sendMail)
 %PREPROC_CONFIG: Defines preprocessing parameters, settings, file locations, etc.
 % Call this function first, and then run the main preprocessing script
 % (preprocess.m)
@@ -8,26 +8,35 @@ function [preproc, paths, trig] = preproc_config(subjects, sessions, blocks, sen
 %
 % Inputs:
 %
-% -subjects     string (e.g. 'S01') or cell array of strings (e.g. {'S01',
-%               'S02'}) containing name(s) of subject(s) to be preprocessed.
+% -subjects         string (e.g. 'S01') or cell array of strings (e.g.
+%                   {'S01', 'S02'}) containing name(s) of subject(s) to be
+%                   preprocessed.
 %
-% -sessions     string (e.g. 'B') or cell array of strings ({'B',
-%               'D'}) containing name()s of session(s) to be preprocessed.
+% -sessions         string (e.g. 'B') or cell array of strings ({'B',
+%                   'D'}) containing name()s of session(s) to be
+%                   preprocessed.
 %
-% -blocks       string (e.g. 'pre') or cell array of string (e.g.
-%               {'pre','tDCS','post'}) containing name(s) of blocks(s) to 
-%               be preprocessed.
+% -blocks           string (e.g. 'pre') or cell array of string (e.g.
+%                   {'pre','tDCS','post'}) containing name(s) of blocks(s)
+%                   to be preprocessed.
 %
-% -sendMail     either false or true, to send an e-mail when preprocessing
-%               script finished (see lib/mail_from_matlab.m)
+% -eeglabVersion    string of either 'eeglab13_5_4b' to use the newest
+%                   version of EEGLAB (tested under MATLAB r2012b and 
+%                   r2015a), or 'eeglab8_0_3_5b' to use an old version 
+%                   (tested under MATLAB r2010b).
+%
+% -sendMail         either false or true, to send an e-mail when 
+%                   preprocessing script finished 
+%                   (see lib/mail_from_matlab.m)
 %
 % Outputs:
 %
-% -preproc      structure with preprocessing parameters.
+% -preproc          structure with preprocessing parameters.
 %
-% -paths        structure with file/script names and paths
+% -paths            structure with file/script names and paths
 %
-% -trigs        structure containing info on conditions and EEG triggers.
+% -trigs            structure containing info on conditions and EEG 
+%                   triggers.
 %
 % See also PREPROCESS
 
@@ -59,7 +68,7 @@ preproc.do_chanlookup = [1 0];     % 8. import standard channel locations
 preproc.do_filter = [0 1];         % 9. high-pass filter the data
 
 preproc.do_recodeTrigs = [1 0];    % 10. recode original marker values to more meaningful ones for analysis
-preproc.do_zerochans = [1 1];      % 11. set all values at unused channels (blocked by tDCS electrodes) to zero
+preproc.do_zerochans = [1 0];      % 11. set all values at unused channels (blocked by tDCS electrodes) to zero
 preproc.do_epoch = [0 0];          % 12. split continous data into small epochs for trial rejection (not yet separated per condition)
 preproc.do_baseline = [0 0];       % 13. subtract a (pre-stimulus) baseline from each epoch
 
@@ -112,16 +121,25 @@ paths.procDir = fullfile('data', 'main', 'processed'); % processed eeg data
 paths.srcDir = fullfile('src', 'eeg', 'preproc'); % directory containing all preprocessing code for the project
 paths.libDir = fullfile(paths.srcDir, 'lib');
 paths.funcDir = fullfile(paths.srcDir, 'func');
-paths.eeglabOld = 'eeglab8_0_3_5b'; %old version of eeglab, used for loading data (which can fail in newer versions) and on old matlab versions
-paths.eeglabNew = 'eeglab13_4_4b'; % new version of eeglab, to use with new versions of matlab
-
+paths.eeglab = fullfile(paths.srcDir, eeglabVersion); % Tested with 'eeglab13_5_4b' on MATLAB r2012b & r2015a. On r2010b, use 'eeglab8_0_3_5b' (this version also loads in data correctly; does not mess up trigger values).
 paths.expID = 'AB-tDCS-EEG';
 paths.sessionID = {'B','D'}; % indicator for stimulation type: B = Anodal, D = Cathodal
 paths.blockID = {'pre','tDCS','post'}; % indicator for block (20 minutes): pre, during ("tDCS"), or post-tDCS 
 
 % Add folders to matlab path
+restoredefaultpath; % get rid of any folders other users might have added to the MATLAB path (e.g. other versions of EEGLAB)
+
+addpath(paths.srcDir);
 addpath(paths.funcDir); % add preprocessing code for project
 addpath(paths.libDir); % add general preprocessing code
+
+if strcmp(eeglabVersion, 'eeglab13_5_4b')
+    addpath(paths.eeglab); % for the new version, add just root folder
+elseif strcmp(eeglabVersion, 'eeglab8_0_3_5b')
+    addpath(genpath(paths.eeglab)); % for the older, add with subfolders
+else
+    error('preproc:eeglabversion', 'Unsupported EEGLAB version %s!', eeglabVersion);
+end
 
 %% Triggers
 
@@ -148,6 +166,13 @@ trig.itiT2err = '70'; % Inter-trial interval onset | T2 question answered incorr
 trig.itiT2corr = '71'; % Inter-trial interval onset | T2 question answered correctly
 
 trig.pauseEEG = '255'; % Pause EEG recording (task finished)
+
+% In this version of eeglab, 61440 is added to each trigger for some reason.
+if strcmp(eeglabVersion, 'eeglab13_5_4b')
+    trig.offset = 61440; % store to correct for later
+elseif strcmp(eeglabVersion, 'eeglab8_0_3_5b')
+    trig.offset = 0; % this version loads triggers in correctly
+end
 
 %% 1. Import data
 

@@ -26,11 +26,15 @@ currFile = [trig.tDCS{sessionIdx} '_' trig.block{blockIdx}];
 % Extract only the relevant condition labels and triggers (e.g. the "anodal, pre" conditions)
 conditionLabels = trig.conditions(strncmp(currFile, trig.conditions(:,1), length(currFile)),:);
 
-% force event markers to be strings in all cases (only in tDCS blocks they are strings by default, 
+% Force event markers to be strings in all cases (only in tDCS blocks they are strings by default, 
 % due to 'boundary' events inserted by selection of subset of the continous data).
+% Also, if using the newer version of EEGLAB, 61440 is added to each event
+% value for some reason, so subtract to get back the originals.
 for i = 1:length({EEG.event.type})
-    if ~ischar(EEG.event(i).type)
-        EEG.event(i).type = num2str(EEG.event(i).type);
+    if ischar(EEG.event(i).type)
+        EEG.event(i).type = num2str(str2double(EEG.event(i).type) - trig.offset); 
+    else
+        EEG.event(i).type = num2str(EEG.event(i).type - trig.offset);
     end
 end
 
