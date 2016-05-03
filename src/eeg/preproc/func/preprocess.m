@@ -548,7 +548,7 @@ for iSub = 1:length(paths.subs2process)
                 msg_handle = msgbox(sprintf('Mark components for rejection using the EEGlab graphical user interface.\nClose the two windows when done; the script will then resume.'), 'Component rejection');
                 uiwait(msg_handle)
                 pop_eegplot(EEG, 0, 1, 0); % plot the component timecourses
-                pop_selectcomps(EEG, 1:30); % plot the topographical maps of the first 30 components
+                pop_selectcomps(EEG, 1:35); % plot the topographical maps of the first 35 components
                 uiwait
                 
                 if ~isempty(EEG.reject.gcompreject)
