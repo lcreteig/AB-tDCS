@@ -545,11 +545,11 @@ for iSub = 1:length(paths.subs2process)
                 
                 %PROCESS
                 eeglab redraw
-                msg_handle = msgbox(sprintf('Mark components for rejection using the EEGlab graphical user interface.\nClose the two windows when done; the script will then resume.'), 'Component rejection');
-                uiwait(msg_handle)
+                msg_handle = msgbox(sprintf(['In the EEGLAB GUI, go to Tools > SASICA to analyze components and mark them for rejection.\n' ...
+                    'Hit "OK" in the SASICA window when you are done, then close this message box to resume the script.']), 'Component rejection');
                 pop_eegplot(EEG, 0, 1, 0); % plot the component timecourses
-                pop_selectcomps(EEG, 1:35); % plot the topographical maps of the first 35 components
-                uiwait
+                %pop_selectcomps(EEG, 1:35); % plot the topographical maps of the first 35 components; Use this if the SASICA extension is not present
+                uiwait(msg_handle)
                 
                 if ~isempty(EEG.reject.gcompreject)
                     EEG.rejectedICs = EEG.reject.gcompreject;
