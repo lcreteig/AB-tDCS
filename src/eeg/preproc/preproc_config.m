@@ -69,23 +69,22 @@ preproc.do_filter = [0 1];         % 9. high-pass filter the data
 
 preproc.do_recodeTrigs = [0 0];    % 10. recode original marker values to more meaningful ones for analysis
 preproc.do_zerochans = [0 0];      % 11. set all values at unused channels (blocked by tDCS electrodes) to zero
-preproc.do_epoch = [0 0];          % 12. split continous data into small epochs for trial rejection (not yet separated per condition)
+preproc.do_epoch = [0 0];          % 12. split continous data into epochs
 preproc.do_baseline = [0 0];       % 13. subtract a (pre-stimulus) baseline from each epoch
 
 preproc.do_trialrej = [0 0];       % 14. manually identify trials for rejection and save trial indices
-preproc.do_reepoch = [0 0];        % 15. re-cut data to larger epochs (including buffers)
-preproc.do_badchans = [0 0];       % 16. zero-out additional bad channels (that should not be interpolated) after data inspection
-preproc.do_interpchans = [0 0];    % 17. interpolate all points of channels
-preproc.do_interpepochs = [0 0];   % 18. interpolate channel on a single epoch
-preproc.do_removetrials = [0 0];   % 19. remove trials previously identified for rejection (if they exist)
-preproc.do_averef = [0 0];         % 20. re-reference the data to the common average
-preproc.do_ica = [0 1];            % 21. run independent component analysis
+preproc.do_badchans = [0 0];       % 15. zero-out additional bad channels (that should not be interpolated) after data inspection
+preproc.do_interpchans = [0 0];    % 16. interpolate all points of channels
+preproc.do_interpepochs = [0 0];   % 17. interpolate channel on a single epoch
+preproc.do_removetrials = [0 0];   % 18. remove trials previously identified for rejection (if they exist)
+preproc.do_averef = [0 0];         % 19. re-reference the data to the common average
+preproc.do_ica = [0 1];            % 20. run independent component analysis
 
-preproc.do_plotIC = [1 0];         % 22. plot results of independent component analyis and save component indices
-preproc.do_removeIC = [0 0];       % 23. subtract marked components from the data
-preproc.do_removebipolars = [0 0]; % 24. drop bipolars from the dataset, leaving only the leave scalp channels
-preproc.do_laplacian = [0 0];      % 25. apply scalp laplacian
-preproc.do_conditions = 0;         % 26. re-epoch into separate conditions
+preproc.do_plotIC = [1 0];         % 21. plot results of independent component analyis and save component indices
+preproc.do_removeIC = [0 0];       % 22. subtract marked components from the data
+preproc.do_removebipolars = [0 0]; % 23. drop bipolars from the dataset, leaving only the leave scalp channels
+preproc.do_laplacian = [0 0];      % 24. apply scalp laplacian
+preproc.do_conditions = 0;         % 25. re-epoch lo into separate conditions
 
 %% Inputs
 
@@ -339,7 +338,8 @@ end
 %% 12. Epoch
 
 preproc.zeroMarkers = {trig.streamLag3, trig.streamLag8}; % markers for time 0 in the epoch (onset of stream in attentional blink task)
-preproc.epochTime1= [-1.75 1.375+1]; % relative to time 0, cut epochs to span one trial: from start of fixation (-1.75) to end (stream + post-stream fixation = 2.375)
+preproc.epochTime1= [-1 1.375+1]*1.01; % relative to time 0, cut epochs within one trial: 1s before stream onset (0.5 s after fixation) to end (stream + post-stream fixation = 2.375)
+% Add a tiny bit to both bounds, so the final cut epochs fit within these
 
 %% 13. Baseline
 
@@ -354,17 +354,7 @@ preproc.baseTime = [-200 0]; % time range in ms to use for baseline subtraction,
 % trials in the EEG structure! Regardless, a text file will always be
 % written to disk containing the rejected trials.
 
-%% 15.Re-epoch
-
-% Cut larger epochs locked to stream onset, including 1.5s buffer zones to
-% accomodate edge artefacts.
-
-% Start: 1 second baseline before stream onset + 1.5 s buffer 
-% End: stream (1.375 s) + post-stream fixation (1 s) + 1.5 s buffer.
-
-preproc.epochTime2= [-1.5-1 1.375+1+1.5]*1.01; % Add a tiny bit to both bounds, so the final cut epochs fit within these
-
-%% 16. Mark bad channels
+%% 15. Mark bad channels
 
 % After inspection of individual data files, additional channels might have
 % to be zeroed out (e.g. those that went out of range due to tDCS. These
@@ -373,7 +363,7 @@ preproc.epochTime2= [-1.5-1 1.375+1+1.5]*1.01; % Add a tiny bit to both bounds, 
 %
 % See bad_chans.m for a list of channels.
 
-%% 17. Interpolate channels (all epochs)
+%% 16. Interpolate channels (all epochs)
 
 % Uses a modified version of the standard "eeg_interp" called
 % "eeg_interp_excl" to interpolate channels. This adds the option of
@@ -385,7 +375,7 @@ preproc.epochTime2= [-1.5-1 1.375+1+1.5]*1.01; % Add a tiny bit to both bounds, 
 
 % See chans2interp.m for a list of channels.
 
-%% 18. Interpolate channels (single epochs)
+%% 17. Interpolate channels (single epochs)
 
 % Sometimes only a single channel acts out on a single epoch, in which case 
 % it would be a shame to throw away the epoch or interpolate the channel.
@@ -394,24 +384,24 @@ preproc.epochTime2= [-1.5-1 1.375+1+1.5]*1.01; % Add a tiny bit to both bounds, 
 %
 % See epochs2interp.m for a list of channels and epochs.
 
-%% 19. Remove rejected trials
+%% 18. Remove rejected trials
 
 % At this point trials marked for rejection in step 11 will actually be
 % removed,(which changes the trial indices!).
 
-%% 20. Average reference
+%% 19. Average reference
 
 % Re-reference to the average of all electrodes (excluding externals, and
 % possibly other ones that were zero'd out / marked as bad).
 
-%% 21. Independent components analysis
+%% 20. Independent components analysis
 
 preproc.icaType = 'runica'; % either 'runica' to run the most standard ICA algorithm,
 % or 'jader' to run a faster version (which first uses PCA).
 preproc.icaBaseline = true; % subtract an epoch-mean baseline. 
 % This may improve reliability of ICs compared to a short pre-stimulus baseline (see Groppe et al., 2009).
 
-%% 22. Plot independent components
+%% 21. Plot independent components
 
 % Inspect the ICA results, which you can either do as part of the
 % preprocessing pipeline, or manually when saving files to disk after the
@@ -421,17 +411,17 @@ preproc.icaBaseline = true; % subtract an epoch-mean baseline.
 % components in the EEG structure! Regardless, a text file will always be
 % written to disk containing the rejected components.
 
-%% 23. Remove independent components
+%% 22. Remove independent components
 
 % At this point only will the independent components be subtracted from the
 % data.
 
-%% 24. Remove bipolar channels
+%% 23. Remove bipolar channels
 
 % Drop the ear reference, vertical EOG and horizontal EOG channels, leaving
 % only the scalp channels for analysis.
 
-%% 25. Laplacian
+%% 24. Laplacian
 
 % Apply a spatial filter (surface Laplacian) to reduce low-frequency
 % spatial features in the data (which are likely due to volume conduction),
@@ -439,11 +429,11 @@ preproc.icaBaseline = true; % subtract an epoch-mean baseline.
 % ERPs (especially "broad" ones such as the P3, which may be attenuated by
 % the laplacian), but a good idea otherwise.
 
-%% 26. Separate into conditions
+%% 25. Separate into conditions
 
 %Re-epoch with T1 as time zero, leaving only those trials that were
 %re-coded earlier (only the 4 blink/lag combinations).
 
-% Start: before T1 onset (5th letter), there are 4 letters of 11/120 (= 91.66) ms each + 1 second baseline, + a buffer (1.5 s).
-% End: after T1 onset, there are 11 letters (including T1 itself) + 1 second fixation period, + a buffer (1.5 s).
-preproc.epochTime3= [-4*(11/120)-1-1.5 11*(11/120)+1+1.5];
+% Start: before T1 onset (5th letter), there are 4 letters of 11/120 (= 91.66) ms each + 1 second baseline.
+% End: after T1 onset, there are 11 letters (including T1 itself) + 1 second fixation period.
+preproc.epochTime2= [-4*(11/120)-1 11*(11/120)+1];
