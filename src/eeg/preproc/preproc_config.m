@@ -57,18 +57,18 @@ function [preproc, paths, trig] = preproc_config(subjects, sessions, blocks, eeg
 % Lists all pre-processing steps in the order they will be carried out
 % First element: if true, perform this step. 2nd element: if true, write EEG data to disk afterwards
 
-preproc.do_importdata = 1;         % 1. import the data from the bdf files into EEGlab
-preproc.do_cutdata = [1 0];        % 2. select segment of continuous data to keep
-preproc.do_detrend = [1 0];        % 3. remove the DC component from each channel
-preproc.do_buffer = [1 0];         % 4. splice some mirrored data to either end, to accomodate filter edge artefacts
-preproc.do_reref = [1 0];          % 5. re-reference the data to earlobes
-preproc.do_bipolar = [1 0];        % 6. bipolarize external channels (subtract pairs from each other, e.g. both HEOG channels)
-preproc.do_removechans = [1 0];    % 7. remove unused channels from data set
-preproc.do_chanlookup = [1 0];     % 8. import standard channel locations
+preproc.do_importdata = 0;         % 1. import the data from the bdf files into EEGlab
+preproc.do_cutdata = [0 0];        % 2. select segment of continuous data to keep
+preproc.do_detrend = [0 0];        % 3. remove the DC component from each channel
+preproc.do_buffer = [0 0];         % 4. splice some mirrored data to either end, to accomodate filter edge artefacts
+preproc.do_reref = [0 0];          % 5. re-reference the data to earlobes
+preproc.do_bipolar = [0 0];        % 6. bipolarize external channels (subtract pairs from each other, e.g. both HEOG channels)
+preproc.do_removechans = [0 0];    % 7. remove unused channels from data set
+preproc.do_chanlookup = [0 0];     % 8. import standard channel locations
 preproc.do_filter = [0 1];         % 9. high-pass filter the data
 
-preproc.do_recodeTrigs = [1 0];    % 10. recode original marker values to more meaningful ones for analysis
-preproc.do_zerochans = [1 0];      % 11. set all values at unused channels (blocked by tDCS electrodes) to zero
+preproc.do_recodeTrigs = [0 0];    % 10. recode original marker values to more meaningful ones for analysis
+preproc.do_zerochans = [0 0];      % 11. set all values at unused channels (blocked by tDCS electrodes) to zero
 preproc.do_epoch = [0 0];          % 12. split continous data into small epochs for trial rejection (not yet separated per condition)
 preproc.do_baseline = [0 0];       % 13. subtract a (pre-stimulus) baseline from each epoch
 
@@ -81,7 +81,7 @@ preproc.do_removetrials = [0 0];   % 19. remove trials previously identified for
 preproc.do_averef = [0 0];         % 20. re-reference the data to the common average
 preproc.do_ica = [0 1];            % 21. run independent component analysis
 
-preproc.do_plotIC = [0 1];         % 22. plot results of independent component analyis and save component indices
+preproc.do_plotIC = [1 0];         % 22. plot results of independent component analyis and save component indices
 preproc.do_removeIC = [0 0];       % 23. subtract marked components from the data
 preproc.do_removebipolars = [0 0]; % 24. drop bipolars from the dataset, leaving only the leave scalp channels
 preproc.do_laplacian = [0 0];      % 25. apply scalp laplacian
@@ -134,7 +134,7 @@ addpath(paths.funcDir); % add preprocessing code for project
 addpath(paths.libDir); % add general preprocessing code
 
 if strcmp(eeglabVersion, 'eeglab13_5_4b')
-    addpath(paths.eeglab); % for the new version, add just root folder
+    addpath(fullfile(pwd, paths.eeglab)); % for the new version, add just root folder
 elseif strcmp(eeglabVersion, 'eeglab8_0_3_5b')
     addpath(genpath(paths.eeglab)); % for the older, add with subfolders
 else
