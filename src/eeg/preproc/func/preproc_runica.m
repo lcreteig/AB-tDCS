@@ -14,9 +14,9 @@ function EEG = preproc_runica(EEG, preproc, currSub, currSession, currBlock)
 %   - EEG: EEGlab structure with independent components in addition to
 %   channel data.
 %
-% Called in preprocess; calls pop_runica.
+% Called in preprocess; calls pop_runica, pop_rmbase
 %
-% See also POP_RUNICA, PREPROCESS, PREPROC_CONFIG,
+% See also POP_RUNICA, POP_RMBASE, PREPROCESS, PREPROC_CONFIG,
 
 % Exclude zero'd-out channels from ICA
 chansZero = blocked_chans(currSub, currSession); % blocked channels
@@ -25,6 +25,10 @@ chansBad = bad_chans(currSub, currSession, currBlock); % otherwise bad channels
 % Create list of all channels to include in the ICA
 chansICA = setdiff({EEG.chanlocs.labels}, [chansZero chansBad preproc.earLabel]); % also exclude reference channels
 chansICAidx = find(ismember({EEG.chanlocs.labels}, chansICA));
+
+if preproc.icaBaseline
+    EEG = pop_rmbase(EEG, []);
+end
 
 if strcmp(preproc.icaType, 'jader')
     EEG = pop_runica(EEG, 'icatype', 'jader', 'dataset', 1, 'options', {40}, 'chanind', chansICAidx);

@@ -408,6 +408,8 @@ preproc.epochTime2= [-1.5-1 1.375+1+1.5]*1.01; % Add a tiny bit to both bounds, 
 
 preproc.icaType = 'runica'; % either 'runica' to run the most standard ICA algorithm,
 % or 'jader' to run a faster version (which first uses PCA).
+preproc.icaBaseline = true; % subtract an epoch-mean baseline. 
+% This may improve reliability of ICs compared to a short pre-stimulus baseline (see Groppe et al., 2009).
 
 %% 22. Plot independent components
 
