@@ -215,7 +215,11 @@ for iSub = 1:length(paths.subs2process)
                 
                 %PROCESS
                 fprintf('    High-pass filtering the data...\n')
-                EEG = pop_eegfilt(EEG, preproc.highPass, []); % filter with low-cutoff at specified value (only high-pass, so no high cutoff)
+                 if exist('pop_eegfiltnew', 'file') % pop_eegfilt (eeglab version 8) is deprecated and very slow for high-pass; use the new filter if possible
+                    EEG = pop_eegfiltnew(EEG, preproc.highPass, []); % filter with low-cutoff at specified value (only high-pass, so no high cutoff)
+                 else
+                     EEG = pop_eegfilt(EEG, preproc.highPass, 0);
+                 end
                 
                 %SAVE
                 if preproc.(pipeLine{step})(2)
