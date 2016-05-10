@@ -32,8 +32,9 @@ conditionLabels = trig.conditions(strncmp(currFile, trig.conditions(:,1), length
 ALLEEG=EEG;
 for iCond = 1:size(conditionLabels,1)
     ALLEEG(iCond).setname = conditionLabels{iCond,1};
+    fprintf('   Working on condition %s...\n', conditionLabels{iCond,1});
     try
-        ALLEEG(iCond) = pop_epoch(EEG,conditionLabels(iCond,2), epochTime);
+        ALLEEG(iCond) = pop_epoch(EEG,conditionLabels(iCond,2), epochTime, 'newname', conditionLabels{iCond,1});
     catch % prevent crash in case there are conditions with 0 trials (can happen for T1 errors / blinks in the long lag)
     end
 end
