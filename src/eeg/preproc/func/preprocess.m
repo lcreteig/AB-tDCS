@@ -342,11 +342,9 @@ for iSub = 1:length(paths.subs2process)
                 
                 % The rejmanual subfield will be reset after removing trials, but we want to keep the info!
                 % So make a back-up both in the EEG structure and as a text file
-                if ~isempty(EEG.reject.rejmanual)
                     EEG.rejectedTrials = EEG.reject.rejmanual;
                     rejectedTrials = find(EEG.reject.rejmanual);
                     dlmwrite(fullfile(paths.procDir, [rawFile '_' 'rejectedtrials' '_' timeStamp '.txt']), rejectedTrials, 'delimiter', '\t')
-                end
 
                 %SAVE
                 if preproc.(pipeLine{step})(2)
@@ -447,7 +445,7 @@ for iSub = 1:length(paths.subs2process)
                 end
                 
                 %PROCESS
-                EEG = preproc_reject_trials(EEG, trig, paths.procDir, rawFile, currSession, currBlock); % remove trials marked for rejection
+                EEG = preproc_reject_trials(EEG, paths.procDir, rawFile); % remove trials marked for rejection
                 
                 %SAVE
                 if preproc.(pipeLine{step})(2)

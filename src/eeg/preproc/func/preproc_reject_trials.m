@@ -1,16 +1,13 @@
-function EEG = preproc_reject_trials(EEG, trig, fileDir, rawFile, currSession, currBlock)
+function EEG = preproc_reject_trials(EEG, fileDir, rawFile)
 %PREPROC_REJECT_TRIALS: Removes trials previously marked for rejection and
 %prints statistics on rejected trials.
 %
-% Usage: EEG = PREPROC_REJECT_TRIALS(EEG, trig, fileDir, rawFile, currSession, currBlock)
+% Usage: EEG = PREPROC_REJECT_TRIALS(EEG, fileDir, rawFile)
 %
 % Inputs:
 %   - EEG: EEGlab structure with EEG data.
-%   - trig: structure containing original event markers (see preproc_config.m)
 %   - fileDir: string with path to folder with processed eeg data
 %   - rawFile: string containing name of this subject/session/block combination (raw data file)
-%   - currSession: string with tDCS code of file ('B' or 'D')
-%   - currBlock: string with block of file ('pre', 'tDCS', or 'post')
 %
 % Outputs:
 %   - EEG: EEGlab structure without trials marked for rejection
@@ -27,8 +24,8 @@ elseif ~isempty(dir(fullfile(fileDir, [rawFile '_' 'rejectedtrials' '_' '*' '.tx
     rejFile = dir(fullfile(fileDir, [rawFile '_' 'rejectedtrials' '_' '*' '.txt']));
     [~,i] = sort([rejFile.datenum]);
     rejectedTrials = load(fullfile(fileDir, rejFile(i(end)).name));
-else % if nothing works
-    error('Could not find list of trials to reject!')
+else
+    rejectedTrials = [];
 end
 
 % If not already in the EEG structure, add info on rejected trial indices
@@ -37,5 +34,10 @@ if ~isfield(EEG, 'rejectedTrials') || isempty(EEG.rejectedTrials)
    EEG.rejectedTrials(rejectedTrials) = 1;
 end
 
-fprintf('Rejecting %i (%i%%) of %i trials in total.\n', numel(rejectedTrials))
-EEG = pop_select(EEG, 'notrial', rejectedTrials); %actually remove the marked trials
+if ~isempty(rejectedTrials)
+    fprintf('Rejecting %i (%i%%) of %i trials in total.\n', numel(rejectedTrials))
+    EEG = pop_select(EEG, 'notrial', rejectedTrials); %actually remove the marked trials
+else
+    warning('There seems to be no list of trials to reject for %s!. Moving on...', rawFile)
+end
+    
