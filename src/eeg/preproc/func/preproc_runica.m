@@ -25,6 +25,7 @@ chansBad = bad_chans(currSub, currSession, currBlock); % otherwise bad channels
 % Create list of all channels to include in the ICA
 chansICA = setdiff({EEG.chanlocs.labels}, [chansZero chansBad preproc.earLabel]); % also exclude reference channels
 chansICAidx = find(ismember({EEG.chanlocs.labels}, chansICA));
+assert(length([chansZero chansBad preproc.earLabel]) == length({EEG.chanlocs.labels}) - length(chansICAidx), 'At least one channel is not recognized!');
 
 if preproc.icaBaseline
     EEG = pop_rmbase(EEG, []);

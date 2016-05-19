@@ -28,5 +28,6 @@ end
 
 if ~isempty(chansZero)
     chansZeroIdx = ismember({EEG.chanlocs.labels}, chansZero); % find indices in chanlocs structure
+    assert(length(chansZero) == sum(chansZeroIdx), 'At least one channel is not recognized!');
     EEG.data(chansZeroIdx, :) = 0; % set all samples on these channels to zero
 end

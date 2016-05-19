@@ -21,6 +21,7 @@ function EEG = preproc_interp_channels(EEG, preproc, currSub, currSession, currB
 
 interpChans = chans2interp(currSub, currSession, currBlock); % get names of channels that are marked for interpolation
 interpChanIdx = find(ismember({EEG.chanlocs.labels}, interpChans));
+assert(length(interpChans) == length(interpChanIdx), 'At least one channel is not recognized!');
 
 % exclude external channels from interpolation
 exclInterpChanIdx = find(ismember({EEG.chanlocs.labels}, {preproc.heogLabel, preproc.veogLabel, preproc.earLabel}));
@@ -28,11 +29,13 @@ exclInterpChanIdx = find(ismember({EEG.chanlocs.labels}, {preproc.heogLabel, pre
 % exclude blocked channels from interpolation
 chansZero = blocked_chans(currSub, currSession);
 chansZeroIdx = find(ismember({EEG.chanlocs.labels}, chansZero));
+assert(length(chansZero) == length(chansZeroIdx), 'At least one channel is not recognized!');
 
 % exclude otherwise bad channels from interpolation
 chansBad = bad_chans(currSub, currSession, currBlock);
 if ~isempty(chansBad)
     chansBadIdx = find(ismember({EEG.chanlocs.labels}, chansBad));
+    assert(length(chansBad) == length(chansBadIdx), 'At least one channel is not recognized!');
 else
     chansBadIdx = [];
 end
