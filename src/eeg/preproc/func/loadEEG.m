@@ -39,13 +39,14 @@ for iStep = 1:length(pipeReverse)
         if exist('preproc', 'var')
             for iPipe = 1:length(pipeReverse) % for each step
                 if isfield(preproc, pipeReverse{iPipe}) && preproc.(pipeReverse{iPipe})(1) % if it was performed in loaded data
-                preprocNew.(pipeReverse{iPipe}) = preproc.(pipeReverse{iPipe}); % mark the step also in the new data
+                    preprocNew.(pipeReverse{iPipe}) = preproc.(pipeReverse{iPipe}); % mark the step also in the new data
                 end
             end
         end
         
+        break
     end
-    break
+    
 end
 
 if iStep == length(pipeReverse)
