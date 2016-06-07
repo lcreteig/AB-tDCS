@@ -21,9 +21,9 @@ function EEG = preproc_recode_triggers(EEG, trig, currSession, currBlock)
 
 sessionIdx = strcmpi(currSession, trig.session);
 blockIdx = strcmpi(currBlock, trig.block);
-currFile = [trig.tDCS{sessionIdx} '_' trig.block{blockIdx}];
+currFile = [trig.session{sessionIdx} '_' trig.block{blockIdx}];
 
-% Extract only the relevant condition labels and triggers (e.g. the "anodal, pre" conditions)
+% Extract only the relevant condition labels and triggers (e.g. the "B, pre" conditions)
 conditionLabels = trig.conditions(strncmp(currFile, trig.conditions(:,1), length(currFile)),:);
 
 % Force event markers to be strings in all cases (only in tDCS blocks they are strings by default, 
