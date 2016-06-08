@@ -12,8 +12,8 @@ function [preproc, paths, trig] = preproc_config(subjects, sessions, blocks, eeg
 %                   {'S01', 'S02'}) containing name(s) of subject(s) to be
 %                   preprocessed.
 %
-% -sessions         string (e.g. 'B') or cell array of strings ({'B',
-%                   'D'}) containing name()s of session(s) to be
+% -sessions         string (e.g. 'B') or cell array of strings ({'D',
+%                   'I'}) containing name()s of session(s) to be
 %                   preprocessed.
 %
 % -blocks           string (e.g. 'pre') or cell array of string (e.g.
@@ -65,14 +65,14 @@ preproc.do_reref = [0 0];          % 5. re-reference the data to earlobes
 preproc.do_bipolar = [0 0];        % 6. bipolarize external channels (subtract pairs from each other, e.g. both HEOG channels)
 preproc.do_removechans = [0 0];    % 7. remove unused channels from data set
 preproc.do_chanlookup = [0 0];     % 8. import standard channel locations
-preproc.do_filter = [0 1];         % 9. high-pass filter the data
+preproc.do_filter = [0 0];         % 9. high-pass filter the data
 
-preproc.do_recodeTrigs = [0 0];    % 10. recode original marker values to more meaningful ones for analysis
-preproc.do_zerochans = [0 0];      % 11. set all values at unused channels (blocked by tDCS electrodes) to zero
-preproc.do_epoch = [0 0];          % 12. split continous data into epochs
-preproc.do_baseline = [0 0];       % 13. subtract a (pre-stimulus) baseline from each epoch
+preproc.do_recodeTrigs = [1 0];    % 10. recode original marker values to more meaningful ones for analysis
+preproc.do_zerochans = [1 0];      % 11. set all values at unused channels (blocked by tDCS electrodes) to zero
+preproc.do_epoch = [1 0];          % 12. split continous data into epochs
+preproc.do_baseline = [1 0];       % 13. subtract a (pre-stimulus) baseline from each epoch
 
-preproc.do_trialrej = [0 1];       % 14. manually identify trials for rejection and save trial indices
+preproc.do_trialrej = [1 0];       % 14. manually identify trials for rejection and save trial indices
 preproc.do_badchans = [0 0];       % 15. zero-out additional bad channels (that should not be interpolated) after data inspection
 preproc.do_interpchans = [0 0];    % 16. interpolate all points of channels
 preproc.do_interpepochs = [0 0];   % 17. interpolate channel on a single epoch
@@ -81,10 +81,10 @@ preproc.do_averef = [0 0];         % 19. re-reference the data to the common ave
 preproc.do_ica = [0 1];            % 20. run independent component analysis
 
 preproc.do_plotIC = [0 0];         % 21. plot results of independent component analyis and save component indices
-preproc.do_removeIC = [1 0];       % 22. subtract marked components from the data
-preproc.do_removebipolars = [1 0]; % 23. drop bipolars from the dataset, leaving only the leave scalp channels
+preproc.do_removeIC = [0 0];       % 22. subtract marked components from the data
+preproc.do_removebipolars = [0 0]; % 23. drop bipolars from the dataset, leaving only the leave scalp channels
 preproc.do_laplacian = [0 0];      % 24. apply scalp laplacian
-preproc.do_conditions = 1;         % 25. re-epoch into separate conditions
+preproc.do_conditions = 0;         % 25. re-epoch into separate conditions
 
 %% Inputs
 
@@ -122,7 +122,7 @@ paths.libDir = fullfile(paths.srcDir, 'lib');
 paths.funcDir = fullfile(paths.srcDir, 'func');
 paths.eeglab = fullfile(paths.srcDir, eeglabVersion); % Tested with 'eeglab13_5_4b' on MATLAB r2012b & r2015a. On r2010b, use 'eeglab8_0_3_5b' (this version also loads in data correctly; does not mess up trigger values).
 paths.expID = 'AB-tDCS-EEG';
-paths.sessionID = {'B','D'}; % indicator for stimulation type: B = either anodal or cathodal, D = opposite of B
+paths.stimID = {'Y', 'X'}; % indicator for stimulation type: Y = either anodal or cathodal, X = opposite of Y
 paths.blockID = {'pre','tDCS','post'}; % indicator for block (20 minutes): pre, during ("tDCS"), or post-tDCS 
 
 % Add folders to matlab path
@@ -235,13 +235,13 @@ preproc.highPass = 0.1; %cut-off for highpass filter in Hz
 % Specify modifications for trigger codes. These numbers will be appended
 % to the T1 trigger code ('31'). So for example, the T1 trigger for a trial
 % in the:
-% -B session ('1')
+% -X session ('1')
 % -post-tDCS block ('3')
 % -no-blink condition ('1')
 % -lag 8 condition ('8')
-% will be 311318; this condition is labelled 'B_post_nonblink_long'
+% will be 311318; this condition is labelled 'X_post_nonblink_long'
 
-trig.session = paths.sessionID;
+trig.session = paths.stimID;
 trig.sessionCode = {'1', '2'};
 
 trig.block = paths.blockID;
@@ -276,54 +276,54 @@ for iSession = 1:length(trig.session)
     end
 end
 
-%     'B_pre_short_T1corr_T2corr'       '3111311'
-%     'B_pre_short_T1corr_T2err'        '3111310'
-%     'B_pre_short_T1err_T2corr'        '3111301'
-%     'B_pre_short_T1err_T2err'         '3111300'
-%     'B_pre_long_T1corr_T2corr'        '3111811'
-%     'B_pre_long_T1corr_T2err'         '3111810'
-%     'B_pre_long_T1err_T2corr'         '3111801'
-%     'B_pre_long_T1err_T2err'          '3111800'
-%     'B_tDCS_short_T1corr_T2corr'      '3112311'
-%     'B_tDCS_short_T1corr_T2err'       '3112310'
-%     'B_tDCS_short_T1err_T2corr'       '3112301'
-%     'B_tDCS_short_T1err_T2err'        '3112300'
-%     'B_tDCS_long_T1corr_T2corr'       '3112811'
-%     'B_tDCS_long_T1corr_T2err'        '3112810'
-%     'B_tDCS_long_T1err_T2corr'        '3112801'
-%     'B_tDCS_long_T1err_T2err'         '3112800'
-%     'B_post_short_T1corr_T2corr'      '3113311'
-%     'B_post_short_T1corr_T2err'       '3113310'
-%     'B_post_short_T1err_T2corr'       '3113301'
-%     'B_post_short_T1err_T2err'        '3113300'
-%     'B_post_long_T1corr_T2corr'       '3113811'
-%     'B_post_long_T1corr_T2err'        '3113810'
-%     'B_post_long_T1err_T2corr'        '3113801'
-%     'B_post_long_T1err_T2err'         '3113800'
-%     'D_pre_short_T1corr_T2corr'     '3121311'
-%     'D_pre_short_T1corr_T2err'      '3121310'
-%     'D_pre_short_T1err_T2corr'      '3121301'
-%     'D_pre_short_T1err_T2err'       '3121300'
-%     'D_pre_long_T1corr_T2corr'      '3121811'
-%     'D_pre_long_T1corr_T2err'       '3121810'
-%     'D_pre_long_T1err_T2corr'       '3121801'
-%     'D_pre_long_T1err_T2err'        '3121800'
-%     'D_tDCS_short_T1corr_T2corr'    '3122311'
-%     'D_tDCS_short_T1corr_T2err'     '3122310'
-%     'D_tDCS_short_T1err_T2corr'     '3122301'
-%     'D_tDCS_short_T1err_T2err'      '3122300'
-%     'D_tDCS_long_T1corr_T2corr'     '3122811'
-%     'D_tDCS_long_T1corr_T2err'      '3122810'
-%     'D_tDCS_long_T1err_T2corr'      '3122801'
-%     'D_tDCS_long_T1err_T2err'       '3122800'
-%     'D_post_short_T1corr_T2corr'    '3123311'
-%     'D_post_short_T1corr_T2err'     '3123310'
-%     'D_post_short_T1err_T2corr'     '3123301'
-%     'D_post_short_T1err_T2err'      '3123300'
-%     'D_post_long_T1corr_T2corr'     '3123811'
-%     'D_post_long_T1corr_T2err'      '3123810'
-%     'D_post_long_T1err_T2corr'      '3123801'
-%     'D_post_long_T1err_T2err'       '3123800'
+%     'Y_pre_short_T1corr_T2corr'       '3111311'
+%     'Y_pre_short_T1corr_T2err'        '3111310'
+%     'Y_pre_short_T1err_T2corr'        '3111301'
+%     'Y_pre_short_T1err_T2err'         '3111300'
+%     'Y_pre_long_T1corr_T2corr'        '3111811'
+%     'Y_pre_long_T1corr_T2err'         '3111810'
+%     'Y_pre_long_T1err_T2corr'         '3111801'
+%     'Y_pre_long_T1err_T2err'          '3111800'
+%     'Y_tDCS_short_T1corr_T2corr'      '3112311'
+%     'Y_tDCS_short_T1corr_T2err'       '3112310'
+%     'Y_tDCS_short_T1err_T2corr'       '3112301'
+%     'Y_tDCS_short_T1err_T2err'        '3112300'
+%     'Y_tDCS_long_T1corr_T2corr'       '3112811'
+%     'Y_tDCS_long_T1corr_T2err'        '3112810'
+%     'Y_tDCS_long_T1err_T2corr'        '3112801'
+%     'Y_tDCS_long_T1err_T2err'         '3112800'
+%     'Y_post_short_T1corr_T2corr'      '3113311'
+%     'Y_post_short_T1corr_T2err'       '3113310'
+%     'Y_post_short_T1err_T2corr'       '3113301'
+%     'Y_post_short_T1err_T2err'        '3113300'
+%     'Y_post_long_T1corr_T2corr'       '3113811'
+%     'Y_post_long_T1corr_T2err'        '3113810'
+%     'Y_post_long_T1err_T2corr'        '3113801'
+%     'Y_post_long_T1err_T2err'         '3113800'
+%     'X_pre_short_T1corr_T2corr'       '3121311'
+%     'X_pre_short_T1corr_T2err'        '3121310'
+%     'X_pre_short_T1err_T2corr'        '3121301'
+%     'X_pre_short_T1err_T2err'         '3121300'
+%     'X_pre_long_T1corr_T2corr'        '3121811'
+%     'X_pre_long_T1corr_T2err'         '3121810'
+%     'X_pre_long_T1err_T2corr'         '3121801'
+%     'X_pre_long_T1err_T2err'          '3121800'
+%     'X_tDCS_short_T1corr_T2corr'      '3122311'
+%     'X_tDCS_short_T1corr_T2err'       '3122310'
+%     'X_tDCS_short_T1err_T2corr'       '3122301'
+%     'X_tDCS_short_T1err_T2err'        '3122300'
+%     'X_tDCS_long_T1corr_T2corr'       '3122811'
+%     'X_tDCS_long_T1corr_T2err'        '3122810'
+%     'X_tDCS_long_T1err_T2corr'        '3122801'
+%     'X_tDCS_long_T1err_T2err'         '3122800'
+%     'X_post_short_T1corr_T2corr'      '3123311'
+%     'X_post_short_T1corr_T2err'       '3123310'
+%     'X_post_short_T1err_T2corr'       '3123301'
+%     'X_post_short_T1err_T2err'        '3123300'
+%     'X_post_long_T1corr_T2corr'       '3123811'
+%     'X_post_long_T1corr_T2err'        '3123810'
+%     'X_post_long_T1err_T2corr'        '3123801'
+%     'X_post_long_T1err_T2err'         '3123800'
 
 %% 11. Set channels to zero
 

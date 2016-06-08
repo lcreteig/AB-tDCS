@@ -1,14 +1,14 @@
-function EEG = preproc_segment_data(EEG, trig, currSub, currBlock, currSession)
+function EEG = preproc_segment_data(EEG, trig, currSub, currBlock, currStimID)
 %PREPROC_SEGMENT_DATA: Cut out the portion of continuous data before start
 %of the ramp-up and after end of the ramp-down in the tDCS block.
 %
-% Usage: EEG = PREPROC_SEGMENT_DATA(EEG, trig, currSub, currBlock, currSession)
+% Usage: EEG = PREPROC_SEGMENT_DATA(EEG, trig, currSub, currBlock, currStimID)
 %
 % Inputs:
 %   - EEG: EEGlab structure with EEG data.
 %   - trig: structure containing original event markers (see preproc_config.m)
 %   - currSub: string with subject ID of file (e.g. 'S01' or 'S18')
-%   - currSession: string with tDCS code of file ('B' or 'D')
+%   - currStimID: string with stimulation ID of session ('Y' or 'X')
 %   - currBlock: string with block of file ('pre', 'tDCS', or 'post')
 %
 % Outputs:
@@ -20,7 +20,7 @@ function EEG = preproc_segment_data(EEG, trig, currSub, currBlock, currSession)
 
 if strcmp(currBlock, 'tDCS')
     
-    endTime = data_timerange(currSub, currSession); % get time before the ramp-down artifact
+    endTime = data_timerange(currSub, currStimID); % get time before the ramp-down artifact
     
     if ~isempty(endTime) % if there was a ramp-down artifact present
         startTrig = find([EEG.event.type] == str2double(trig.startEEG)+trig.offset, 1); % find event corresponding to start of the task

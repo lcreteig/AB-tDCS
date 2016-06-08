@@ -1,13 +1,13 @@
-function outChans = bad_chans(currSub,currSession,currBlock)
+function outChans = bad_chans(currSub,currStimID,currBlock)
 % BAD_CHANS: Retrieve cell array of bad channels for a particular file
-% (subject/session/block combination).
+% (subject/stimulation/block combination).
 %
 % Usage:
-% outChans = BAD_CHANS(currSub,currSession,currBlock)
+% outChans = BAD_CHANS(currSub,currStimID,currBlock)
 %
 % Inputs:
 %   - currSub: string with subject ID of file (e.g. 'S01' or 'S18')
-%   - currSession: string with tDCS code of file ('B' or 'D')
+%   - currStimID: string with stimulation ID of session ('Y' or 'X')
 %   - currBlock: string with block of file ('pre', 'tDCS', or 'post')
 %
 % Outputs:
@@ -17,36 +17,14 @@ function outChans = bad_chans(currSub,currSession,currBlock)
 %
 % See also PREPROC_ZERO_CHANNELS, PREPROC_INTERP_CHANNELS, PREPROC_INTERP_EPOCHS, PREPROC_AVEREF 
 
-%% Indices
+%% Stimulation Y, block pre
 
-subjects = {'S01'
-            'S02'
-            'S03'
-            'S04'
-            'S05'
-            'S06'
-            'S07'
-            'S08'
-            'S09'
-            'S10'
-            'S11'
-            'S12'
-            'S13'
-            'S14'
-            'S15'
-            'S16'
-            'S17'
-            'S18'
-            'S19'
-            'S20'
-            'S21'
-         };
-
-%% Session B, block pre
-
-if strcmp(currSession, 'B')  && strcmp(currBlock, 'pre')
+if strcmp(currStimID, 'Y')  && strcmp(currBlock, 'pre')
     
     chans = { ...
+        ...
+        ... % SESSION B
+        ...
         [], ... % 1
         [], ... % 2
         [], ... % 3
@@ -68,26 +46,36 @@ if strcmp(currSession, 'B')  && strcmp(currBlock, 'pre')
         [], ... % 19
         [], ... % 20
         [], ... % 21
+        ...
+        ... % SESSION D
+        ...
+        [], ... % 22
+        [], ... % 23
+        []     % 24
+
         };
     
 end
 
-%% Session B, block tDCS
+%% Stimulation Y, block tDCS
 
-if strcmp(currSession, 'B')  && strcmp(currBlock, 'tDCS')
+if strcmp(currStimID, 'Y')  && strcmp(currBlock, 'tDCS')
     
     chans = { ...
-        [], ... % 1
-        {'F6', 'AF7', 'FC1'}, ... % 2
+        ...
+        ... % SESSION B
+        ...
+        {'Fpz'}, ... % 1
+        {'F6'}, ... % 2
         {'Fz', 'AF3'}, ... % 3
         [], ... % 4
         {'FC5'}, ... % 5
         {'C3'} ... % 6
         {'AF3'} ... % 7
         {'AF3', 'AF7'}, ... % 8
-        {'FPz', 'AF7', 'FC5'}, ... % 9 FPz can be removed in next preproc run, was misspelled in blocked_chans
-        {'AF3', 'FP1', 'C3', 'C5', 'AF7', 'F7'}, ... % 10
-        {'FPz','AF4', 'AF7', 'FC5', 'FC1', 'AF8'} ... % 11
+        {'AF7', 'FC5'}, ... % 9 
+        {'AF3', 'Fp1', 'C3', 'C5', 'AF7', 'F7'}, ... % 10
+        {'Fpz','AF4', 'AF7', 'FC5', 'FC1', 'AF8'} ... % 11
         {'F6', 'Fpz', 'AF7', 'AF3', 'FC5', 'F7', 'C3'} ... % 12
         {'FC5'}, ... % 13
         [], ... % 14
@@ -98,15 +86,65 @@ if strcmp(currSession, 'B')  && strcmp(currBlock, 'tDCS')
         {'AF7'}, ... % 19
         [], ... % 20
         {'FC5', 'C3'}, ... % 21
+        ...
+        ... % SESSION D
+        ...
+        [], ... % 22
+        [], ... % 23
+        []     % 24
+        
         };
     
 end
 
-%% Session B, block post
+%% Stimulation Y, block post
 
-if strcmp(currSession, 'B')  && strcmp(currBlock, 'post')
+if strcmp(currStimID, 'Y')  && strcmp(currBlock, 'post')
     
     chans = { ...
+        ...
+        ... % SESSION B
+        ...
+        {'Fpz','F7'}, ... % 1
+        [], ... % 2
+        [], ... % 3
+        [], ... % 4
+        [], ... % 5
+        [], ... % 6
+        [], ... % 7
+        [], ... % 8
+        [], ... % 9
+        [], ... % 10
+        [], ... % 11
+        [], ... % 12
+        [], ... % 13
+        [], ... % 14
+        [], ... % 15
+        [], ... % 16
+        [], ... % 17
+        [], ... % 18
+        [], ... % 19
+        [], ... % 20
+        [], ... % 21
+        ...
+        ... % SESSION D
+        ...
+        [], ... % 22
+        [], ... % 23
+        []      % 24
+        
+        };
+    
+end
+
+%% Stimulation X, block pre
+
+if strcmp(currStimID, 'X')  && strcmp(currBlock, 'pre')
+    
+    chans = { ...
+        ...
+        ... % SESSION D
+        ...
         [], ... % 1
         [], ... % 2
         [], ... % 3
@@ -128,57 +166,37 @@ if strcmp(currSession, 'B')  && strcmp(currBlock, 'post')
         [], ... % 19
         [], ... % 20
         [], ... % 21
+        ...
+        ... % SESSION I
+        ...
+        [], ... % 22
+        [], ... % 23
+        []      % 24
+        
         };
     
 end
 
-%% Session D, block pre
+%% Stimulation X, block tDCS
 
-if strcmp(currSession, 'D')  && strcmp(currBlock, 'pre')
+if strcmp(currStimID, 'X')  && strcmp(currBlock, 'tDCS')
     
     chans = { ...
-        [], ... % 1
-        [], ... % 2
-        [], ... % 3
-        [], ... % 4
-        [], ... % 5
-        [], ... % 6
-        [], ... % 7
-        [], ... % 8
-        [], ... % 9
-        [], ... % 10
-        [], ... % 11
-        [], ... % 12
-        [], ... % 13
-        [], ... % 14
-        [], ... % 15
-        [], ... % 16
-        [], ... % 17
-        [], ... % 18
-        [], ... % 19
-        [], ... % 20
-        [], ... % 21
-        };
-    
-end
-
-%% Session D, block tDCS
-
-if strcmp(currSession, 'D')  && strcmp(currBlock, 'tDCS')
-    
-    chans = { ...
-        {'FP1', 'FT7', 'FC5', 'AF7', 'AF4'}, ... % 1
-        {'AFz', 'F5', 'F8'}, ... % 2
+        ...
+        ... % SESSION D
+        ...
+        {'Fp1'}, ... % 1
+        {'AFz', 'Fp1', 'AF7'}, ... % 2s
         {'FC1'}, ... % 3
-        [], ... % 4
-        {'Fpz', 'FP1', 'AF7'}, ... % 5
+        [], ... % 4s
+        {'Fpz', 'Fp1', 'AF7'}, ... % 5
         {'Fpz'}, ... % 6
         {'AF3'}, ... % 7
         {'AF3', 'Fpz', 'F6'}, ... % 8
         {'AF7', 'F1', 'FC3', 'C3', 'F6'} ... % 9
         {'AF4', 'Fp1', 'AF7', 'F1'} ... % 10
         {'AF3', 'Fpz', 'F8'}, ... % 11
-        {'AF7', 'FPz','AFz', 'F6', 'F8'} ... % 12
+        {'AF7', 'Fpz','AFz', 'F6', 'F8'} ... % 12
         {'AFz','Fpz', 'F6'} ... % 13
         [], ... % 14
         {'Fpz'} ... % 15
@@ -188,16 +206,26 @@ if strcmp(currSession, 'D')  && strcmp(currBlock, 'tDCS')
         [], ... % 19
         [], ... % 20
         [], ... % 21
+        ...
+        ... % SESSION I
+        ...
+        [], ... % 22
+        [], ... % 23
+        []      % 24
+        
         };
     
 end
 
-%% Session D, block post
+%% Stimulation X, block post
 
-if strcmp(currSession, 'D')  && strcmp(currBlock, 'post')
+if strcmp(currStimID, 'X')  && strcmp(currBlock, 'post')
     
     chans = { ...
-        {'FP1', 'AF7'}, ... % 1
+        ...
+        ... % SESSION D
+        ...
+        {'Fp1', 'AF7'}, ... % 1
         [], ... % 2
         [], ... % 3
         [], ... % 4
@@ -218,12 +246,17 @@ if strcmp(currSession, 'D')  && strcmp(currBlock, 'post')
         [], ... % 19
         [], ... % 20
         [], ... % 21
+        ...
+        ... % SESSION I
+        ...
+        [], ... % 22
+        [], ... % 23
+        []      % 24
+        
         };
     
 end
 
-
 %% Outputs
 
-sub = strcmp(currSub, subjects);
-outChans = chans{sub};
+outChans = chans{str2double(currSub(2:end))};

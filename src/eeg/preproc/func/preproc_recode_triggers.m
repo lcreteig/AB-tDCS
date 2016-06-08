@@ -1,15 +1,15 @@
-function EEG = preproc_recode_triggers(EEG, trig, currSession, currBlock)
+function EEG = preproc_recode_triggers(EEG, trig, currStimID, currBlock)
 %PREPROC_RECODE_TRIGGERS: Recode original experiment markers into more
 %meaningful values, which can be used to separate trials into conditions
 %for further analysis. Code is mostly particular to the AB_tDCS-EEG project
 %and will have to be largely rewritten for other studies.
 %
-% Usage: EEG = PREPROC_RECODE_TRIGGERS(EEG, trig, currSession, currBlock)
+% Usage: EEG = PREPROC_RECODE_TRIGGERS(EEG, trig, currStimID, currBlock)
 %
 % Inputs:
 %   - EEG: EEGlab structure with EEG data.
 %   - trig: structure containing original event markers (see preproc_config.m)
-%   - currSession: string with tDCS code of file ('B' or 'D')
+%   - currStimID: string with stimulation ID of session ('Y' or 'X')
 %   - currBlock: string with block of file ('pre', 'tDCS', or 'post')
 %
 % Outputs:
@@ -19,7 +19,7 @@ function EEG = preproc_recode_triggers(EEG, trig, currSession, currBlock)
 %
 % See also PREPROCESS, PREPROC_CONFIG
 
-sessionIdx = strcmpi(currSession, trig.session);
+sessionIdx = strcmpi(currStimID, trig.session);
 blockIdx = strcmpi(currBlock, trig.block);
 currFile = [trig.session{sessionIdx} '_' trig.block{blockIdx}];
 

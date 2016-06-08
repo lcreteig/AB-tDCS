@@ -20,6 +20,24 @@ for iSub = 1:length(paths.subs2process)
             currSub = paths.subs2process{iSub};
             currSession = paths.sessions2process{iSession};
             currBlock = paths.blocks2process{iBlock};
+            
+            % Figure out which stimulation was given in this session
+            if str2double(currSub(2:end)) <= 21 % for subjects S01 through S21
+                switch currSession
+                    case 'B'
+                        currStimID = 'Y';
+                    case 'D'
+                        currStimID = 'X';
+                end
+            else % for subjects S22 onwars
+                switch currSession
+                    case 'I' %corresponds to 'D' in S01-S21
+                        currStimID = 'X';
+                    case 'D' %corresponds to 'B' in S01-S21
+                        currStimID = 'Y';
+                end
+            end
+            
             fprintf('    Processing data from subject "%s", session "%s", block "%s" ...\n', currSub, currSession, currBlock)
             
             fileInfo = dir(fullfile(paths.rawDir, currSub, [currSub '_*' currSession '_' currBlock '.bdf']));
@@ -49,7 +67,7 @@ for iSub = 1:length(paths.subs2process)
                 %PROCESS
                 fprintf('    Selecting continuous data segment...\n')
                 % cut-out segment of data before end of ramp-up and after end of ramp-down
-                EEG = preproc_segment_data(EEG, trig, currSub, currBlock, currSession);
+                EEG = preproc_segment_data(EEG, trig, currSub, currBlock, currStimID);
                 
                 %SAVE
                 if preproc.(pipeLine{step})(2) % if EEG data should be saved to disk after this step
@@ -243,7 +261,7 @@ for iSub = 1:length(paths.subs2process)
                 %PROCESS
                 fprintf('    Recoding marker values...\n')
                 % recode event markers / EEG triggers for analysis
-                EEG = preproc_recode_triggers(EEG, trig, currSession, currBlock); 
+                EEG = preproc_recode_triggers(EEG, trig, currStimID, currBlock); 
                 
                 %SAVE
                 if preproc.(pipeLine{step})(2)
@@ -266,7 +284,7 @@ for iSub = 1:length(paths.subs2process)
                 
                 %PROCESS
                 fprintf('    Setting bad channels to zero...\n')
-                EEG = preproc_zero_channels(EEG, currSub, currSession, currBlock, 1); %zero-out data from specified channels
+                EEG = preproc_zero_channels(EEG, currSub, currStimID, currBlock, 1); %zero-out data from specified channels
                  
                 %SAVE
                 if preproc.(pipeLine{step})(2)
@@ -393,7 +411,7 @@ for iSub = 1:length(paths.subs2process)
                 %PROCESS
                 fprintf('    Setting additional bad channels to zero...\n')
                 % zero-out data from specified channels
-                EEG = preproc_zero_channels(EEG, currSub, currSession, currBlock, 2);
+                EEG = preproc_zero_channels(EEG, currSub, currStimID, currBlock, 2);
                 
                 %SAVE
                 if preproc.(pipeLine{step})(2)
@@ -415,11 +433,11 @@ for iSub = 1:length(paths.subs2process)
                 end
                 
                 %PROCESS
-                interpChans = chans2interp(currSub, currSession, currBlock);
+                interpChans = chans2interp(currSub, currStimID, currBlock);
                 if ~isempty(interpChans)
                     fprintf('    Interpolating channels...\n')
                     % interpolate all timepoints of specified channels
-                    EEG = preproc_interp_channels(EEG, preproc, currSub, currSession, currBlock); 
+                    EEG = preproc_interp_channels(EEG, preproc, currSub, currStimID, currBlock); 
                 end
                 
                 %SAVE
@@ -442,11 +460,11 @@ for iSub = 1:length(paths.subs2process)
                 end
                 
                 % PROCESS
-                interpEpochChans = epochs2interp(currSub, currSession, currBlock);
+                interpEpochChans = epochs2interp(currSub, currStimID, currBlock);
                 if ~isempty(interpEpochChans)
                     fprintf('    Interpolating epochs...\n')
                     % interpolate specified channels only on specified epochs
-                    EEG = preproc_interp_epochs(EEG, preproc, currSub, currSession, currBlock); 
+                    EEG = preproc_interp_epochs(EEG, preproc, currSub, currStimID, currBlock); 
                 end
                 
                 %SAVE
@@ -493,7 +511,7 @@ for iSub = 1:length(paths.subs2process)
                 %PROCESS
                 fprintf('    Re-referencing to common average...\n')
                 %re-reference to common average
-                EEG = preproc_averef(EEG, preproc, currSub, currSession, currBlock); 
+                EEG = preproc_averef(EEG, preproc, currSub, currStimID, currBlock); 
                 
                 %SAVE
                 if preproc.(pipeLine{step})(2)
@@ -516,7 +534,7 @@ for iSub = 1:length(paths.subs2process)
                 
                 %PROCESS
                 fprintf('    Running independent component analysis...\n')
-                EEG = preproc_runica(EEG, preproc, currSub, currSession, currBlock);
+                EEG = preproc_runica(EEG, preproc, currSub, currStimID, currBlock);
                 
                 %SAVE
                 if preproc.(pipeLine{step})(2)
@@ -647,7 +665,7 @@ for iSub = 1:length(paths.subs2process)
                
                %PROCESS
                fprintf('    Separating into conditions...\n')
-               [ALLEEG, conditionLabels] = preproc_conditions(EEG, currSession, currBlock, trig, preproc.epochTime2); %re-epoch data into separate EEG structures
+               [ALLEEG, conditionLabels] = preproc_conditions(EEG, currStimID, currBlock, trig, preproc.epochTime2); %re-epoch data into separate EEG structures
 
                % Always save data to disk
                [saveDir, procFile, EEG] = prepSave(EEG, paths, rawFile, pipeLine, step, timeStamp);

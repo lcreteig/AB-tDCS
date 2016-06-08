@@ -1,12 +1,12 @@
-function [ALLEEG, conditionLabels] = preproc_conditions(EEG, currSession, currBlock, trig, epochTime)
+function [ALLEEG, conditionLabels] = preproc_conditions(EEG, currStimID, currBlock, trig, epochTime)
 %PREPROC_CONDITIONS: Re-epoch data; place into separate EEG structures -
 %one for each condition.
 %
-% Usage: [ALLEEG, conditionLabels] = PREPROC_CONDITIONS(EEG, currSession, currBlock, trig, epochTime)
+% Usage: [ALLEEG, conditionLabels] = PREPROC_CONDITIONS(EEG, currStimID, currBlock, trig, epochTime)
 %
 % Inputs:
 %   - EEG: EEGlab structure with EEG data
-%   - currSession: string with tDCS code of file ('B' or 'D')
+%   - currStimID: string with stimulation ID of session ('Y' or 'X')
 %   - currBlock: string with block of file ('pre', 'tDCS', or 'post')
 %   - trig: structure containing original event markers (see preproc_config.m)
 %   - epochTime: 2-element vector with boundaries of new epoch, relative to
@@ -22,11 +22,11 @@ function [ALLEEG, conditionLabels] = preproc_conditions(EEG, currSession, currBl
 %
 % See also POP_EPOCH, PREPROCESS, PREPROC_CONFIG
 
-sessionIdx = strcmpi(currSession, trig.session);
+sessionIdx = strcmpi(currStimID, trig.session);
 blockIdx = strcmpi(currBlock, trig.block);
 currFile = [trig.session{sessionIdx} '_' trig.block{blockIdx}];
 
-% Extract only the relevant condition labels and triggers (e.g. the "B, pre" conditions)
+% Extract only the relevant condition labels and triggers (e.g. the "Y, pre" conditions)
 conditionLabels = trig.conditions(strncmp(currFile, trig.conditions(:,1), length(currFile)),:);
 
 ALLEEG=EEG;

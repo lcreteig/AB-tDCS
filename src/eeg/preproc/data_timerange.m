@@ -1,13 +1,13 @@
-function outTime = data_timerange(currSub, currSession)
+function outTime = data_timerange(currSub, currStimID)
 % DATA_TIMERANGE: Retrieve time before end of ramp-down for a particular file
 % (subject/session combination; only in 'tDCS' block).
 %
 % Usage:
-% outTime = DATA_TIMERANGE(currSub,currSession)
+% outTime = DATA_TIMERANGE(currSub,currStimID)
 %
 % Inputs:
 %   - currSub: string with subject ID of file (e.g. 'S01' or 'S18')
-%   - currSession: string with tDCS code of file ('B' or 'D')
+%   - currStimID: string with stimulation ID of session ('Y' or 'X')
 %
 % Outputs:
 %   - outTime: single number with time in seconds before the ramp-down
@@ -17,36 +17,13 @@ function outTime = data_timerange(currSub, currSession)
 %
 % See also PREPROC_SEGMENT_DATA 
 
-%% Indices
+%% Session Y
 
-subjects = {
-    'S01'
-    'S02'
-    'S03'
-    'S04'
-    'S05'
-    'S06'
-    'S07'
-    'S08'
-    'S09'
-    'S10'
-    'S11'
-    'S12'
-    'S13'
-    'S14'
-    'S15'
-    'S16'
-    'S17'
-    'S18'
-    'S19'
-    'S20'
-    'S21'
-    };
-
-%% Session B
-
-if strcmp(currSession, 'B')
+if strcmp(currStimID, 'Y')
     timeEnd = { ...
+        ...
+        ... % SESSION B
+        ...
         1492, ... % 1 
         1418, ... % 2 
         1182, ... % 3 
@@ -68,13 +45,23 @@ if strcmp(currSession, 'B')
         1381, ... % 19
         1220, ... % 20
         1387, ... % 21
+        ...
+        ... % SESSION D
+        ...
+        [], ... % 22
+        [], ... % 23
+        []     % 24
+
         };  
 end
 
-%% Session D
+%% Session X
 
-if strcmp(currSession, 'D')
+if strcmp(currStimID, 'X')
     timeEnd = { ...
+        ...
+        ... % SESSION D
+        ...
         1304, ... % 1
         1215, ... % 2
         1432, ... % 3
@@ -96,10 +83,12 @@ if strcmp(currSession, 'D')
         1411, ... % 19
         1223, ... % 20
         1490, ... % 21 [0 1136]
+        ...
+        ... % SESSION I
+        ...
         };  
 end
 
 %% Outputs
 
-sub = strcmp(currSub, subjects);
-outTime = timeEnd{sub};
+outTime = timeEnd{str2double(currSub(2:end))};

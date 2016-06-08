@@ -1,13 +1,13 @@
-function [outChans, outEpochs] = epochs2interp(currSub,currSession,currBlock)
+function [outChans, outEpochs] = epochs2interp(currSub,currStimID,currBlock)
 % EPOCHS2INTERP: Retrieve channels and single epochs on which these channels should be
-% interpolated for a particular file (subject/session/block combination).
+% interpolated for a particular file (subject/stimulation/block combination).
 %
 % Usage:
-% [outChans, outEpochs] = EPOCHS2INTERP(currSub,currSession,currBlock)
+% [outChans, outEpochs] = EPOCHS2INTERP(currSub,currStimID,currBlock)
 %
 % Inputs:
 %   - currSub: string with subject ID of file (e.g. 'S01' or 'S18')
-%   - currSession: string with tDCS code of file ('B' or 'D')
+%   - currStimID: string with stimulation ID of session ('Y' or 'X')
 %   - currBlock: string with block of file ('pre', 'tDCS', or 'post')
 %
 % Outputs:
@@ -21,43 +21,22 @@ function [outChans, outEpochs] = epochs2interp(currSub,currSession,currBlock)
 % Called in preproc_interp_channels, preproc_interp_epochs, preprocess
 %
 % See also PREPROC_INTERP_CHANNELS, PREPROC_INTERP_EPOCHS, PREPROCESS
-
-%% Indices
-
-subjects = {'S01'
-            'S02'
-            'S03'
-            'S04'
-            'S05'
-            'S06'
-            'S07'
-            'S08'
-            'S09'
-            'S10'
-            'S11'
-            'S12'
-            'S13'
-            'S14'
-            'S15'
-            'S16'
-            'S17'
-            'S18'
-            'S19'
-            'S20'
-            'S21'
-         };
      
-%% Session B, block pre
+%% Stimulation Y, block pre
 
-if strcmp(currSession, 'B')  && strcmp(currBlock, 'pre') 
+if strcmp(currStimID, 'Y')  && strcmp(currBlock, 'pre') 
 
+%%%%%%%%%%%%%
+% Session B %
+%%%%%%%%%%%%%
+    
 % S01
-chans{1} = {'FP9','P2','P2','P2','P2','P2','P2','P7','PO7','P9','P9','T7', 'FT8'};
-epochs{1} = [11 11 114 140 148 175 176 27 28 33 71 79 76];
+chans{1} = {'PO7','PO7','FT8','T7','P2','P2','P2','P2'};
+epochs{1} = [28 33 78 79 136 140 175 176];
 
 % S02
-chans{2} = [];
-epochs{2} = [];
+chans{2} = {'PO8','PO8','F6','F6','F6','P9','Cz','FT8','P9','P9'};
+epochs{2} = [11 16 33 34 39 76 136 147 13 14];
 
 % S03
 chans{3} = [];
@@ -135,19 +114,39 @@ epochs{20} = [];
 chans{21} = [];
 epochs{21} = [];
 
+%%%%%%%%%%%%%
+% Session D %
+%%%%%%%%%%%%%
+
+% S22
+chans{22} = [];
+epochs{22} = [];
+
+% S23
+chans{23} = [];
+epochs{23} = [];
+
+% S24
+chans{24} = [];
+epochs{24} = [];
+
 end
 
-%% Session B, block tDCS
+%% Stimulation Y, block tDCS
 
-if strcmp(currSession, 'B') && strcmp(currBlock, 'tDCS') 
+if strcmp(currStimID, 'Y') && strcmp(currBlock, 'tDCS')
+    
+%%%%%%%%%%%%%
+% Session B %
+%%%%%%%%%%%%%
 
 % S01
-chans{1} = {'F8', 'F8', 'F8', 'F8', 'P2', 'P2', 'CP3' 'P2', 'P2', 'P2','P2', 'P2', 'P2', 'P2', 'P2'};
-epochs{1} = [6 8 9 10 9 12 17 19 24 38 52 57 72 97 98];
+chans{1} = {'FT8','FT8','FT8','P2','P2','P2','P2','F8'};
+epochs{1} = [8 9 10 24 56 72 131 152];
 
 % S02
-chans{2} = [];
-epochs{2} = [];
+chans{2} = {'C6','Fp1','AF7','Fp1','AF7','Fp1','AF7','Fp1','AF7','Fp1','AF7','Fp1','AF7','Fp1','AF7','FC1','FC1'};
+epochs{2} = [151 187 187 188 188 189 189 190 190 191 191 192 192 193 193 192 193];
 
 % S03
 chans{3} = {'C3'};
@@ -225,15 +224,35 @@ epochs{20} = [];
 chans{21} = [];
 epochs{21} = [];
 
+%%%%%%%%%%%%%
+% Session D %
+%%%%%%%%%%%%%
+
+% S22
+chans{22} = [];
+epochs{22} = [];
+
+% S23
+chans{23} = [];
+epochs{23} = [];
+
+% S24
+chans{24} = [];
+epochs{24} = [];
+
 end
 
-%% Session B, block post
+%% Stimulation Y, block post
 
-if strcmp(currSession, 'B')  && strcmp(currBlock, 'post') 
+if strcmp(currStimID, 'Y')  && strcmp(currBlock, 'post') 
 
+%%%%%%%%%%%%%
+% Session B %
+%%%%%%%%%%%%%    
+    
 % S01
-chans{1} = {'P2', 'P2', 'P7', 'P7', 'P7', 'P7'};
-epochs{1} = [126 125 146 180 181 182];
+chans{1} = {'P2'};
+epochs{1} = 21;
 
 % S02
 chans{2} = [];
@@ -315,19 +334,39 @@ epochs{20} = [];
 chans{21} = [];
 epochs{21} = [];
 
+%%%%%%%%%%%%%
+% Session D %
+%%%%%%%%%%%%%
+
+% S22
+chans{22} = [];
+epochs{22} = [];
+
+% S23
+chans{23} = [];
+epochs{23} = [];
+
+% S24
+chans{24} = [];
+epochs{24} = [];
+
 end
 
-%% Session D, block pre
+%% Stimulation X, block pre
 
-if strcmp(currSession, 'D')  && strcmp(currBlock, 'pre') 
+if strcmp(currStimID, 'X')  && strcmp(currBlock, 'pre') 
 
+%%%%%%%%%%%%%
+% Session D %
+%%%%%%%%%%%%%     
+    
 % S01
-chans{1} = {'P2', 'P2', 'P10', 'T8', 'P10', 'P10', 'P8', 'P10', 'P10', 'P10', 'P10', 'P8', 'Iz', 'P10', 'P8', 'P10', 'P8', 'P2'};
-epochs{1} = [42 43 63 64 89 102 102 106 107 117 128 128 129 137 137 141 141 175];
+chans{1} = {'TP7', 'P2', 'P10', 'FC6', 'P10', 'CP4'};
+epochs{1} = [3 9 11 42 50 169];
 
 % S02
-chans{2} = [];
-epochs{2} = [];
+chans{2} = {'TP8','PO3','PO3','O1','O1','TP8','TP8','PO3','PO3','FT8','O1'};
+epochs{2} = [7 29 32 69 80 90 106 106 108 146 184];
 
 % S03
 chans{3} = [];
@@ -405,19 +444,39 @@ epochs{20} = [];
 chans{21} = [];
 epochs{21} = [];
 
+%%%%%%%%%%%%%
+% Session I %
+%%%%%%%%%%%%%
+
+% S22
+chans{22} = [];
+epochs{22} = [];
+
+% S23
+chans{23} = [];
+epochs{23} = [];
+
+% S24
+chans{24} = [];
+epochs{24} = [];
+
 end
 
-%% Session D, block tDCS
+%% Stimulation X, block tDCS
 
-if strcmp(currSession, 'D')  && strcmp(currBlock, 'tDCS') 
+if strcmp(currStimID, 'X')  && strcmp(currBlock, 'tDCS') 
 
+%%%%%%%%%%%%%
+% Session D %
+%%%%%%%%%%%%%     
+    
 % S01
-chans{1} = {'P10', 'P9', 'P10', 'P9', 'P10', 'P9', 'P8', 'FC4', 'CP4', 'P2' 'P2', 'P8', 'P10'};
-epochs{1} = [57 57 61 61 68 68 68 86 91 107 131 138 138];
+chans{1} = {'P10','P10','P9','FC4','FC5','FC5','CP4','P2','P10','P10','P4','FC5','FT8','AF7','AF7','AF7','AF7','AF7','AF4','AF4','AF4','AF4'};
+epochs{1} = [54 57 57 86 91 92 91 107 138 141 152 158 177 184 186 187 188 189 186 187 188 189];
 
 % S02
-chans{2} = [];
-epochs{2} = [];
+chans{2} = {'O1','F5','F8','F5','F8','F5','F8'};
+epochs{2} = [88 150 150 151 151 152 152];
 
 % S03
 chans{3} = [];
@@ -495,19 +554,39 @@ epochs{20} = [];
 chans{21} = [];
 epochs{21} = [];
 
+%%%%%%%%%%%%%
+% Session I %
+%%%%%%%%%%%%%
+
+% S22
+chans{22} = [];
+epochs{22} = [];
+
+% S23
+chans{23} = [];
+epochs{23} = [];
+
+% S24
+chans{24} = [];
+epochs{24} = [];
+
 end
 
-%% Session D, block post
+%% Stimulation X, block post
 
-if strcmp(currSession, 'D')  && strcmp(currBlock, 'post') 
+if strcmp(currStimID, 'X')  && strcmp(currBlock, 'post') 
 
+%%%%%%%%%%%%%
+% Session D %
+%%%%%%%%%%%%%     
+    
 % S01
-chans{1} = [];
-epochs{1} = [];
+chans{1} = {'AF4', 'FC4'};
+epochs{1} = [1 122];
 
 % S02
-chans{2} = [];
-epochs{2} = [];
+chans{2} = {'F8','F5','F5','P8','P8','P8','P6','Fpz'};
+epochs{2} = [1 13 14 18 26 44 67 96];
 
 % S03
 chans{3} = [];
@@ -584,14 +663,29 @@ epochs{20} = [];
 % S21
 chans{21} = [];
 epochs{21} = [];
+
+%%%%%%%%%%%%%
+% Session I %
+%%%%%%%%%%%%%
+
+% S22
+chans{22} = [];
+epochs{22} = [];
+
+% S23
+chans{23} = [];
+epochs{23} = [];
+
+% S24
+chans{24} = [];
+epochs{24} = [];
 
 end
 
 %% Outputs
 
-    sub = strcmp(currSub, subjects);
-    outChans = chans{sub};
-    outEpochs = epochs{sub};
+    outChans = chans{str2double(currSub(2:end))};
+    outEpochs = epochs{str2double(currSub(2:end))};
 
     assert(length(outChans) == length(outEpochs), 'Mismatch between channel and epoch list!')
 end
