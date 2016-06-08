@@ -351,6 +351,15 @@ for iSub = 1:length(paths.subs2process)
                     loadFlag = true;
                 end
                 
+                if preproc.previousReject % if previously marked trials should be reloaded
+                    rejFile = dir(fullfile(paths.procDir, [rawFile '_' 'rejectedtrials' '_' '*' '.txt'])); % get text file names
+                    if ~isempty(rejFile) % if it exists
+                        [~,i] = sort([rejFile.datenum]); % sort to get most recent
+                        rejectedTrials = load(fullfile(paths.procDir, rejFile(i(end)).name)); % load the file
+                        EEG.reject.rejmanual(rejectedTrials) = 1; % mark trials in the EEG structure
+                    end
+                end
+                
                 %PROCESS
                 eeglab redraw
                 msg_handle = msgbox(sprintf('Reject trials manually using the EEGlab graphical user interface.\nPress "Update marks" when done; the script will then resume.'), 'Trial rejection');

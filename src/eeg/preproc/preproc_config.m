@@ -353,6 +353,10 @@ preproc.baseTime = [-200 0]; % time range in ms to use for baseline subtraction,
 % trials in the EEG structure! Regardless, a text file will always be
 % written to disk containing the rejected trials.
 
+% Remember trials marked previously during visual inspection (loads in most
+% recent text file, if present).
+preproc.previousReject = true;
+
 %% 15. Mark bad channels
 
 % After inspection of individual data files, additional channels might have
