@@ -17,8 +17,8 @@ function EEG = preproc_reref(EEG, refChans, exclChans)
 %
 % See also PREPROCESS, PREPROC_CONFIG, POP_REREF
 
-if strcmp(EEG.subject, 'S11') && strcmp(EEG.session, 'B') && strcmp(EEG.condition, 'tDCS') % for this file, EXG4 was bad, so use only 1 channel as a reference
-    [~,refChanIdx] = find(strcmp('EXG3', {EEG.chanlocs.labels})); 
+if strcmp(EEG.subject, 'S11') && strcmp(EEG.session, 'B') && strcmp(EEG.condition, 'tDCS') % for this file, EXG3 was bad, so use only 1 channel as a reference
+    [~,refChanIdx] = find(strcmp('EXG4', {EEG.chanlocs.labels})); 
 else
     [~,refChanIdx] = ismember(refChans, {EEG.chanlocs.labels}); % indices of reference channels (earlobes)
 end
