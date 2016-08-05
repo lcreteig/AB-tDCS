@@ -65,18 +65,18 @@ preproc.do_reref = [0 0];          % 5. re-reference the data to earlobes
 preproc.do_bipolar = [0 0];        % 6. bipolarize external channels (subtract pairs from each other, e.g. both HEOG channels)
 preproc.do_removechans = [0 0];    % 7. remove unused channels from data set
 preproc.do_chanlookup = [0 0];     % 8. import standard channel locations
-preproc.do_filter = [0 0];         % 9. high-pass filter the data
+preproc.do_filter = [0 1];         % 9. high-pass filter the data
 
 preproc.do_recodeTrigs = [1 0];    % 10. recode original marker values to more meaningful ones for analysis
 preproc.do_zerochans = [1 0];      % 11. set all values at unused channels (blocked by tDCS electrodes) to zero
 preproc.do_epoch = [1 0];          % 12. split continous data into epochs
 preproc.do_baseline = [1 0];       % 13. subtract a (pre-stimulus) baseline from each epoch
 
-preproc.do_trialrej = [1 0];       % 14. manually identify trials for rejection and save trial indices
-preproc.do_badchans = [0 0];       % 15. zero-out additional bad channels (that should not be interpolated) after data inspection
-preproc.do_interpchans = [0 0];    % 16. interpolate all points of channels
-preproc.do_interpepochs = [0 0];   % 17. interpolate channel on a single epoch
-preproc.do_removetrials = [0 0];   % 18. remove trials previously identified for rejection (if they exist)
+preproc.do_trialrej = [0 1];       % 14. manually identify trials for rejection and save trial indices
+preproc.do_badchans = [1 0];       % 15. zero-out additional bad channels (that should not be interpolated) after data inspection
+preproc.do_interpepochs = [1 0];   % 16. interpolate channel on a single epoch
+preproc.do_interpchans = [1 0];    % 17. interpolate all points of channels
+preproc.do_removetrials = [1 0];   % 18. remove trials previously identified for rejection (if they exist)
 preproc.do_averef = [0 0];         % 19. re-reference the data to the common average
 preproc.do_ica = [0 1];            % 20. run independent component analysis
 
@@ -366,7 +366,16 @@ preproc.previousReject = true;
 %
 % See bad_chans.m for a list of channels.
 
-%% 16. Interpolate channels (all epochs)
+%% 16. Interpolate channels (single epochs)
+
+% Sometimes only a single channel acts out on a single epoch, in which case 
+% it would be a shame to throw away the epoch or interpolate the channel.
+% "eeg_interp_trials.m" is a modification of the EEGLAB interpolate
+% function that can interpolate a channel only on a given epoch.
+%
+% See epochs2interp.m for a list of channels and epochs.
+
+%% 17. Interpolate channels (all epochs)
 
 % Uses a modified version of the standard "eeg_interp" called
 % "eeg_interp_excl" to interpolate channels. This adds the option of
@@ -377,15 +386,6 @@ preproc.previousReject = true;
 % (later zeroed-out channels, step 12).
 
 % See chans2interp.m for a list of channels.
-
-%% 17. Interpolate channels (single epochs)
-
-% Sometimes only a single channel acts out on a single epoch, in which case 
-% it would be a shame to throw away the epoch or interpolate the channel.
-% "eeg_interp_trials.m" is a modification of the EEGLAB interpolate
-% function that can interpolate a channel only on a given epoch.
-%
-% See epochs2interp.m for a list of channels and epochs.
 
 %% 18. Remove rejected trials
 

@@ -429,36 +429,9 @@ for iSub = 1:length(paths.subs2process)
                     save(fullfile(saveDir, procFile), 'EEG', 'paths', 'preproc', 'trig');
                 end 
             end
-
-            %% 16. Interpolate channels (all epochs)
-            step = 16;
-            
-            if preproc.(pipeLine{step})(1)
-                
-                %LOAD
-                if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
-                    [EEG, preproc] = loadEEG(paths.procDir, rawFile, preproc, step);
-                    loadFlag = true;
-                end
-                
-                %PROCESS
-                interpChans = chans2interp(currSub, currStimID, currBlock);
-                if ~isempty(interpChans)
-                    fprintf('    Interpolating channels...\n')
-                    % interpolate all timepoints of specified channels
-                    EEG = preproc_interp_channels(EEG, preproc, currSub, currStimID, currBlock); 
-                end
-                
-                %SAVE
-                if preproc.(pipeLine{step})(2)
-                    [saveDir, procFile, EEG] = prepSave(EEG, paths, rawFile, pipeLine, step, timeStamp);
-                    fprintf('    Saving file %s...\n', procFile);
-                    save(fullfile(saveDir, procFile), 'EEG', 'paths', 'preproc', 'trig');
-                end
-            end
                  
-            %% 17. Interpolate channels (single epochs) 
-            step = 17;
+            %% 16. Interpolate channels (single epochs) 
+            step = 16;
             
             if preproc.(pipeLine{step})(1)
                 
@@ -474,6 +447,33 @@ for iSub = 1:length(paths.subs2process)
                     fprintf('    Interpolating epochs...\n')
                     % interpolate specified channels only on specified epochs
                     EEG = preproc_interp_epochs(EEG, preproc, currSub, currStimID, currBlock); 
+                end
+                
+                %SAVE
+                if preproc.(pipeLine{step})(2)
+                    [saveDir, procFile, EEG] = prepSave(EEG, paths, rawFile, pipeLine, step, timeStamp);
+                    fprintf('    Saving file %s...\n', procFile);
+                    save(fullfile(saveDir, procFile), 'EEG', 'paths', 'preproc', 'trig');
+                end
+            end
+            
+             %% 17. Interpolate channels (all epochs)
+            step = 17;
+            
+            if preproc.(pipeLine{step})(1)
+                
+                %LOAD
+                if ~preproc.(pipeLine{step-1})(1) && ~loadFlag
+                    [EEG, preproc] = loadEEG(paths.procDir, rawFile, preproc, step);
+                    loadFlag = true;
+                end
+                
+                %PROCESS
+                interpChans = chans2interp(currSub, currStimID, currBlock);
+                if ~isempty(interpChans)
+                    fprintf('    Interpolating channels...\n')
+                    % interpolate all timepoints of specified channels
+                    EEG = preproc_interp_channels(EEG, preproc, currSub, currStimID, currBlock); 
                 end
                 
                 %SAVE
