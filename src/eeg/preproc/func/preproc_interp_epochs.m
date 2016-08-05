@@ -21,8 +21,8 @@ function EEG = preproc_interp_epochs(EEG, preproc, currSub, currStimID, currBloc
 
 % find channels and trial numbers on which these should be interpolated
 [interpEpochChans, interpEpochs] = epochs2interp(currSub, currStimID, currBlock);
-interpEpochChanIdx = find(ismember({EEG.chanlocs.labels}, interpEpochChans));
-assert(length(unique(interpEpochChans)) == length(interpEpochChanIdx), 'At least one channel is not recognized!');
+[~,interpEpochChanIdx] = ismember(interpEpochChans,{EEG.chanlocs.labels});
+assert(all(interpEpochChanIdx), 'At least one channel is not recognized!');
 
 % exclude external channels from interpolation
 exclInterpChanIdx = find(ismember({EEG.chanlocs.labels}, {preproc.heogLabel, preproc.veogLabel, preproc.earLabel}));
@@ -54,7 +54,7 @@ inChans = interpEpochChanIdx;
 exclChans = [exclInterpChanIdx interpChanIdx chansZeroIdx chansBadIdx];
 
 if isempty(intersect(inChans, exclChans))
-    EEG = eeg_interp_trials(EEG, inChans, 'spherical', interpEpochs, exclChans);
+    EEG = eeg_interp_epochs(EEG, inChans, interpEpochs, exclChans);
 else
     error('At least one channel is both specified as "to-be interpolated" and "to-be excluded from interpolation"!')
 end

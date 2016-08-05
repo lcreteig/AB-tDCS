@@ -1,25 +1,43 @@
-    % eeg_interp() - interpolate data channels
+    % eeg_interp_epochs() - interpolate data channels on single epochs
+    % N.B. MODIFIED FUNCTION! original:eeg_interp() from eeglab_13_5_4b
 %
-% Usage: EEGOUT = eeg_interp(EEG, badchans, method);
+% Usage: OUTEEG = eeg_interp_epochs(ORIEEG, bad_elec, bad_epochs, excl_elec, method)
 %
 % Inputs: 
-%     EEG      - EEGLAB dataset
-%     badchans - [integer array] indices of channels to interpolate.
-%                For instance, these channels might be bad.
-%                [chanlocs structure] channel location structure containing
-%                either locations of channels to interpolate or a full
-%                channel structure (missing channels in the current 
-%                dataset are interpolated).
-%     method   - [string] method used for interpolation (default is 'spherical').
-%                'invdist'/'v4' uses inverse distance on the scalp
-%                'spherical' uses superfast spherical interpolation. 
-%                'spacetime' uses griddata3 to interpolate both in space 
-%                and time (very slow and cannot be interupted).
+%     ORIEEG     - EEGLAB dataset
+%     bad_elec   - [integer array] indices of channels to interpolate for
+%                  a given epoch. Corresponding epoch indices are in 
+%                  "bad_epochs", so both should have the same length.
+%     bad_epochs - [integer array] indices of epochs on which a given 
+%                  channel should be interpolated. Corresponding channel 
+%                  indices are in "bad_elec", so both should have the 
+%                  same length.
+%     excl_elec  - [integer array] indices of channels that you don't want 
+%                  to include in the interpolation algorithm (e.g. channels
+%                  that are interpolated entirely with function eeg_interp, 
+%                  channels not on the scalp, etc.).
+%     method     - [string] method used for interpolation 
+%                  (default is 'spherical'). 'invdist'/'v4' uses inverse 
+%                  distance on the scalp 'spherical' uses superfast
+%                  spherical interpolation. 'spacetime' uses griddata3 
+%                  to interpolate both in space and time (very slow and 
+%                  cannot be interupted).
+%     
 % Output: 
-%     EEGOUT   - data set with bad electrode data replaced by
-%                interpolated data
+%     OUTEEG     - data set with bad electrode data replaced by
+%                  interpolated data
+%
+% Example:
+% OUTEEG = eeg_interp_epochs(ORIEEG, [3 3 16], [21 28 86], [66], 'spherical')
+% 
+% This will interpolate channel 3 on epochs 21 and 28, and will interpolate
+% channel 16 on epoch 86. Data from channel 66 is always excluded from the
+% interpolation.
 %
 % Author: Arnaud Delorme, CERCO, CNRS, Mai 2006-
+%
+% Modified by Leon Reteig (LCR) for single-channel, single-epoch interpolation
+% all modifications are marked with "#LCR edit"
 
 % Copyright (C) Arnaud Delorme, CERCO, 2006, arno@salk.edu
 %
@@ -37,208 +55,143 @@
 % along with this program; if not, write to the Free Software
 % Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-function EEG = eeg_interp(ORIEEG, bad_elec, method)
-
+function OUTEEG = eeg_interp_epochs(ORIEEG, bad_elec, bad_epochs, excl_elec, method)
+ % #LCR edit
+ 
     if nargin < 2
         help eeg_interp;
         return;
     end;
-    EEG = ORIEEG;
+    OUTEEG = ORIEEG; % #LCR edit
     
-    if nargin < 3
+    if nargin < 4 % #LCR edit
+        excl_elec = [];
+    end
+    
+    if nargin < 5  % #LCR edit
         disp('Using spherical interpolation');
         method = 'spherical';
     end;
-
+    
     % check channel structure
     tmplocs = ORIEEG.chanlocs;
     if isempty(tmplocs) || isempty([tmplocs.X])
         error('Interpolation require channel location');
     end;
-    
-    if isstruct(bad_elec)
+   
+    for numEpoch = unique(bad_epochs) % for each epoch #LCR edit
+        badchans = bad_elec(bad_epochs == numEpoch); % indices of all channels that should be interpolated on this epoch #LCR edit
+        EEG = pop_select(ORIEEG, 'trial', numEpoch); % keep only the one epoch to be interpolated for this iteration #LCR edit
         
-        % add missing channels in interpolation structure
-        % -----------------------------------------------
-        lab1 = { bad_elec.labels };
-        tmpchanlocs = EEG.chanlocs;
-        lab2 = { tmpchanlocs.labels };
-        [tmp tmpchan] = setdiff_bc( lab2, lab1);
-        tmpchan = sort(tmpchan);
-        if ~isempty(tmpchan)
-            newchanlocs = [];
-            fields = fieldnames(bad_elec);
-            for index = 1:length(fields)
-                if isfield(bad_elec, fields{index})
-                    for cind = 1:length(tmpchan)
-                        fieldval = getfield( EEG.chanlocs, { tmpchan(cind) },  fields{index});
-                        newchanlocs = setfield(newchanlocs, { cind }, fields{index}, fieldval);
-                    end;
-                end;
-            end;
-            newchanlocs(end+1:end+length(bad_elec)) = bad_elec;
-            bad_elec = newchanlocs;
-        end;
-        if length(EEG.chanlocs) == length(bad_elec), return; end;
-        
-        lab1 = { bad_elec.labels };
-        tmpchanlocs = EEG.chanlocs;
-        lab2 = { tmpchanlocs.labels };
-        [tmp badchans] = setdiff_bc( lab1, lab2);
-        fprintf('Interpolating %d channels...\n', length(badchans));
-        if length(badchans) == 0, return; end;
-        goodchans      = sort(setdiff(1:length(bad_elec), badchans));
-       
-        % re-order good channels
-        % ----------------------
-        [tmp1 tmp2 neworder] = intersect_bc( lab1, lab2 );
-        [tmp1 ordertmp2] = sort(tmp2);
-        neworder = neworder(ordertmp2);
-        EEG.data = EEG.data(neworder, :, :);
-
-        % looking at channels for ICA
-        % ---------------------------
-        %[tmp sorti] = sort(neworder);
-        %{ EEG.chanlocs(EEG.icachansind).labels; bad_elec(goodchans(sorti(EEG.icachansind))).labels }
-        
-        % update EEG dataset (add blank channels)
-        % ---------------------------------------
-        if ~isempty(EEG.icasphere)
-            
-            [tmp sorti] = sort(neworder);
-            EEG.icachansind = sorti(EEG.icachansind);
-            EEG.icachansind = goodchans(EEG.icachansind);
-            EEG.chaninfo.icachansind = EEG.icachansind;
-            
-            % TESTING SORTING
-            %icachansind = [ 3 4 5 7 8]
-            %data = round(rand(8,10)*10)
-            %neworder = shuffle(1:8)
-            %data2 = data(neworder,:)
-            %icachansind2 = sorti(icachansind)
-            %data(icachansind,:)
-            %data2(icachansind2,:)
-        end;
-        % { EEG.chanlocs(neworder).labels; bad_elec(sort(goodchans)).labels }
-        %tmpdata                  = zeros(length(bad_elec), size(EEG.data,2), size(EEG.data,3));
-        %tmpdata(goodchans, :, :) = EEG.data;
-        
-        % looking at the data
-        % -------------------
-        %tmp1 = mattocell(EEG.data(sorti,1));
-        %tmp2 = mattocell(tmpdata(goodchans,1));
-        %{ EEG.chanlocs.labels; bad_elec(goodchans).labels; tmp1{:}; tmp2{:} }
-        %EEG.data      = tmpdata;
-        
-        EEG.chanlocs  = bad_elec;
-
-    else
-        badchans  = bad_elec;
-        goodchans = setdiff_bc(1:EEG.nbchan, badchans);
+        goodchans = setdiff_bc(1:EEG.nbchan, [badchans excl_elec]); % #LCR edit
         oldelocs  = EEG.chanlocs;
-        EEG       = pop_select(EEG, 'nochannel', badchans);
+        EEG       = pop_select(EEG, 'nochannel', [badchans excl_elec]); % #LCR edit
         EEG.chanlocs = oldelocs;
         disp('Interpolating missing channels...');
-    end;
-
-    % find non-empty good channels
-    % ----------------------------
-    origoodchans = goodchans;
-    chanlocs     = EEG.chanlocs;
-    nonemptychans = find(~cellfun('isempty', { chanlocs.theta }));
-    [tmp indgood ] = intersect_bc(goodchans, nonemptychans);
-    goodchans = goodchans( sort(indgood) );
-    datachans = getdatachans(goodchans,badchans);
-    badchans  = intersect_bc(badchans, nonemptychans);
-    if isempty(badchans), return; end;
-    
-    % scan data points
-    % ----------------
-    if strcmpi(method, 'spherical')
-        % get theta, rad of electrodes
+        
+        % find non-empty good channels
         % ----------------------------
-        tmpgoodlocs = EEG.chanlocs(goodchans);
-        xelec = [ tmpgoodlocs.X ];
-        yelec = [ tmpgoodlocs.Y ];
-        zelec = [ tmpgoodlocs.Z ];
-        rad = sqrt(xelec.^2+yelec.^2+zelec.^2);
-        xelec = xelec./rad;
-        yelec = yelec./rad;
-        zelec = zelec./rad;
-        tmpbadlocs = EEG.chanlocs(badchans);
-        xbad = [ tmpbadlocs.X ];
-        ybad = [ tmpbadlocs.Y ];
-        zbad = [ tmpbadlocs.Z ];
-        rad = sqrt(xbad.^2+ybad.^2+zbad.^2);
-        xbad = xbad./rad;
-        ybad = ybad./rad;
-        zbad = zbad./rad;
+        origoodchans = goodchans;
+        chanlocs     = EEG.chanlocs;
+        nonemptychans = find(~cellfun('isempty', { chanlocs.theta }));
+        [tmp indgood ] = intersect_bc(goodchans, nonemptychans);
+        goodchans = goodchans( sort(indgood) );
+        datachans = getdatachans(goodchans,[badchans excl_elec]); % #LCR edit
+        badchans  = intersect_bc(badchans, nonemptychans);
+        if isempty(badchans), return; end;
         
-        EEG.data = reshape(EEG.data, EEG.nbchan, EEG.pnts*EEG.trials);
-        %[tmp1 tmp2 tmp3 tmpchans] = spheric_spline_old( xelec, yelec, zelec, EEG.data(goodchans,1));
-        %max(tmpchans(:,1)), std(tmpchans(:,1)), 
-        %[tmp1 tmp2 tmp3 EEG.data(badchans,:)] = spheric_spline( xelec, yelec, zelec, xbad, ybad, zbad, EEG.data(goodchans,:));
-        [tmp1 tmp2 tmp3 badchansdata] = spheric_spline( xelec, yelec, zelec, xbad, ybad, zbad, EEG.data(datachans,:));
-        %max(EEG.data(goodchans,1)), std(EEG.data(goodchans,1))
-        %max(EEG.data(badchans,1)), std(EEG.data(badchans,1))
-        EEG.data = reshape(EEG.data, EEG.nbchan, EEG.pnts, EEG.trials);
-    elseif strcmpi(method, 'spacetime') % 3D interpolation, works but x10 times slower
-        disp('Warning: if processing epoch data, epoch boundary are ignored...');
-        disp('3-D interpolation, this can take a long (long) time...');
-        tmpgoodlocs = EEG.chanlocs(goodchans);
-        tmpbadlocs = EEG.chanlocs(badchans);
-        [xbad ,ybad]  = pol2cart([tmpbadlocs.theta],[tmpbadlocs.radius]);
-        [xgood,ygood] = pol2cart([tmpgoodlocs.theta],[tmpgoodlocs.radius]);
-        pnts = size(EEG.data,2)*size(EEG.data,3);
-        zgood = [1:pnts];
-        zgood = repmat(zgood, [length(xgood) 1]);    
-        zgood = reshape(zgood,prod(size(zgood)),1);
-        xgood = repmat(xgood, [1 pnts]); xgood = reshape(xgood,prod(size(xgood)),1);
-        ygood = repmat(ygood, [1 pnts]); ygood = reshape(ygood,prod(size(ygood)),1);
-        tmpdata = reshape(EEG.data, prod(size(EEG.data)),1);
-        zbad = 1:pnts;
-        zbad = repmat(zbad, [length(xbad) 1]);     
-        zbad = reshape(zbad,prod(size(zbad)),1);
-        xbad = repmat(xbad, [1 pnts]); xbad = reshape(xbad,prod(size(xbad)),1);
-        ybad = repmat(ybad, [1 pnts]); ybad = reshape(ybad,prod(size(ybad)),1);
-        badchansdata = griddata3(ygood, xgood, zgood, tmpdata,...
-                                              ybad, xbad, zbad, 'nearest'); % interpolate data                                            
-    else 
-        % get theta, rad of electrodes
-        % ----------------------------
-        tmpchanlocs = EEG.chanlocs;
-        [xbad ,ybad]  = pol2cart([tmpchanlocs( badchans).theta],[tmpchanlocs( badchans).radius]);
-        [xgood,ygood] = pol2cart([tmpchanlocs(goodchans).theta],[tmpchanlocs(goodchans).radius]);
-
-        fprintf('Points (/%d):', size(EEG.data,2)*size(EEG.data,3));
-        badchansdata = zeros(length(badchans), size(EEG.data,2)*size(EEG.data,3));
+        % scan data points
+        % ----------------
+        if strcmpi(method, 'spherical')
+            % get theta, rad of electrodes
+            % ----------------------------
+            tmpgoodlocs = EEG.chanlocs(goodchans);
+            xelec = [ tmpgoodlocs.X ];
+            yelec = [ tmpgoodlocs.Y ];
+            zelec = [ tmpgoodlocs.Z ];
+            rad = sqrt(xelec.^2+yelec.^2+zelec.^2);
+            xelec = xelec./rad;
+            yelec = yelec./rad;
+            zelec = zelec./rad;
+            tmpbadlocs = EEG.chanlocs(badchans);
+            xbad = [ tmpbadlocs.X ];
+            ybad = [ tmpbadlocs.Y ];
+            zbad = [ tmpbadlocs.Z ];
+            rad = sqrt(xbad.^2+ybad.^2+zbad.^2);
+            xbad = xbad./rad;
+            ybad = ybad./rad;
+            zbad = zbad./rad;
+            
+            EEG.data = reshape(EEG.data, EEG.nbchan, EEG.pnts*EEG.trials);
+            %[tmp1 tmp2 tmp3 tmpchans] = spheric_spline_old( xelec, yelec, zelec, EEG.data(goodchans,1));
+            %max(tmpchans(:,1)), std(tmpchans(:,1)),
+            %[tmp1 tmp2 tmp3 EEG.data(badchans,:)] = spheric_spline( xelec, yelec, zelec, xbad, ybad, zbad, EEG.data(goodchans,:));
+            [tmp1 tmp2 tmp3 badchansdata] = spheric_spline( xelec, yelec, zelec, xbad, ybad, zbad, EEG.data(datachans,:));
+            %max(EEG.data(goodchans,1)), std(EEG.data(goodchans,1))
+            %max(EEG.data(badchans,1)), std(EEG.data(badchans,1))
+            EEG.data = reshape(EEG.data, EEG.nbchan, EEG.pnts, EEG.trials);
+        elseif strcmpi(method, 'spacetime') % 3D interpolation, works but x10 times slower
+            disp('Warning: if processing epoch data, epoch boundary are ignored...');
+            disp('3-D interpolation, this can take a long (long) time...');
+            tmpgoodlocs = EEG.chanlocs(goodchans);
+            tmpbadlocs = EEG.chanlocs(badchans);
+            [xbad ,ybad]  = pol2cart([tmpbadlocs.theta],[tmpbadlocs.radius]);
+            [xgood,ygood] = pol2cart([tmpgoodlocs.theta],[tmpgoodlocs.radius]);
+            pnts = size(EEG.data,2)*size(EEG.data,3);
+            zgood = [1:pnts];
+            zgood = repmat(zgood, [length(xgood) 1]);
+            zgood = reshape(zgood,prod(size(zgood)),1);
+            xgood = repmat(xgood, [1 pnts]); xgood = reshape(xgood,prod(size(xgood)),1);
+            ygood = repmat(ygood, [1 pnts]); ygood = reshape(ygood,prod(size(ygood)),1);
+            tmpdata = reshape(EEG.data, prod(size(EEG.data)),1);
+            zbad = 1:pnts;
+            zbad = repmat(zbad, [length(xbad) 1]);
+            zbad = reshape(zbad,prod(size(zbad)),1);
+            xbad = repmat(xbad, [1 pnts]); xbad = reshape(xbad,prod(size(xbad)),1);
+            ybad = repmat(ybad, [1 pnts]); ybad = reshape(ybad,prod(size(ybad)),1);
+            badchansdata = griddata3(ygood, xgood, zgood, tmpdata,...
+                ybad, xbad, zbad, 'nearest'); % interpolate data
+        else
+            % get theta, rad of electrodes
+            % ----------------------------
+            tmpchanlocs = EEG.chanlocs;
+            [xbad ,ybad]  = pol2cart([tmpchanlocs( badchans).theta],[tmpchanlocs( badchans).radius]);
+            [xgood,ygood] = pol2cart([tmpchanlocs(goodchans).theta],[tmpchanlocs(goodchans).radius]);
+            
+            fprintf('Points (/%d):', size(EEG.data,2)*size(EEG.data,3));
+            badchansdata = zeros(length(badchans), size(EEG.data,2)*size(EEG.data,3));
+            
+            for t=1:(size(EEG.data,2)*size(EEG.data,3)) % scan data points
+                if mod(t,100) == 0, fprintf('%d ', t); end;
+                if mod(t,1000) == 0, fprintf('\n'); end;
+                
+                %for c = 1:length(badchans)
+                %   [h EEG.data(badchans(c),t)]= topoplot(EEG.data(goodchans,t),EEG.chanlocs(goodchans),'noplot', ...
+                %        [EEG.chanlocs( badchans(c)).radius EEG.chanlocs( badchans(c)).theta]);
+                %end;
+                tmpdata = reshape(EEG.data, size(EEG.data,1), size(EEG.data,2)*size(EEG.data,3) );
+                if strcmpi(method, 'invdist'), method = 'v4'; end;
+                [Xi,Yi,badchansdata(:,t)] = griddata(ygood, xgood , double(tmpdata(datachans,t)'),...
+                    ybad, xbad, method); % interpolate data
+            end
+            fprintf('\n');
+        end;
         
-        for t=1:(size(EEG.data,2)*size(EEG.data,3)) % scan data points
-            if mod(t,100) == 0, fprintf('%d ', t); end;
-            if mod(t,1000) == 0, fprintf('\n'); end;          
-        
-            %for c = 1:length(badchans)
-            %   [h EEG.data(badchans(c),t)]= topoplot(EEG.data(goodchans,t),EEG.chanlocs(goodchans),'noplot', ...
-            %        [EEG.chanlocs( badchans(c)).radius EEG.chanlocs( badchans(c)).theta]);
-            %end;
-            tmpdata = reshape(EEG.data, size(EEG.data,1), size(EEG.data,2)*size(EEG.data,3) );
-            if strcmpi(method, 'invdist'), method = 'v4'; end;
-            [Xi,Yi,badchansdata(:,t)] = griddata(ygood, xgood , double(tmpdata(datachans,t)'),...
-                                                    ybad, xbad, method); % interpolate data                                            
+        tmpdata               = zeros(length(bad_elec), EEG.pnts, EEG.trials);
+        tmpdata(origoodchans, :,:) = EEG.data;
+        %if input data are epoched reshape badchansdata for Octave compatibility...
+        if length(size(tmpdata))==3
+            badchansdata = reshape(badchansdata,length(badchans),size(tmpdata,2),size(tmpdata,3));
         end
-        fprintf('\n');
-    end;
-    
-    tmpdata               = zeros(length(bad_elec), EEG.pnts, EEG.trials);
-    tmpdata(origoodchans, :,:) = EEG.data;
-    %if input data are epoched reshape badchansdata for Octave compatibility...
-    if length(size(tmpdata))==3
-        badchansdata = reshape(badchansdata,length(badchans),size(tmpdata,2),size(tmpdata,3));
+        tmpdata(badchans,:,:) = badchansdata;
+        EEG.data = tmpdata;
+        EEG.nbchan = size(EEG.data,1);
+        
+        OUTEEG.data(badchans,:,numEpoch) = EEG.data(badchans,:); % #LCR edit
     end
-    tmpdata(badchans,:,:) = badchansdata;
-    EEG.data = tmpdata;
-    EEG.nbchan = size(EEG.data,1);
-    EEG = eeg_checkset(EEG);
+    OUTEEG = eeg_checkset(OUTEEG); % #LCR edit
+    
+    
 
 % get data channels
 % -----------------

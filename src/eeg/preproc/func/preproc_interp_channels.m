@@ -44,7 +44,7 @@ inChans = interpChanIdx;
 exclChans = [exclInterpChanIdx chansZeroIdx chansBadIdx];
 
 if isempty(intersect(inChans, exclChans))
-    EEG = eeg_interp_excl(EEG, inChans, exclChans);
+    EEG = eeg_interp_exclude(EEG, inChans, exclChans);
 else
     error('At least one channel is both specified as "to be interpolated" and "to be excluded from interpolation"!')
 end
