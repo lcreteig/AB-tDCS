@@ -13,7 +13,7 @@ load_data_study2 <- function(dataDir, subs_incomplete) {
   lag <- c(3,8)
   
   # initialize group data frame
-  colHeader <- c("subject", "first.session", "stimulation", "block", "lag", "trials", "T1", "T2.given.T1") # name the variables (column header)
+  colHeader <- c("subject", "first.session", "stimulation", "block", "lag", "trials", "T1", "T2", "T2.given.T1") # name the variables (column header)
   frameCols <- length(colHeader)
   repRows <- length(stimulation)*length(block)*length(lag) # number of rows in data frame belonging to 1 subject
   frameRows <- numSubjects*repRows
@@ -65,13 +65,15 @@ load_data_study2 <- function(dataDir, subs_incomplete) {
           T1 <- sum(trialsT1 & trialsLag) / numTrials * 100 # percentage of T1 correct trials
           
           trialsT2 <- ABdata$T2acc == 1 # indices of T2 correct trials
-          nonBlink <- sum(trialsLag & trialsT1 & trialsT2) / numTrials * 100 # percentage of T2 given T1 correct trials
+          T2 <- sum(trialsT2 & trialsLag) / numTrials * 100 # percentage of T1 correct trials
+          nonBlink <- sum(trialsLag & trialsT1 & trialsT2) / sum(trialsLag & trialsT1) * 100 # percentage of T2 given T1 correct trials
           
           # insert into data frame
           cellIdx = groupData$subject == iSub & groupData$stimulation == stimulation[tDCScode == iStim] & groupData$block == iBlock & groupData$lag == iLag # get index of current cell
           # fill with data
           groupData$trials[cellIdx] <- numTrials
           groupData$T1[cellIdx] <- T1
+          groupData$T2[cellIdx] <- T2
           groupData$T2.given.T1[cellIdx] <- nonBlink
         }
         
