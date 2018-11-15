@@ -1,0 +1,43 @@
+---
+title: AB_tDCS-EEG
+author: Leon Reteig
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: 
+  rmdformats::html_clean:
+    highlight: pygments
+---
+
+# Setup environment
+
+```{r setup}
+
+# Load packages
+library(tidyverse)  # importing, transforming, and visualizing data frames
+library(here) # (relative) file paths
+library(knitr) # R notebook output
+# Print version info
+print(sessionInfo())
+# Source functions
+source(here("src", "func", "behavioral_analysis.R"))
+```
+
+# Load study 2 data
+
+The following participants are excluded from further analysis at this point:
+
+* `S03`, `S14`, `S29`, `S38`, `S43`, `S46`: their T1 performance in session 1 was less than 63% correct. This cutoff was determined based on a separate pilot study with 10 participants. It is two standard deviations below the mean of that sample.
+* `S25` has no data for session 2, as they stopped responding to requests for scheduling the session
+* `S31` was excluded as a precaution after session 1, as they developed a severe headache and we could not rule out the possibility this was related to the tDCS
+
+```{r load study 2 data}
+dataDir <- here("data","main") # root folder with AB task data
+subs_incomplete <- c("S03", "S14", "S25", "S29", "S31", "S38", "S43", "S46") # don't try to load data from these participants
+groupData <- load_data_study2(dataDir, subs_incomplete)
+```
+
+Preprocess
+
+```{r print slice study 2 data}
+kable(head(groupData,13), digits = 1, caption = "Data frame for study 2")
+```
+
