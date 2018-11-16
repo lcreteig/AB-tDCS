@@ -5,6 +5,7 @@ date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: 
   rmdformats::html_clean:
     highlight: pygments
+    gallery: true
 ---
 
 # Setup environment
@@ -112,3 +113,42 @@ df_study1 <- data_study1_fromDisk %>%
 kable(head(df_study1,19), digits = 1, caption = "Data frame for study 1")
 ```
 
+# Group analysis 
+
+## Line plots cf. London & Slagter (2015)
+
+### Study 1
+
+```{r lag line plot study 1, fig.cap="Group effects of tDCS in study 1"}
+df_study1 %>%
+  gather(target, percentage_correct, T1, T2.given.T1) %>% # so T1 vs. T2|T1 can be used as a factor
+  
+  ggplot(aes(lag, percentage_correct, color = block, linetype = target)) +
+  facet_wrap(~stimulation) +
+  stat_summary(fun.y = mean, geom = "line", aes(group = interaction(target,block)), position = position_dodge(width = 0.2)) +
+  stat_summary(fun.data = mean_se, geom = "errorbar", position = position_dodge(width = 0.2)) +
+  scale_x_discrete("Lag") +
+  scale_y_continuous("Percentage correct", limits = c(0,100), breaks = seq(0,100,10))
+```
+
+### Study 2
+
+```{r lag line plot study 2, fig.cap="Group effects of tDCS in study 2"}
+df_study2 %>%
+  gather(target, percentage_correct, T1, T2.given.T1) %>% # so T1 vs. T2|T1 can be used as a factor
+  
+  ggplot(aes(lag, percentage_correct, color = block, linetype = target)) +
+  facet_wrap(~stimulation) +
+  stat_summary(fun.y = mean, geom = "line", aes(group = interaction(target,block)), position = position_dodge(width = 0.2)) +
+  stat_summary(fun.data = mean_se, geom = "errorbar", position = position_dodge(width = 0.2)) +
+  scale_x_discrete("Lag") +
+  scale_y_continuous("Percentage correct", limits = c(0,100), breaks = seq(0,100,10))
+```
+
+__Stray observations:__
+
+* T1 performance comparable between both studies
+* Lag 8 performance is comparable to lag 10 (although a little bit lower)
+* Blink at lag 3 is about 10-15 percentage points less than lag 2
+* Slopes differ a bit in study 1, in study 2 especially anodal tDCS lag 8 stands out
+* In both studies, performance at lag 2/3 across anodal/cathodal tDCS and blocks is basically identical
