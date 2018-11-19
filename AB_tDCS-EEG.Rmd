@@ -16,6 +16,9 @@ output:
 library(tidyverse)  # importing, transforming, and visualizing data frames
 library(here) # (relative) file paths
 library(knitr) # R notebook output
+library(broom) # transform model outputs into data frames
+library(ggm) # partial correlations
+library(BayesFactor) # Bayesian statistics
 # Print version info
 print(sessionInfo())
 # Source functions
@@ -115,12 +118,11 @@ kable(head(df_study1,19), digits = 1, caption = "Data frame for study 1")
 
 # Group analysis 
 
-## Line plots cf. London & Slagter (2015)
+## Line plots cf. London & Slagter (2015) {.tabset .tabset-fade .tabset-pills}
 
-### Study 1
-
-```{r lag line plot study 1, fig.cap="Group effects of tDCS in study 1"}
-df_study1 %>%
+```{r plot lines function}
+plot_lines <- function(df) {
+  df %>%
   gather(target, percentage_correct, T1, T2.given.T1) %>% # so T1 vs. T2|T1 can be used as a factor
   
   ggplot(aes(lag, percentage_correct, color = block, linetype = target)) +
@@ -129,20 +131,19 @@ df_study1 %>%
   stat_summary(fun.data = mean_se, geom = "errorbar", position = position_dodge(width = 0.2)) +
   scale_x_discrete("Lag") +
   scale_y_continuous("Percentage correct", limits = c(0,100), breaks = seq(0,100,10))
+}
+```
+
+### Study 1
+
+```{r lag line plot study 1, fig.cap="Group effects of tDCS in study 1"}
+plot_lines(df_study1)
 ```
 
 ### Study 2
 
 ```{r lag line plot study 2, fig.cap="Group effects of tDCS in study 2"}
-df_study2 %>%
-  gather(target, percentage_correct, T1, T2.given.T1) %>% # so T1 vs. T2|T1 can be used as a factor
-  
-  ggplot(aes(lag, percentage_correct, color = block, linetype = target)) +
-  facet_wrap(~stimulation) +
-  stat_summary(fun.y = mean, geom = "line", aes(group = interaction(target,block)), position = position_dodge(width = 0.2)) +
-  stat_summary(fun.data = mean_se, geom = "errorbar", position = position_dodge(width = 0.2)) +
-  scale_x_discrete("Lag") +
-  scale_y_continuous("Percentage correct", limits = c(0,100), breaks = seq(0,100,10))
+plot_lines(df_study2)
 ```
 
 __Stray observations:__
@@ -152,3 +153,166 @@ __Stray observations:__
 * Blink at lag 3 is about 10-15 percentage points less than lag 2
 * Slopes differ a bit in study 1, in study 2 especially anodal tDCS lag 8 stands out
 * In both studies, performance at lag 2/3 across anodal/cathodal tDCS and blocks is basically identical
+
+# Anodal vs. cathodal
+
+## Calculate change scores
+
+First we calculate attentional blink magnitude:
+
+```{r AB magnitude function}
+calc_ABmag <- function(df) {
+  maxLag = max(as.numeric(levels(df$lag))) # lag 10 in study 1, lag 8 in study 2
+  minLag = min(as.numeric(levels(df$lag))) # lag 2 in study 1, lag 3 in study 2
+  ABmag <- df %>% 
+    group_by(subject, first.session, stimulation, block) %>% # for each unique factor combination
+    summarise(AB.magnitude = T2.given.T1[lag == maxLag] - T2.given.T1[lag == minLag], # subtract lags to replace data with AB magnitude,
+              T1.short = T1[lag == minLag]) # also keep T1 performance for short lag, to use as a covariate later
+}
+```
+
+```{r calculate AB magnitude}
+ABmag_study1 <- calc_ABmag(df_study1)
+ABmag_study2 <- calc_ABmag(df_study2)
+kable(head(ABmag_study2,7), digits = 1, caption = "AB magnitude data frame in study 2")
+```
+
+* __AB.magnitude__: the difference in T2|T1 performance at the longest lag (study 1: lag 10, study 2: lag 8) vs. the shortest lag (study 1: lag 2, study 2: lag 3)
+* __T1.short__: % T1 correct at the short lag, for use as a covariate in the partial correlation analysis
+
+Next, we calculate change from baseline for both of these measures:
+
+```{r change scores function}
+calc_change_scores <- function(df) {
+  df %>%
+  gather(measure, performance, AB.magnitude, T1.short) %>%
+  group_by(subject, first.session, stimulation, measure) %>%
+  summarise(baseline = performance[block == "pre"], 
+  during = performance[block == "tDCS"] - baseline,
+  after = performance[block == "post"] - baseline) %>%
+  gather(change, change.score, during, after) %>%
+  mutate(change = fct_recode(change, "tDCS - baseline" = "during", "post - baseline" = "after"),
+         change = fct_relevel(change, "tDCS - baseline")) %>%
+  arrange(subject, stimulation)
+}
+```
+
+```{r calculate change scores}
+ABmagChange_study1 <- calc_change_scores(ABmag_study1)
+ABmagChange_study2 <- calc_change_scores(ABmag_study2)
+kable(head(ABmagChange_study2,9), digits = 1, caption = "Change scores data frame in study 2")
+```
+
+* __baseline__ is the score in the "pre" block for this _measure_ (`AB.magnitude` or `T1.short`)
+* __change__ indicates whether the change score is comparing the "pre" block with the "tDCS" block (`tDCS-baseline`) or with the "post" block (`post - baseline`)
+* __change.score__ is the difference in the scores between the blocks (as indicated in the _change_ column)
+
+## Plots {.tabset .tabset-fade .tabset-pills}
+
+```{r anodal vs. cathodal plot function}
+plot_anodalVScathodal <- function(df) {
+  df %>% 
+  # create two columns of AB magnitude change score during tDCS: for anodal and cathodal
+  filter(measure == "AB.magnitude", change == "tDCS - baseline") %>%
+  select(-baseline) %>%
+  spread(stimulation, change.score) %>% 
+  
+  ggplot(aes(anodal, cathodal)) +
+    geom_hline(yintercept = 0, linetype = "dashed") +
+    geom_vline(xintercept = 0, linetype = "dashed") +
+    geom_smooth(method = "lm") +
+    geom_point() +
+    geom_rug() +
+    scale_x_continuous("Effect of anodal tDCS (%)", limits = c(-40,40), breaks = seq(-40,40,10) ) +
+    scale_y_continuous("Effect of cathodal tDCS (%)", limits = c(-40,40), breaks = seq(-40,40,10) ) +
+    coord_equal()
+}
+```
+
+### Study 1
+
+```{r anodal vs. cathodal plot study 1, fig.cap="Effect of anodal vs. effect of cathodal in study 1"}
+plot_anodalVScathodal(ABmagChange_study1)
+```
+
+### Study 2
+
+```{r anodal vs. cathodal plot study 2, fig.cap="Effect of anodal vs. effect of cathodal in study 2"}
+plot_anodalVScathodal(ABmagChange_study2)
+```
+
+## Statistics {.tabset .tabset-fade .tabset-pills}
+
+```{r partial correlation function}
+compute_pcorr <- function(df) {
+  df %>%
+  # create two columns of AB magnitude change score during tDCS: for anodal and cathodal
+  filter(measure == "AB.magnitude", change == "tDCS - baseline") %>%
+  select(-baseline) %>%
+  spread(stimulation, change.score) %>%
+  ungroup() %>% # remove grouping from previous steps, as we need to modify the dataframe
+  select(first.session, anodal, cathodal) %>% # keep only relevant columns
+  mutate(first.session = as.numeric(first.session)) %>% # dummy code to use as covariate
+  
+  # partial correlation  
+  summarise(r = pcor(c("anodal","cathodal","first.session"), var(.))) %>% # partial correlation coefficient
+  mutate(stats = list(as.data.frame(pcor.test(r, 1, 34)))) %>% # t-stat, df and p-value of coefficient
+  unnest(stats) # unpack resulting data frame into separate columns %>%
+}
+```
+
+
+### Study 1
+
+Partial correlation between anodal and cathodal AB magnitude change score (tDCS - baseline), "controlling" for session order:
+
+```{r partial correlation study 1}
+kable(compute_pcorr(ABmagChange_study1))
+```
+
+Zero-order correlation:
+
+```{r zero-order correlation study 1}
+r_1 <- tidy(cor.test(
+  pull(filter(ABmagChange_study1, stimulation == "anodal", measure == "AB.magnitude", change == "tDCS - baseline"), change.score),
+  pull(filter(ABmagChange_study1, stimulation == "cathodal", measure == "AB.magnitude", change == "tDCS - baseline"), change.score),
+  method = "pearson"))
+kable(r_1)
+```
+
+Bayes factor:
+
+```{r Bayes factor study 1}
+extractBF(correlationBF(
+  pull(filter(ABmagChange_study1, stimulation == "anodal", measure == "AB.magnitude", change == "tDCS - baseline"), change.score),
+  pull(filter(ABmagChange_study1, stimulation == "cathodal", measure == "AB.magnitude", change == "tDCS - baseline"), change.score))) %>%
+  select(bf) %>% # keep only the Bayes Factor
+  kable(.)
+```
+
+### Study 2
+
+Partial correlation between anodal and cathodal AB magnitude change score (tDCS - baseline), "controlling" for session order:
+
+```{r partial correlation study 2}
+kable(compute_pcorr(ABmagChange_study2))
+```
+
+Zero-order correlation:
+
+```{r zero-order correlation study 2}
+r_2 <- tidy(cor.test(
+  pull(filter(ABmagChange_study2, stimulation == "anodal", measure == "AB.magnitude", change == "tDCS - baseline"), change.score),
+  pull(filter(ABmagChange_study2, stimulation == "cathodal", measure == "AB.magnitude", change == "tDCS - baseline"), change.score),
+  method = "pearson"))
+kable(r_2)
+```
+
+Bayes factor:
+
+```{r Bayes factor study 2}
+extractBF(correlationBF(
+  pull(filter(ABmagChange_study2, stimulation == "anodal", measure == "AB.magnitude", change == "tDCS - baseline"), change.score),
+  pull(filter(ABmagChange_study2, stimulation == "cathodal", measure == "AB.magnitude", change == "tDCS - baseline"), change.score))) %>%
+  select(bf) %>% # keep only the Bayes Factor
+  kable(.)
