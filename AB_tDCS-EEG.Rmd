@@ -19,6 +19,7 @@ library(knitr) # R notebook output
 library(broom) # transform model outputs into data frames
 library(ggm) # partial correlations
 library(BayesFactor) # Bayesian statistics
+library(metafor) # meta-analysis
 # Print version info
 print(sessionInfo())
 # Source functions
@@ -316,3 +317,48 @@ extractBF(correlationBF(
   pull(filter(ABmagChange_study2, stimulation == "cathodal", measure == "AB.magnitude", change == "tDCS - baseline"), change.score))) %>%
   select(bf) %>% # keep only the Bayes Factor
   kable(.)
+```
+
+## Meta-analysis
+
+To investigated the pooled effect from both studies, let's perform a meta-analysis of the correlation coefficients. 
+
+First, create a new data frame with all the information:
+
+```{r data frame for meta-analysis}
+df_meta <- tibble(authors = c("London & Slagter","Reteig et al."), year = c(2015,2018), 
+                  ni = c(n_distinct(df_study1$subject), n_distinct(df_study2$subject)), 
+                  ri = c(r_1$estimate, r_2$estimate))
+kable(df_meta)
+```
+
+* __ni__ is the sample size in each study
+* __ri__ is the correlation coefficient (Pearson's _r_)
+
+We'll specify the meta-analysis as a fixed effects model, as both studies were highly similar and from the same population (same lab, same university student sample). This does mean our inferences are limited to this particular set of two studies, but that's also what we want to know in this case ("how large is the effect when we pool both studies"), not necessarily "how large is the true effect in the population" (which would be a random-effects meta-analysis).
+
+```{r meta-analayze}
+res <- rma(ri = ri, ni = ni, data = df_meta, 
+           measure = "ZCOR", method = "FE", # Fisher-z tranform of r values, fixed effects method
+           slab = paste(authors, year, sep = ", ")) # add study info to "res" list
+res
+```
+
+The overall effect is not siginifcant: _p_ = `r round(res$pval,3)`.
+
+The effect size and confidence intervals printed above are _z_-values, as the meta-analysis was performed on Fisher's _r_-to-_z_ transformed correlationn coefficients. Now we transform them back to _r_-values:
+
+```{r transform to r}
+kable(predict(res, transf = transf.ztor))
+```
+
+* __pred__ is the correlation coefficient _r_
+* __ci.lb__ and __ci.ub__ are the upper and lower bounds of the confidence interval around _r_
+
+We can also visualize all of this in a forest plot:
+
+```{r forest plot, fig.cap="Fixed-effects meta-analysis of the anodal vs. cathodal correlation in study 1 and 2"}
+forest(res, transf = transf.ztor)
+```
+
+This shows the r-values (squares) and CIs (error bars) of the individual studies, as well as the meta-analytic effect size (middle of the diamond) and CI (ends of the diamond). The CIs of the meta-analytic effect just overlap zero, so the overall effect is not significant.
