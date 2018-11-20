@@ -20,6 +20,7 @@ library(broom) # transform model outputs into data frames
 library(ggm) # partial correlations
 library(BayesFactor) # Bayesian statistics
 library(metafor) # meta-analysis
+library(predictionInterval) # prediction intervals (for correlations)
 # Print version info
 print(sessionInfo())
 # Source functions
@@ -344,7 +345,7 @@ res <- rma(ri = ri, ni = ni, data = df_meta,
 res
 ```
 
-The overall effect is not siginifcant: _p_ = `r round(res$pval,3)`.
+The overall effect is not significant: _p_ = `r round(res$pval,3)`.
 
 The effect size and confidence intervals printed above are _z_-values, as the meta-analysis was performed on Fisher's _r_-to-_z_ transformed correlationn coefficients. Now we transform them back to _r_-values:
 
@@ -362,3 +363,18 @@ forest(res, transf = transf.ztor)
 ```
 
 This shows the r-values (squares) and CIs (error bars) of the individual studies, as well as the meta-analytic effect size (middle of the diamond) and CI (ends of the diamond). The CIs of the meta-analytic effect just overlap zero, so the overall effect is not significant.
+
+## Prediction intervals
+
+To evaluate whether the result observed in study 2 is consistent with study 1, we can construct a _prediction interval_. A prediction interval contains the range of correlation coefficients we can expect to see in study 2, based on the original correlation in study 1, and the sample sizes of both study 1 and 2. 
+
+If the original study were replicated 100 times, 95 of the observed correlation coefficients would fall within the 95% prediction interval. Note that this is different from a _confidence interval_, which quantifies uncertainty about the (unknown) true correlation in the population (95 out of every hundred 95% CIs contain the true population parameter).
+
+```{r prediction interval}
+pi.r(r = r_1$estimate, n = n_distinct(df_study1$subject), rep.n = n_distinct(df_study2$subject))
+```
+
+The observed correlation in study 2 (_r_ = `r round(r_2$estimate,2)`) falls within the 95% PI. Therefore, the results of study 2 are technically consistent with study 1, so we could conclude that study 2 was a succesful replication. 
+
+However, the 95% PI is so wide that almost any negative correlation of a realistic size would fall inside it (it even extends beyond 0 a little). So above all it illustrates that we cannot draw strong conclusions based on the results of either study.
+
