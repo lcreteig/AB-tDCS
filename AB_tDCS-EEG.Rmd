@@ -24,7 +24,8 @@ library(predictionInterval) # prediction intervals (for correlations)
 # Print version info
 print(sessionInfo())
 # Source functions
-source(here("src", "func", "behavioral_analysis.R"))
+source(here("src", "func", "behavioral_analysis.R")) # load data from study 2
+source(here("src", "lib", "appendixCodeFunctionsJeffreys.R")) # replication Bayes factors
 ```
 
 # Load data
@@ -62,9 +63,9 @@ The data has the following columns:
 
 ## Study 1
 
-These data were used for statistical analysis in London & Slagter (2015)[^ref_study1], and were processed by the lead author:
+These data were used for statistical analysis in London & Slagter (2015)[^ref_london], and were processed by the lead author:
 
-[^ref_study1]: London, R. E., & Slagter, H. A. (2015). Effects of transcranial direct current stimulation over left dorsolateral pFC on the attentional blink depend on individual baseline performance. _Journal of Cognitive Neuroscience, 27(12)_, 2382-2393. doi: [10.1162/jocn_a_00867](https://doi.org/10.1162/jocn_a_00867)
+[^ref_london]: London, R. E., & Slagter, H. A. (2015). Effects of transcranial direct current stimulation over left dorsolateral pFC on the attentional blink depend on individual baseline performance. _Journal of Cognitive Neuroscience, 27(12)_, 2382-2393. doi: [10.1162/jocn_a_00867](https://doi.org/10.1162/jocn_a_00867)
 
 ```{r read study 1 data}
 dataPath_study1 <- here("data","AB-tDCS_study1.txt")
@@ -313,11 +314,12 @@ kable(r_2)
 Bayes factor:
 
 ```{r Bayes factor study 2}
-extractBF(correlationBF(
+bf_study2 <- extractBF(correlationBF(
   pull(filter(ABmagChange_study2, stimulation == "anodal", measure == "AB.magnitude", change == "tDCS - baseline"), change.score),
   pull(filter(ABmagChange_study2, stimulation == "cathodal", measure == "AB.magnitude", change == "tDCS - baseline"), change.score))) %>%
-  select(bf) %>% # keep only the Bayes Factor
-  kable(.)
+  select(bf) # keep only the Bayes Factor
+
+  kable(bf_study2)
 ```
 
 ## Meta-analysis
@@ -378,3 +380,38 @@ The observed correlation in study 2 (_r_ = `r round(r_2$estimate,2)`) falls with
 
 However, the 95% PI is so wide that almost any negative correlation of a realistic size would fall inside it (it even extends beyond 0 a little). So above all it illustrates that we cannot draw strong conclusions based on the results of either study.
 
+## Bayes Factors with informed priors
+
+### One-sided
+
+The default Bayes Factor uses a prior that assigns equal weight to positive and negative effect sizes (correlation coefficients in our case). However, we can also "fold" all the prior mass to one side, thereby effectively testing a directional hypothesis.
+
+In our case, based on study 1, we expect a negative correlation, so we evaluate the prior only over negative effect sizes (`-1` to `0`)
+
+```{r one-sided Bayes factor study 2}
+bf_one_sided <- extractBF(correlationBF(
+  pull(filter(ABmagChange_study2, stimulation == "anodal", measure == "AB.magnitude", change == "tDCS - baseline"), change.score),
+  pull(filter(ABmagChange_study2, stimulation == "cathodal", measure == "AB.magnitude", change == "tDCS - baseline"), change.score),
+  nullInterval = c(-1,0))) %>%
+  select(bf) # keep only the Bayes Factor
+
+  kable(bf_one_sided)
+```
+
+This Bayes Factor still provides more evidence for the null than for the alternative, but does provide less evidence for the null (BF~01~ = 1 / `r round(bf_one_sided$bf[1],2)` = `r round(1 / bf_one_sided$bf[1],2)`) than the regular Bayes Factor (BF~01~ = 1 / `r round(bf_study2$bf[1],2)` = `r round(1 / bf_study2$bf[1],2)`)
+
+### "Replication Bayes Factor"
+
+While a default Bayes factor adresses the question ("Is there more evidence that the effect is absent (H~0~) vs. presentt (H~1~), this Bayes factors adresses the question ("Is there more evidence that the effect is absent (the "skeptic's hypothesis") vs. similar to what was found before ( the "proponent's hypothesis"). The "replication Bayes factor" adresses this latter question by using the posterior of study 1 as a prior in the analysis of study 2, i.e. as the proponent's hypothesis.
+
+This Bayes factor was proposed by Wagenmakers, Verhagen & Ly (2016)[^ref_wagenmakers] and is computed using [their provided code](https://osf.io/9d4ip/).
+
+```{r replication Bayes Factor}
+bf0RStudy1 <- 1/repBfR0(nOri = n_distinct(df_study1$subject), rOri = r_1$estimate,
+                        nRep = n_distinct(df_study2$subject), rRep = r_2$estimate)
+bf0RStudy1
+```
+
+This BF expresses that the data are `r round(bf0RStudy1,2)` times more likely under the skeptic's hypothesis, than under the proponent's hypothesis.
+
+[^ref_wagenmakers]: Wagenmakers, E. J., Verhagen, J., & Ly, A. (2016). How to quantify the evidence for the absence of a correlation. _Behavior Research Methods, 48(2)_, 413-426. doi: [10.3758/s13428-015-0593-0](https://doi.org/10.3758/s13428-015-0593-0)
