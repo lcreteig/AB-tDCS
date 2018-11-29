@@ -52,6 +52,7 @@ dataDir_study2 <- here("data","main") # root folder with AB task data
 subs_incomplete <- c("S03", "S14", "S25", "S29", "S31", "S38", "S43", "S46") # don't try to load data from these participants
 df_study2 <- load_data_study2(dataDir_study2, subs_incomplete) %>%
   filter(complete.cases(.)) # discard rows with data from incomplete subjects
+n_study2 <- n_distinct(df_study2$subject) # number of subjects in study 2
 ```
 
 ```{r print slice study 2 data}
@@ -60,7 +61,7 @@ kable(head(df_study2,13), digits = 1, caption = "Data frame for study 2")
 
 The data has the following columns:
 
-* __subject__: Participant ID, e.g. `S01`, `S12
+* __subject__: Participant ID, e.g. `S01`, `S12`
 * __first.session__: Whether the first session participant received `anodal` or `cathodal` tDCS in the first session. Codes for session order.
 * __stimulation__: Whether participant received `anodal` or `cathodal` tDCS
 * __block__: Whether data is before (`pre), during (`tDCS`) or after (`post`) tDCS
@@ -122,6 +123,7 @@ df_study1 <- data_study1_fromDisk %>%
          First_Session = factor(First_Session, labels = c("anodal","cathodal"))) %>%
   spread(target, accuracy) %>% # create separate columns for T2.given.T1 and T1 performance
   rename(T2.given.T1 = NB, first.session = First_Session, subject = fileno)# rename columns to match those in study 2
+n_study1 <- n_distinct(df_study1$subject) # number of subjects in study 1
 ```
 
 ```{r print slice study 1 data}
@@ -279,7 +281,9 @@ compute_pcorr <- function(df) {
 Partial correlation between anodal and cathodal AB magnitude change score (tDCS - baseline), "controlling" for session order:
 
 ```{r partial correlation study 1}
-kable(compute_pcorr(ABmagChange_study1))
+p_r_1 <- compute_pcorr(ABmagChange_study1)
+r_study1 <- p_r_1$r
+kable(p_r_1)
 ```
 
 Zero-order correlation:
@@ -290,6 +294,7 @@ r_1 <- tidy(cor.test(
   pull(filter(ABmagChange_study1, stimulation == "cathodal", measure == "AB.magnitude", change == "tDCS - baseline"), change.score),
   method = "pearson"))
 kable(r_1)
+
 ```
 
 Bayes factor:
@@ -307,7 +312,9 @@ extractBF(correlationBF(
 Partial correlation between anodal and cathodal AB magnitude change score (tDCS - baseline), "controlling" for session order:
 
 ```{r partial correlation study 2}
-kable(compute_pcorr(ABmagChange_study2))
+p_r_2 <- compute_pcorr(ABmagChange_study2)
+r_study2 <- p_r_2$r
+kable(p_r_2)
 ```
 
 Zero-order correlation:
@@ -339,8 +346,8 @@ First, create a new data frame with all the information:
 
 ```{r data frame for meta-analysis}
 df_meta <- tibble(authors = c("London & Slagter","Reteig et al."), year = c(2015,2018), 
-                  ni = c(n_distinct(df_study1$subject), n_distinct(df_study2$subject)), 
-                  ri = c(r_1$estimate, r_2$estimate))
+                  ni = c(n_study1, n_study2), 
+                  ri = c(r_study1, r_study2))
 kable(df_meta)
 ```
 
@@ -382,10 +389,10 @@ To evaluate whether the result observed in study 2 is consistent with study 1, w
 If the original study were replicated 100 times, 95 of the observed correlation coefficients would fall within the 95% prediction interval. Note that this is different from a _confidence interval_, which quantifies uncertainty about the (unknown) true correlation in the population (95 out of every hundred 95% CIs contain the true population parameter).
 
 ```{r prediction interval}
-pi.r(r = r_1$estimate, n = n_distinct(df_study1$subject), rep.n = n_distinct(df_study2$subject))
+pi.r(r = r_study1, n = n_study1, rep.n = n_study2)
 ```
 
-The observed correlation in study 2 (_r_ = `r round(r_2$estimate,2)`) falls within the 95% PI. Therefore, the results of study 2 are technically consistent with study 1, so we could conclude that study 2 was a succesful replication. 
+The observed correlation in study 2 (_r_ = `r round(r_study2,2)`) falls within the 95% PI. Therefore, the results of study 2 are technically consistent with study 1, so we could conclude that study 2 was a succesful replication. 
 
 However, the 95% PI is so wide that almost any negative correlation of a realistic size would fall inside it (it even extends beyond 0 a little). So above all it illustrates that we cannot draw strong conclusions based on the results of either study.
 
@@ -416,8 +423,8 @@ While a default Bayes factor adresses the question ("Is there more evidence that
 This Bayes factor was proposed by Wagenmakers, Verhagen & Ly (2016)[^ref_wagenmakers] and is computed using [their provided code](https://osf.io/9d4ip/).
 
 ```{r replication Bayes Factor}
-bf0RStudy1 <- 1/repBfR0(nOri = n_distinct(df_study1$subject), rOri = r_1$estimate,
-                        nRep = n_distinct(df_study2$subject), rRep = r_2$estimate)
+bf0RStudy1 <- 1/repBfR0(nOri = n_study1, rOri = r_study1,
+                        nRep = n_study2, rRep = r_study2)
 bf0RStudy1
 ```
 
@@ -434,8 +441,8 @@ Equivalence tests allow you to test for the _absence_ of an effect of a specific
 The "Small Telescopes" approach (Simonsohn, 2015)[^ref_simonsohn] suggests that the SESOI should be the effect size the original study had 33% power to detect, the idea being that anything smaller than that could not have been properly investigated in the original study in the first place (as the odds were already stacked 2:1 against finding the effect).
 
 ```{r small telescopes test, fig.cap='test for equivalence to 33% power effect size'}
-small_telescopes <- pwr.r.test(n_distinct(df_study1$subject), power = 0.33) # r value with 33% power in study 1
-TOSTr(n = n_distinct(df_study2$subject), r = r_2$estimate, 
+small_telescopes <- pwr.r.test(n_study1, power = 0.33) # r value with 33% power in study 1
+TOSTr(n = n_study2, r = r_study2, 
       high_eqbound_r = small_telescopes$r, 
       low_eqbound_r = -small_telescopes$r, alpha = 0.05) # equivalence test
 ```
@@ -458,9 +465,9 @@ critical.r <- function(n, alpha = .05 ) {
 ```
 
 ```{r critical r test, fig.cap='test for equivalence to critical effect size'}
-TOSTr(n = n_distinct(df_study2$subject), r = r_2$estimate, 
-      high_eqbound_r = critical.r(n_distinct(df_study1$subject)), 
-      low_eqbound_r = -critical.r(n_distinct(df_study1$subject)), 
+TOSTr(n = n_study2, r = r_study2, 
+      high_eqbound_r = critical.r(n_study1), 
+      low_eqbound_r = -critical.r(n_study1), 
       alpha = 0.05)
 ```
 
@@ -471,7 +478,7 @@ TOSTr(n = n_distinct(df_study2$subject), r = r_2$estimate,
 Finally, we can also take the original effect size as the SESOI.
 
 ```{r original effect size, fig.cap='test for equivalence to original effect size'}
-TOSTr(n = n_distinct(df_study2$subject), r = r_2$estimate, high_eqbound_r =  -r_1$estimate, low_eqbound_r = r_1$estimate, alpha = 0.05)
+TOSTr(n = n_study2, r = r_study2, high_eqbound_r =  -r_study1, low_eqbound_r = r_study1, alpha = 0.05)
 ```
 
 Here the effect size is actually significant, so based on study 2 we can reject the presence of a correlation at least as large as in study 1.
