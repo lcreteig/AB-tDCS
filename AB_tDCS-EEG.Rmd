@@ -21,12 +21,21 @@ library(ggm) # partial correlations
 library(BayesFactor) # Bayesian statistics
 library(metafor) # meta-analysis
 library(predictionInterval) # prediction intervals (for correlations)
+library(TOSTER) # equivalence tests
+library(pwr) # power analysis
 # Print version info
 print(sessionInfo())
 # Source functions
 source(here("src", "func", "behavioral_analysis.R")) # load data from study 2
 source(here("src", "lib", "appendixCodeFunctionsJeffreys.R")) # replication Bayes factors
 ```
+
+To do:
+
+* Repeat analyses on short lag performance
+* Get a sense of whether (variance in) short-lag performance drives the correlation, either by modeling it (in the partial correlation), or by coloring dots in the scatter plots with short-lag performance
+* Combine the data, by taking the halfway point between lag 2 and lag 4 in study 2 as a proxy for lag 3 performance.
+* Repeat analyses with original partial correlation
 
 # Load data
 
@@ -415,3 +424,56 @@ bf0RStudy1
 This BF expresses that the data are `r round(bf0RStudy1,2)` times more likely under the skeptic's hypothesis, than under the proponent's hypothesis.
 
 [^ref_wagenmakers]: Wagenmakers, E. J., Verhagen, J., & Ly, A. (2016). How to quantify the evidence for the absence of a correlation. _Behavior Research Methods, 48(2)_, 413-426. doi: [10.3758/s13428-015-0593-0](https://doi.org/10.3758/s13428-015-0593-0)
+
+## Equivalence tests {.tabset .tabset-fade .tabset-pills}
+
+Equivalence tests allow you to test for the _absence_ of an effect of a specific size. Usually this is the smallest effect size of interest (the SESOI). We'll use three different specifications of the SESOI.
+
+### Small telescopes
+
+The "Small Telescopes" approach (Simonsohn, 2015)[^ref_simonsohn] suggests that the SESOI should be the effect size the original study had 33% power to detect, the idea being that anything smaller than that could not have been properly investigated in the original study in the first place (as the odds were already stacked 2:1 against finding the effect).
+
+```{r small telescopes test, fig.cap='test for equivalence to 33% power effect size'}
+small_telescopes <- pwr.r.test(n_distinct(df_study1$subject), power = 0.33) # r value with 33% power in study 1
+TOSTr(n = n_distinct(df_study2$subject), r = r_2$estimate, 
+      high_eqbound_r = small_telescopes$r, 
+      low_eqbound_r = -small_telescopes$r, alpha = 0.05) # equivalence test
+```
+
+[^ref_simonsohn]: Simonsohn, U. (2015). Small telescopes: Detectability and the evaluation of replication results. _Psychological Science, _, 1–11. doi: [10.1177/0956797614567341](https://doi.org/10.1177/0956797614567341)
+
+### Critical effect size
+
+Others (e.g. in the paper accompanying the R package for equivalence tesst, by Lakens et al. (2018)[^ref_lakens]) argue that a more appropriate SESOI would be the smallest effect size that would still be significant in the original study. This usually corresponds to the effect size the study had 50% power to detect.
+
+First we derive the critical r-value for the original sample size (function below from <https://www.researchgate.net/post/What_is_the_formula_to_calculate_the_critical_value_of_correlation>).
+
+```{r critical r function}
+critical.r <- function(n, alpha = .05 ) {
+    df <- n - 2
+    critical.t <- qt( alpha/2, df, lower.tail = F )
+    critical.r <- sqrt( (critical.t^2) / ( (critical.t^2) + df ) )
+    return( critical.r )
+}
+```
+
+```{r critical r test, fig.cap='test for equivalence to critical effect size'}
+TOSTr(n = n_distinct(df_study2$subject), r = r_2$estimate, 
+      high_eqbound_r = critical.r(n_distinct(df_study1$subject)), 
+      low_eqbound_r = -critical.r(n_distinct(df_study1$subject)), 
+      alpha = 0.05)
+```
+
+[^ref_lakens]: Lakens, D., Scheel, A. M., & Isager, P. M. (2018). Equivalence Testing for Psychological Research: A Tutorial. _Advances in Methods and Practices in Psychological Science, 1(2)_, 259–269. doi: [10.1177/2515245918770963](http://doi.org/10.1177/2515245918770963)
+
+### Original effect size
+
+Finally, we can also take the original effect size as the SESOI.
+
+```{r original effect size, fig.cap='test for equivalence to original effect size'}
+TOSTr(n = n_distinct(df_study2$subject), r = r_2$estimate, high_eqbound_r =  -r_1$estimate, low_eqbound_r = r_1$estimate, alpha = 0.05)
+```
+
+Here the effect size is actually significant, so based on study 2 we can reject the presence of a correlation at least as large as in study 1.
+
+However, given that the original correlation was not very precisely estimated (the confidence intervals were very wide), this is not really a reasonable SESOI.
