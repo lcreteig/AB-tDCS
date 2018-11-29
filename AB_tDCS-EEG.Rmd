@@ -268,7 +268,7 @@ compute_pcorr <- function(df) {
   
   # partial correlation  
   summarise(r = pcor(c("anodal","cathodal","first.session"), var(.))) %>% # partial correlation coefficient
-  mutate(stats = list(as.data.frame(pcor.test(r, 1, 34)))) %>% # t-stat, df and p-value of coefficient
+  mutate(stats = list(as.data.frame(pcor.test(r, 1, n_distinct(df$subject))))) %>% # t-stat, df and p-value of coefficient
   unnest(stats) # unpack resulting data frame into separate columns %>%
 }
 ```
