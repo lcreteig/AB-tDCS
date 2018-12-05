@@ -32,13 +32,6 @@ source(here("src", "func", "behavioral_analysis.R")) # load data from study 2
 source(here("src", "lib", "appendixCodeFunctionsJeffreys.R")) # replication Bayes factors
 ```
 
-To do:
-
-* Repeat analyses on short lag performance
-* Get a sense of whether (variance in) short-lag performance drives the correlation, either by modeling it (in the partial correlation), or by coloring dots in the scatter plots with short-lag performance
-* Combine the data, by taking the halfway point between lag 2 and lag 4 in study 2 as a proxy for lag 3 performance.
-* Repeat analyses with original partial correlation
-
 # Load data
 
 ## Study 2
@@ -457,6 +450,10 @@ kable(head(ABmagChange_study2,9), digits = 1, caption = "Change scores data fram
 
 ## Plots {.tabset .tabset-fade .tabset-pills}
 
+# Anodal vs. cathodal
+
+## Plots {.tabset .tabset-fade .tabset-pills}
+
 ```{r anodal vs. cathodal plot function}
 plot_anodalVScathodal <- function(df) {
   df %>% 
@@ -491,8 +488,8 @@ plot_anodalVScathodal(ABmagChange_study2)
 
 ## Statistics {.tabset .tabset-fade .tabset-pills}
 
-```{r partial correlation function}
-compute_pcorr <- function(df) {
+```{r partial correlation anodal vs cathodal function}
+pcorr_anodal_cathodal <- function(df) {
   df %>%
   # create two columns of AB magnitude change score during tDCS: for anodal and cathodal
   filter(measure == "AB.magnitude", change == "tDCS - baseline") %>%
@@ -509,13 +506,12 @@ compute_pcorr <- function(df) {
 }
 ```
 
-
 ### Study 1
 
 Partial correlation between anodal and cathodal AB magnitude change score (tDCS - baseline), "controlling" for session order:
 
-```{r partial correlation study 1}
-p_r_1 <- compute_pcorr(ABmagChange_study1)
+```{r partial correlation anodal vs cathodal study 1}
+p_r_1 <- pcorr_anodal_cathodal(ABmagChange_study1)
 r_study1 <- p_r_1$r
 kable(p_r_1)
 ```
@@ -545,8 +541,8 @@ extractBF(correlationBF(
 
 Partial correlation between anodal and cathodal AB magnitude change score (tDCS - baseline), "controlling" for session order:
 
-```{r partial correlation study 2}
-p_r_2 <- compute_pcorr(ABmagChange_study2)
+```{r partial correlation anodal vs cathodal study 2}
+p_r_2 <- pcorr_anodal_cathodal(ABmagChange_study2)
 r_study2 <- p_r_2$r
 kable(p_r_2)
 ```
@@ -572,9 +568,84 @@ bf_study2 <- extractBF(correlationBF(
   kable(bf_study2)
 ```
 
+## Pool study 1 and 2
+
+As the samples in study 1 (n = `r n_study1`) and 2 (n = `r n_study2`) are on the smaller side, pooling the data from both studies might allow us to infer with more confidence whether the effect exists.
+
+The main difference is that study 1 presented T2 at lag 2, 4 or 10, whereas study 2 used lags 3 and 8. The long lags should be fairly comparable, as they are both well outside the attentional blink window. T2|T1 performance for both is between 80-90 % at the group level (although performance is a little better for lag 10).
+
+However, there is a big difference at the short lags: group-level performance at lag 3 (study 2) is 10-15 percentage points higher than at lag 2. Therefore, when comparing both studies, the best bet is to also create a "lag 3" condition in study 1, by imputing lag 2 and lag 4.
+
+```{r create lag 3 in study 1}
+df_study1_lag3 <- df_study1 %>%
+  group_by(subject, first.session, block, stimulation) %>% # for each condition
+  # calculate lag 3 as mean of 2 and 4; keep lag 10
+  summarise(`3_T2.given.T1` = (T2.given.T1[lag == "2"] + T2.given.T1[lag == "4"]) / 2,
+            `3_T1` = (T1[lag == "2"] + T1[lag == "4"]) / 2,
+            `10_T2.given.T1` = T2.given.T1[lag == "10"], 
+            `10_T1` = T1[lag == "10"]) %>%
+  gather(condition, score, -subject, -first.session, -block, -stimulation) %>% # gather the 4 columns we created
+  separate(condition, c("lag", "measure"), "_") %>% # separate lag and T1/T2|T1
+  spread(measure, score) %>% # make a column of T1 and T2|T1
+  mutate(lag = factor(lag)) #remake the lag factor
+kable(head(df_study1_lag3,9), digits = 1, caption = "Data frame for study 1 with lag 3 as the short lag")
+```
+
+Then we redo the further processing, and combine with the data from study 2:
+
+```{r redo further processing on lag 3}
+ABmagChange_pooled <- df_study1_lag3 %>% 
+  calc_ABmag(.) %>% # calculate AB mangnitude
+  calc_change_scores(.) %>% # calculate change from baseline
+  bind_rows(.,ABmagChange_study2) %>% # combine with study 2
+  mutate(study = ifelse(grepl("^pp",subject), "1", "2")) # add a "study" column, based on subject ID formatting
+```
+
+### Plot
+
+Recreate the scatter plot with data from both studies:
+
+```{r anodal vs. cathodal plot pooled, fig.cap="Effect of anodal vs. effect of cathodal pooled across studies"}
+plot_anodalVScathodal(ABmagChange_pooled) +
+ aes(colour = study)
+```
+
+The negative correlation is larger in study 1, and the data points from study 1 have a bigger spread. But overall it doesn't look very convincing still.
+
+### Statistics
+
+Partial correlation between anodal and cathodal AB magnitude change score (tDCS - baseline), "controlling" for session order:
+
+```{r partial correlation anodal vs cathodal pooled}
+pcorr_anodal_cathodal(ABmagChange_pooled) %>%
+kable(., digits = 3, caption = "Pooled data from studies 1 and 2: Partial correlation anodal vs. cathodal")
+```
+
+Zero-order correlation:
+
+```{r zero-order correlation pooled}
+tidy(cor.test(
+  pull(filter(ABmagChange_pooled, stimulation == "anodal", measure == "AB.magnitude", change == "tDCS - baseline"), change.score),
+  pull(filter(ABmagChange_pooled, stimulation == "cathodal", measure == "AB.magnitude", change == "tDCS - baseline"), change.score),
+  method = "pearson")) %>%
+kable(., digits = 3, caption = "Pooled data from studies 1 and 2: Zero-order correlation anodal vs. cathodal")
+```
+
+Bayes factor:
+
+```{r Bayes factor study pooled}
+extractBF(correlationBF(
+  pull(filter(ABmagChange_pooled, stimulation == "anodal", measure == "AB.magnitude", change == "tDCS - baseline"), change.score),
+  pull(filter(ABmagChange_pooled, stimulation == "cathodal", measure == "AB.magnitude", change == "tDCS - baseline"), change.score))) %>%
+  select(bf) %>% # keep only the Bayes Factor
+  kable(., digits = 3, caption = "Pooled data from studies 1 and 2: Bayesian correlation")
+```
+
+Neither correlation is significant. The Bayes factor favors the null, but only slightly, and less so than in study 2.
+
 ## Meta-analysis
 
-To investigated the pooled effect from both studies, let's perform a meta-analysis of the correlation coefficients. 
+For a more orthodox look on the pooled effect from both studies, let's perform a meta-analysis of the correlation coefficients. 
 
 First, create a new data frame with all the information:
 
@@ -681,7 +752,7 @@ TOSTr(n = n_study2, r = r_study2,
       low_eqbound_r = -small_telescopes$r, alpha = 0.05) # equivalence test
 ```
 
-[^ref_simonsohn]: Simonsohn, U. (2015). Small telescopes: Detectability and the evaluation of replication results. _Psychological Science, _, 1–11. doi: [10.1177/0956797614567341](https://doi.org/10.1177/0956797614567341)
+[^ref_simonsohn]: Simonsohn, U. (2015). Small telescopes: Detectability and the evaluation of replication results. _Psychological Science, 26(5),_, 1–11. doi: [10.1177/0956797614567341](https://doi.org/10.1177/0956797614567341)
 
 ### Critical effect size
 
