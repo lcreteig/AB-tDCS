@@ -29,10 +29,11 @@ library(pwr) # power analysis
 print(sessionInfo())
 # Source functions
 source(here("src", "func", "behavioral_analysis.R")) # load data from study 2
+source(here("src", "lib", "corr_change_baseline.R")) # variance test / baseline vs. change-from-baseline correlation 
 source(here("src", "lib", "appendixCodeFunctionsJeffreys.R")) # replication Bayes factors
 ```
 
-# Load data
+# Load task data
 
 ## Study 2
 
@@ -394,8 +395,7 @@ afex_plot(aov_study2_T1, x = "stimulation", trace =  "first.session", panel = "b
 
 The two-way interaction is strongest in the later two blocks. Again, this is the inverse of the learning effect, which was strongest in the first block.
 
-
-# Anodal vs. cathodal
+# Change from baseline
 
 ## Calculate change scores
 
@@ -426,15 +426,15 @@ Next, we calculate change from baseline for both of these measures:
 ```{r change scores function}
 calc_change_scores <- function(df) {
   df %>%
-  gather(measure, performance, AB.magnitude, T1.short) %>%
-  group_by(subject, first.session, stimulation, measure) %>%
-  summarise(baseline = performance[block == "pre"], 
-  during = performance[block == "tDCS"] - baseline,
-  after = performance[block == "post"] - baseline) %>%
-  gather(change, change.score, during, after) %>%
-  mutate(change = fct_recode(change, "tDCS - baseline" = "during", "post - baseline" = "after"),
-         change = fct_relevel(change, "tDCS - baseline")) %>%
-  arrange(subject, stimulation)
+    gather(measure, performance, AB.magnitude, T1.short) %>%
+    group_by(subject, first.session, stimulation, measure) %>%
+    summarise(baseline = performance[block == "pre"], 
+              during = performance[block == "tDCS"] - baseline,
+              after = performance[block == "post"] - baseline) %>%
+    gather(change, change.score, during, after) %>%
+    mutate(change = fct_recode(change, "tDCS - baseline" = "during", "post - baseline" = "after"),
+           change = fct_relevel(change, "tDCS - baseline")) %>%
+    arrange(subject, stimulation)
 }
 ```
 
@@ -449,6 +449,144 @@ kable(head(ABmagChange_study2,9), digits = 1, caption = "Change scores data fram
 * __change.score__ is the difference in the scores between the blocks (as indicated in the _change_ column)
 
 ## Plots {.tabset .tabset-fade .tabset-pills}
+
+```{r plot change scores function}
+plot_change_from_baseline <- function(df)
+  ggplot(filter(df, measure == "AB.magnitude"), aes(baseline, change.score)) +
+  facet_grid(change ~ stimulation) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  geom_smooth(method = "lm") +
+  geom_point() +
+  geom_rug() +
+  scale_x_continuous("Baseline AB magnitude (%)", breaks = seq(0,100,20), limits = c(0,100)) +
+  scale_y_continuous("Change in AB magnitude (%)", breaks = seq(-40,40,10), limits = c(-40,40))
+```
+
+### Study 1
+
+```{r change from baseline plot study 1, fig.cap="Study 1: change from baseline as a function of baseline performance"}
+plot_change_from_baseline(ABmagChange_study1)
+```
+
+### Study 2 
+
+```{r change from baseline plot study 2, fig.cap="Study 2: change from baseline as a function of baseline performance"}
+plot_change_from_baseline(ABmagChange_study2)
+```
+
+## Statistics
+
+### Partial correlations  {.tabset .tabset-fade .tabset-pills}
+
+```{r partial correlation change from baseline function}
+pcorr_change_baseline <- function(df) {
+  df %>%
+    ungroup() %>%
+    mutate(first.session = as.numeric(first.session)) %>% # dummy code
+    nest(baseline, change.score, .key = 'value_col') %>% # combine the two performance columns into a list
+    # make 2 separate list-columns: AB.magnitude and T1. short
+    spread(key = measure, value = value_col) %>% # each contains two vectors: baseline performance and change score
+    unnest(AB.magnitude, T1.short, .sep = '_') %>% # make all 2x2 combinations into 4 columns
+    select(-T1.short_baseline) %>% # drop the baseline value for T1.short: not used in partial correlation
+    group_by(stimulation,change) %>% # for anodal/cathodal during/after
+    # make a data frame out of all 4 columns we need for the partial correlation
+    nest(first.session, AB.magnitude_baseline, AB.magnitude_change.score, T1.short_change.score) %>% 
+    # partial correlation between baseline and T2|T1 change score, given session order and T1 change score
+    mutate(r = map_dbl(data, ~pcor(c("AB.magnitude_baseline","AB.magnitude_change.score",
+                                     "first.session", "T1.short_change.score"), var(.)))) %>% 
+    group_by(stimulation,change) %>%
+    mutate(stats = list(as.data.frame(pcor.test(r, 2, n_distinct(df$subject))))) %>% # significance of partial correlations
+    unnest(stats, .drop = TRUE) # combine all into one data frame
+}
+```
+
+Partial correlation between:
+
+* baseline AB magnitude
+* AB magnitude change from baseline (tDCS - baseline; post - baseline)
+
+Given ("controlling for"):
+
+* session order
+* change from baseline in T1 accuracy at lag 2
+
+#### Study 1
+
+```{r partial correlation change from baseline study 1}
+kable(pcorr_change_baseline(ABmagChange_study1),
+      digits = 3, caption = "Study 1: partial correlation change from baseline")
+```
+
+In study 1, all correlations except for `cathodal, tDCS - baseline` are significant (without correcting for multiple comparisons). The correlation for `anodal, tDCS - baseline`) is the strongest.
+
+#### Study 2
+
+```{r partial correlation change from baseline study 2}
+kable(pcorr_change_baseline(ABmagChange_study2),
+      digits = 3, caption = "Study 2: partial correlation change from baseline")
+```
+
+In study 2, only two correlations are significant: both `post - baseline`. So the `anodal, tDCS - baseline` correlation that was the focus of study 1 is not significant here.
+
+### Variance tests {.tabset .tabset-fade .tabset-pills}
+
+There are two problems with assessing the correlation between `baseline` and change from baseline (`retest - baseline`, e.g. `tDCS - baseline`)[^ref_spur_cor].
+
+1. __Mathematical coupling__. The `baseline` term shows up in both variables, introducing a spurious covariance. This may result in a correlation (negative, because `baseline` is subtracted) of up to _r_ = -0.71 (Tu and Gilthorpe, 2007)[^ref_tu], even when `baseline` and `retest` are randomly sampled from the same distribution.
+2. __Regression to the mean__. Purely due to measurement error, extreme scores will tend to be less extreme upon another measurement, which also introduces a spurious relation between the two variables.
+
+One solution to regression to the mean is to compare the variances in the baseline and retest. Regression to the mean is a random process, so the variances are expected to be the same. However, if there is truly a relation between `baseline` and `retest - baseline`, the variance in the retest should be less than in the baseline: if high-performers become worse, and low-performers become better, so the scores in the retest should be closer together.
+
+Maloney and Rastogi (1970)[^ref_maloney] (equation in Tu & Gilthorpe (2007)) and Myrtek and Foerster (1986)[^ref_myrtek] (equation in Jin (1992)[^ref_jin]) propose t-statistics for such tests (which are identical). Further (somewhat counterintuitively), Tu & Gilthorpe (2007) show that testing the variance between `baseline` and `retest` is equivalent to testing the significance of the correlation between `baseline - retest` and `baseline + retest` (as in Maloney & Rastogi (1970)). Because the sign is now opposite in both variables, the covariance is no longer biased towards either. This illustrates how variance tests also adress mathematical coupling.
+
+[^ref_spur_cor]: Taken from [this page](http://imaging.mrc-cbu.cam.ac.uk/statswiki/FAQ/rxxy_correction), which has more extensive introduction to the issue.
+
+[^ref_tu]: Tu, Y. K., & Gilthorpe, M. S. (2007). Revisiting the relation between change and initial value: a review and evaluation. _Statistics in medicine, 26(2)_, 443-457. doi: [10.1002/sim.2538](https://doi.org/10.1002/sim.2538)
+
+[^ref_maloney]: Maloney, C. J., & Rastogi, S. C. (1970). Significance test for Grubbs's estimators. _Biometrics, 26_, 671-676.
+
+[^ref_myrtek]: Myrtek, M., & Foerster, F. (1986). The law of initial value: A rare exception. _Biological Psychology, 22_, 227-239.
+
+[^ref_jin]: Jin, P. (1992). Toward a reconceptualization of the law of initial value. _Psychological Bulletin, 111_, 176-184. doi: [10.1037/0033-2909.111.1.176](http://psycnet.apa.org/doi/10.1037/0033-2909.111.1.176)
+
+```{r variance test function}
+var_test <- function(df) {
+df %>%
+  ungroup() %>%
+  select(-T1.short, -first.session) %>% # drop columns we don't need
+  spread(block, AB.magnitude) %>% # create 3 columns of scores, one for each block
+  gather(condition, retest, tDCS, post) %>% # gather the tdcs and post blocks into one "retest score" column
+  unite(comparison, stimulation, condition) %>% # create all 2x2 combinations for the correlations
+  group_by(comparison) %>% # for each of these
+  nest() %>% # make a data frame out of the test and retest columns
+  mutate(stats = map(data, ~as.data.frame(corr_change_baseline(.$pre, .$retest)))) %>% # apply the variance test
+  unnest(stats, .drop = TRUE) # unpack list into data frame, drop the data
+}
+```
+
+Variance tests between:
+
+* baseline AB magnitude (`pre` block)
+* retest AB magnitude (`tDCS` or `post` block)
+
+
+#### Study 1
+
+```{r variance test study 1}
+kable(var_test(ABmag_study1), digits = 3, caption = "Study 1: test of variance in baseline vs. retest")
+```
+
+Even though three out of four conditions showed a significant negative partial correlation, none of the conditions pass the variance test[^ref_error], suggesting no relation between baseline and change due to tDCS.
+
+[^ref_error]: These values for study 1 are different then in the paper, because of a possible error in the calculation of the variance tests there.
+
+#### Study 2
+
+```{r variance test study 2}
+kable(var_test(ABmag_study2), digits = 3, caption = "Study 2: test of variance in baseline vs. retest")
+```
+
+In study 2 also all variance tests are not significant, again suggesting the two significant partial correlations are spurious.
 
 # Anodal vs. cathodal
 
