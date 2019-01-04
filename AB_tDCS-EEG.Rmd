@@ -68,6 +68,16 @@ The data has the following columns:
 * __T2__: Proportion of trials (out of `trials`) in which T2 was identified correctly
 * __T2.given.T1__: Proportion of trials which T2 was identified correctly, out of the trials in which T1 was idenitified correctly (T2|T1).
 
+The number of trials vary from person-to-person, as some completed more trials in a 20-minute block than others (because responses were self-paced):
+
+```{r trial counts}
+df_study2 %>%
+  group_by(lag) %>%
+  summarise_at(vars(trials), funs(mean, min, max, sd)) %>%
+  kable(caption = "Descriptive statistics for trial counts per lag", digits = 0)
+```
+
+
 ## Study 1
 
 These data were used for statistical analysis in London & Slagter (2015)[^ref_london], and were processed by the lead author:
