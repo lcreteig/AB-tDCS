@@ -403,12 +403,10 @@ First we calculate attentional blink magnitude:
 
 ```{r AB magnitude function}
 calc_ABmag <- function(df) {
-  maxLag = max(as.numeric(levels(df$lag))) # lag 10 in study 1, lag 8 in study 2
-  minLag = min(as.numeric(levels(df$lag))) # lag 2 in study 1, lag 3 in study 2
-  ABmag <- df %>% 
+  df %>% 
     group_by(subject, first.session, stimulation, block) %>% # for each unique factor combination
-    summarise(AB.magnitude = T2.given.T1[lag == maxLag] - T2.given.T1[lag == minLag], # subtract lags to replace data with AB magnitude,
-              T1.short = T1[lag == minLag]) # also keep T1 performance for short lag, to use as a covariate later
+    summarise(AB.magnitude = last(T2.given.T1) - first(T2.given.T1), # subtract lags to replace data with AB magnitude,
+              T1.short = first(T1)) # also keep T1 performance for short lag, to use as a covariate later
 }
 ```
 
@@ -428,9 +426,9 @@ calc_change_scores <- function(df) {
   df %>%
     gather(measure, performance, AB.magnitude, T1.short) %>%
     group_by(subject, first.session, stimulation, measure) %>%
-    summarise(baseline = performance[block == "pre"], 
-              during = performance[block == "tDCS"] - baseline,
-              after = performance[block == "post"] - baseline) %>%
+    summarise(baseline = first(performance), 
+              during = nth(performance,2) - baseline,
+              after = last(performance) - baseline) %>%
     gather(change, change.score, during, after) %>%
     mutate(change = fct_recode(change, "tDCS - baseline" = "during", "post - baseline" = "after"),
            change = fct_relevel(change, "tDCS - baseline")) %>%
@@ -672,7 +670,7 @@ extractBF(correlationBF(
   pull(filter(ABmagChange_study1, stimulation == "anodal", measure == "AB.magnitude", change == "tDCS - baseline"), change.score),
   pull(filter(ABmagChange_study1, stimulation == "cathodal", measure == "AB.magnitude", change == "tDCS - baseline"), change.score))) %>%
   select(bf) %>% # keep only the Bayes Factor
-  kable(.)
+  kable()
 ```
 
 ### Study 2
@@ -718,14 +716,15 @@ However, there is a big difference at the short lags: group-level performance at
 df_study1_lag3 <- df_study1 %>%
   group_by(subject, first.session, block, stimulation) %>% # for each condition
   # calculate lag 3 as mean of 2 and 4; keep lag 10
-  summarise(`3_T2.given.T1` = (T2.given.T1[lag == "2"] + T2.given.T1[lag == "4"]) / 2,
-            `3_T1` = (T1[lag == "2"] + T1[lag == "4"]) / 2,
-            `10_T2.given.T1` = T2.given.T1[lag == "10"], 
-            `10_T1` = T1[lag == "10"]) %>%
+  summarise(lag3_T2.given.T1 = (first(T2.given.T1) + nth(T2.given.T1,2)) / 2,
+            lag3_T1 = (first(T1) + nth(T1,2)) / 2,
+            lag10_T2.given.T1 = last(T2.given.T1), 
+            lag10_T1 = last(T1)) %>%
   gather(condition, score, -subject, -first.session, -block, -stimulation) %>% # gather the 4 columns we created
   separate(condition, c("lag", "measure"), "_") %>% # separate lag and T1/T2|T1
-  spread(measure, score) %>% # make a column of T1 and T2|T1
-  mutate(lag = factor(lag)) #remake the lag factor
+  mutate(lag = str_remove(lag,"lag")) %>%
+  mutate(lag = fct_relevel(lag, "3","10")) %>% #remake the lag factor
+  spread(measure, score)  # make a column of T1 and T2|T1
 kable(head(df_study1_lag3,9), digits = 1, caption = "Data frame for study 1 with lag 3 as the short lag")
 ```
 
@@ -733,8 +732,8 @@ Then we redo the further processing, and combine with the data from study 2:
 
 ```{r redo further processing on lag 3}
 ABmagChange_pooled <- df_study1_lag3 %>% 
-  calc_ABmag(.) %>% # calculate AB mangnitude
-  calc_change_scores(.) %>% # calculate change from baseline
+  calc_ABmag() %>% # calculate AB mangnitude
+  calc_change_scores() %>% # calculate change from baseline
   bind_rows(.,ABmagChange_study2) %>% # combine with study 2
   mutate(study = ifelse(grepl("^pp",subject), "1", "2")) # add a "study" column, based on subject ID formatting
 ```
@@ -756,7 +755,7 @@ Partial correlation between anodal and cathodal AB magnitude change score (tDCS 
 
 ```{r partial correlation anodal vs cathodal pooled}
 pcorr_anodal_cathodal(ABmagChange_pooled) %>%
-kable(., digits = 3, caption = "Pooled data from studies 1 and 2: Partial correlation anodal vs. cathodal")
+kable(digits = 3, caption = "Pooled data from studies 1 and 2: Partial correlation anodal vs. cathodal")
 ```
 
 Zero-order correlation:
@@ -776,7 +775,7 @@ extractBF(correlationBF(
   pull(filter(ABmagChange_pooled, stimulation == "anodal", measure == "AB.magnitude", change == "tDCS - baseline"), change.score),
   pull(filter(ABmagChange_pooled, stimulation == "cathodal", measure == "AB.magnitude", change == "tDCS - baseline"), change.score))) %>%
   select(bf) %>% # keep only the Bayes Factor
-  kable(., digits = 3, caption = "Pooled data from studies 1 and 2: Bayesian correlation")
+  kable(digits = 3, caption = "Pooled data from studies 1 and 2: Bayesian correlation")
 ```
 
 Neither correlation is significant. The Bayes factor favors the null, but only slightly, and less so than in study 2.
@@ -936,9 +935,10 @@ Load and clean (exclude subjects with incomplete data, and S42 (who did not pass
 
 ```{r load subject info}
 subject_info <- read_csv2(here("data", "subject_info.csv"), col_names = TRUE, progress = FALSE, col_types = cols(
-  first.session = col_factor(c("anodal", "cathodal")),
-  gender = col_factor(c("male", "female")))) %>%
-   filter(!(subject %in% c(subs_incomplete, "S42")))
+  first.session = readr::col_factor(c("anodal", "cathodal")),
+  gender = readr::col_factor(c("male", "female")),
+  age = col_integer())) %>%
+  filter(!(subject %in% c(subs_incomplete, "S42")))
 kable(head(subject_info,5), caption = "Demographics in study 2")
 ```
 
@@ -947,19 +947,19 @@ Analyze:
 ```{r gender breakdown}
 subject_info %>%
  count(gender) %>%
-  kable(., caption = "Gender breakdown in study 2")
+  kable(caption = "Gender breakdown in study 2")
 ```
 
 ```{r age descriptives}
 subject_info %>%
   summarise_at(vars(age), funs(mean, min, max, sd), na.rm = TRUE) %>% # apply summary functions to age column
-  kable(., digits = 2, caption = "Age descriptives in study 2")
+  kable(digits = 2, caption = "Age descriptives in study 2")
 ```
 
 ```{r session order breakdown}
 subject_info %>%
  count(first.session) %>%
-  kable(., caption = "Session order breakdown in study 2")
+  kable(caption = "Session order breakdown in study 2")
 ```
 
 ## tDCS adverse events (study 2)
@@ -968,8 +968,8 @@ subject_info %>%
 
 ```{r load tDCS AEs}
 tDCS_AE <- read_csv2(here("data", "tDCS_AE.csv"), col_names = TRUE, progress = FALSE, col_types = cols(
-  session = col_factor(c("first", "second")), 
-  stimulation = col_factor(c("anodal", "cathodal"))))
+  session = readr::col_factor(c("first", "second")), 
+  stimulation = readr::col_factor(c("anodal", "cathodal"))))
 glimpse(tDCS_AE)
 ```
 
@@ -1000,7 +1000,7 @@ Let's see how many data points we have:
 ```{r tally sessions}
 tDCS_AE %>%
   count(stimulation) %>%
-  kable(., caption = "number of completed questionnaires per stimulation type")
+  kable(caption = "number of completed questionnaires per stimulation type")
 ```
 
 This is more than the number of subjects (and not the same for anodal and cathodal), because there are a few subjects that only did one session.
@@ -1028,7 +1028,7 @@ full_join(intensity,confidence) %>%
   summarise(count = sum(intensity > 0, na.rm = TRUE), # count all occurences (rating "0" means no occurence)
             mean = mean(confidence, na.rm = TRUE)) %>%
   arrange(desc(count)) %>% # most frequent at the top
-  kable(., digits = 1)
+  kable(digits = 1)
 ```
 
 Plot all of the data:
@@ -1062,6 +1062,6 @@ intensity %>%
   nest() %>%
   mutate(stats = map(data, ~tidy(wilcox.test(intensity ~ stimulation, paired = TRUE, data = .)))) %>%
   unnest(stats, .drop = TRUE) %>%
-  kable(., digits = 3, caption = "Paired tests of anodal vs. cathodal for each sensation intensity")
+  kable(digits = 3, caption = "Paired tests of anodal vs. cathodal for each sensation intensity")
 ```
 
