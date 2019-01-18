@@ -194,13 +194,13 @@ kable(nice(aov_study1), caption = "Study 1: RM ANOVA on T2|T1 performance")
 This is the attentional blink: T2 is seen more often in the long lag(s).
 
 ```{r study 1 - plot lag, fig.cap="Study 1 - Attentional blink (main effect of Lag)"}
-afex_plot(aov_study1, x = "lag")
+afex_plot(aov_study1, x = "lag", error = "within")
 ```
 
 #### Main effect of block
 
 ```{r study 1 - plot block, fig.cap="Study 1 - main effect of Block"}
-afex_plot(aov_study1, x = "block")
+afex_plot(aov_study1, x = "block", error = "within")
 ```
 
 Appears to be a time-on-task / fatigue effect: participants get worse each block.
@@ -211,7 +211,7 @@ The hypothesized effect was that anodal stimulation improves (compared to `pre` 
 
 ```{r study 1 - plot hypothesis, fig.cap="Study 1 - hypothesized interaction: Block by Stimulation by Lag"}
 afex_plot(aov_study1, x = "block", trace =  "stimulation", panel = "lag", 
-          factor_levels = list(lag = c("lag 2","lag 4","lag 10")))
+          factor_levels = list(lag = c("lag 2","lag 4","lag 10")), error = "within")
 ```
 
 Indeed, only a main effect of lag is clearly visible. If anything, the largest difference is in lag 2 though, but in the opposite direction (cathodal slightly improves performance; anodal slightly decreases performance).
@@ -261,7 +261,7 @@ kable(nice(aov_study2), caption = "Study 2: RM ANOVA on T2|T1 performance")
 #### Main effect of lag
 
 ```{r study 2 - plot lag, fig.cap="Study 2 - Attentional blink (main effect of Lag)"}
-afex_plot(aov_study2, x = "lag")
+afex_plot(aov_study2, x = "lag", error = "within")
 ```
 
 Again simply the attentional blink.
@@ -272,7 +272,7 @@ Like in study 1, this was the hypothesized effect, but it is not significant.
 
 ```{r study 2 - plot hypothesis, fig.cap="Study 2 - hypothesized interaction: Block by Stimulation by Lag"}
 afex_plot(aov_study2, x = "block", trace =  "stimulation", 
-          panel = "lag", factor_levels = list(lag = c("lag 3","lag 8")))
+          panel = "lag", factor_levels = list(lag = c("lag 3","lag 8")), error = "within")
 ```
 
 Doesn't look like much, but as it's trending (_p_ = `r round(aov_study2$anova_table["block:stimulation:lag","Pr(>F)"],3)`), let's look at the contrasts anyway:
@@ -370,7 +370,7 @@ kable(nice(aov_study2_T1), caption = "Study 2: RM ANOVA on T1 performance")
 #### Main effect of lag
 
 ```{r study 2 T1- plot lag, fig.cap="Study 2 - T1 main effect of Lag"}
-afex_plot(aov_study2_T1, x = "lag")
+afex_plot(aov_study2_T1, x = "lag", error = "within")
 ```
 
 Like T2|T1, T1 performance is also worse for the short lag (though only a little). This was also reported in study 1.
@@ -378,7 +378,7 @@ Like T2|T1, T1 performance is also worse for the short lag (though only a little
 #### Main effect of block
 
 ```{r study 2 T1 - plot block, fig.cap="Study 2 - T1 main effect of Block"}
-afex_plot(aov_study2_T1, x = "block")
+afex_plot(aov_study2_T1, x = "block", error = "within")
 ```
 
 T1 performance seems to decrease slightly over the session. In study 1 this was also the case, for T1 and T2|T1, though here there was no effect of block on T2|T1.
