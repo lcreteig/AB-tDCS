@@ -29,12 +29,12 @@ library(pwr) # power analysis
 # Print version info
 print(sessionInfo())
 # Source functions
-source(here("src", "func", "behavioral_analysis.R")) # load data from study 2
+source(here("src", "func", "behavioral_analysis.R")) # loading data and calculating measures
+knitr::read_chunk(here("src", "func", "behavioral_analysis.R")) # display code from file in this notebook
 source(here("src", "lib", "corr_change_baseline.R")) # variance test / baseline vs. change-from-baseline correlation 
 source(here("src", "lib", "appendixCodeFunctionsJeffreys.R")) # replication Bayes factors
 ```
 
-- recode first.session
 # Load task data
 
 ## Study 2
@@ -121,19 +121,11 @@ We'll also keep two more columns: `fileno` (participant ID) and `First_Session` 
 
 Now we'll reformat the data to match the data frame for study 2:
 
+```{r Function to format data from study 1 as in study 2}
+```
+
 ```{r format as for study 2}
-df_study1 <- data_study1_fromDisk %>%
-  select(fileno, First_Session, ends_with("_NP"), -contains("Min")) %>% # keep only relevant columns
-  gather(key, accuracy, -fileno, -First_Session) %>% # make long form
-  # split key column to create separate columns for each factor
-  separate(key, c("block", "stimulation", "target", "lag"), c(1,3,5)) %>% # split after 1st, 3rd, and 5th character
-  # convert to factors, relabel levels to match those in study 2
-  mutate(block = factor(block, levels = c("v", "t", "n"), labels = c("pre", "tDCS", "post")),
-         stimulation = factor(stimulation, levels = c("b_", "d_"), labels = c("anodal", "cathodal")),
-         lag = factor(lag, levels = c("_2_NP", "_4_NP", "_10_NP"), labels = c(2, 4, 10)),
-         First_Session = factor(First_Session, labels = c("anodal","cathodal"))) %>%
-  spread(target, accuracy) %>% # create separate columns for T2.given.T1 and T1 performance
-  rename(T2.given.T1 = NB, first.session = First_Session, subject = fileno)# rename columns to match those in study 2
+df_study1 <- format_study2(data_study1_fromDisk)
 n_study1 <- n_distinct(df_study1$subject) # number of subjects in study 1
 ```
 
@@ -415,13 +407,7 @@ The two-way interaction is strongest in the later two blocks. Again, this is the
 
 First we calculate attentional blink magnitude:
 
-```{r AB magnitude function}
-calc_ABmag <- function(df) {
-  df %>% 
-    group_by(subject, first.session, stimulation, block) %>% # for each unique factor combination
-    summarise(AB.magnitude = last(T2.given.T1) - first(T2.given.T1), # subtract lags to replace data with AB magnitude,
-              T1.short = first(T1)) # also keep T1 performance for short lag, to use as a covariate later
-}
+```{r Function to calculate AB magnitude}
 ```
 
 ```{r calculate AB magnitude}
@@ -435,19 +421,7 @@ kable(head(ABmag_study2,7), digits = 1, caption = "AB magnitude data frame in st
 
 Next, we calculate change from baseline for both of these measures:
 
-```{r change scores function}
-calc_change_scores <- function(df) {
-  df %>%
-    gather(measure, performance, AB.magnitude, T1.short) %>%
-    group_by(subject, first.session, stimulation, measure) %>%
-    summarise(baseline = first(performance), 
-              during = nth(performance,2) - baseline,
-              after = last(performance) - baseline) %>%
-    gather(change, change.score, during, after) %>%
-    mutate(change = fct_recode(change, "tDCS - baseline" = "during", "post - baseline" = "after"),
-           change = fct_relevel(change, "tDCS - baseline")) %>%
-    arrange(subject, stimulation)
-}
+```{r Function to calculate change scores}
 ```
 
 ```{r calculate change scores}
@@ -604,15 +578,15 @@ In study 2 also all variance tests are not significant, again suggesting the two
 
 ## Plots {.tabset .tabset-fade .tabset-pills}
 
-```{r anodal vs. cathodal plot function}
+```{r Function to plot anodal vs cathodal change scores}
 plot_anodalVScathodal <- function(df) {
   df %>% 
-  # create two columns of AB magnitude change score during tDCS: for anodal and cathodal
-  filter(measure == "AB.magnitude", change == "tDCS - baseline") %>%
-  select(-baseline) %>%
-  spread(stimulation, change.score) %>% 
-  
-  ggplot(aes(anodal, cathodal)) +
+    # create two columns of AB magnitude change score during tDCS: for anodal and cathodal
+    filter(measure == "AB.magnitude", change == "tDCS - baseline") %>%
+    select(-baseline) %>%
+    spread(stimulation, change.score) %>% 
+    
+    ggplot(aes(anodal, cathodal)) +
     geom_hline(yintercept = 0, linetype = "dashed") +
     geom_vline(xintercept = 0, linetype = "dashed") +
     geom_smooth(method = "lm") +
@@ -638,22 +612,7 @@ plot_anodalVScathodal(ABmagChange_study2)
 
 ## Statistics {.tabset .tabset-fade .tabset-pills}
 
-```{r partial correlation anodal vs cathodal function}
-pcorr_anodal_cathodal <- function(df) {
-  df %>%
-  # create two columns of AB magnitude change score during tDCS: for anodal and cathodal
-  filter(measure == "AB.magnitude", change == "tDCS - baseline") %>%
-  select(-baseline) %>%
-  spread(stimulation, change.score) %>%
-  ungroup() %>% # remove grouping from previous steps, as we need to modify the dataframe
-  select(first.session, anodal, cathodal) %>% # keep only relevant columns
-  mutate(first.session = as.numeric(first.session)) %>% # dummy code to use as covariate
-  
-  # partial correlation  
-  summarise(r = pcor(c("anodal","cathodal","first.session"), var(.))) %>% # partial correlation coefficient
-  mutate(stats = list(as.data.frame(pcor.test(r, 1, n_distinct(df$subject))))) %>% # t-stat, df and p-value of coefficient
-  unnest(stats) # unpack resulting data frame into separate columns %>%
-}
+```{r Function to calculate partial correlations of anodal vs cathodal change scores}
 ```
 
 ### Study 1
@@ -726,19 +685,12 @@ The main difference is that study 1 presented T2 at lag 2, 4 or 10, whereas stud
 
 However, there is a big difference at the short lags: group-level performance at lag 3 (study 2) is 10-15 percentage points higher than at lag 2. Therefore, when comparing both studies, the best bet is to also create a "lag 3" condition in study 1, by imputing lag 2 and lag 4.
 
+```{r Function to create lag 3 in study 1 data}
+```
+
+
 ```{r create lag 3 in study 1}
-df_study1_lag3 <- df_study1 %>%
-  group_by(subject, first.session, block, stimulation) %>% # for each condition
-  # calculate lag 3 as mean of 2 and 4; keep lag 10
-  summarise(lag3_T2.given.T1 = (first(T2.given.T1) + nth(T2.given.T1,2)) / 2,
-            lag3_T1 = (first(T1) + nth(T1,2)) / 2,
-            lag10_T2.given.T1 = last(T2.given.T1), 
-            lag10_T1 = last(T1)) %>%
-  gather(condition, score, -subject, -first.session, -block, -stimulation) %>% # gather the 4 columns we created
-  separate(condition, c("lag", "measure"), "_") %>% # separate lag and T1/T2|T1
-  mutate(lag = str_remove(lag,"lag")) %>%
-  mutate(lag = fct_relevel(lag, "3","10")) %>% #remake the lag factor
-  spread(measure, score)  # make a column of T1 and T2|T1
+df_study1_lag3 <- create_lag3_study1(df_study1) 
 kable(head(df_study1_lag3,9), digits = 1, caption = "Data frame for study 1 with lag 3 as the short lag")
 ```
 
