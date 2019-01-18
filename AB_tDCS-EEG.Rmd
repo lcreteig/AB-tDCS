@@ -34,6 +34,7 @@ source(here("src", "lib", "corr_change_baseline.R")) # variance test / baseline 
 source(here("src", "lib", "appendixCodeFunctionsJeffreys.R")) # replication Bayes factors
 ```
 
+- recode first.session
 # Load task data
 
 ## Study 2
@@ -48,7 +49,11 @@ The following participants are excluded from further analysis at this point, bec
 dataDir_study2 <- here("data","main") # root folder with AB task data
 subs_incomplete <- c("S03", "S14", "S25", "S29", "S31", "S38", "S43", "S46") # don't try to load data from these participants
 df_study2 <- load_data_study2(dataDir_study2, subs_incomplete) %>%
-  filter(complete.cases(.)) # discard rows with data from incomplete subjects
+  filter(complete.cases(.)) %>% # discard rows with data from incomplete subjects
+   # recode first.session ("anodal" or "cathodal") to session.order ("anodal first", "cathodal first")
+  mutate(first.session = parse_factor(paste(first.session, "first"), 
+                                      levels = c("anodal first", "cathodal first"))) %>%
+  rename(session.order = first.session)
 n_study2 <- n_distinct(df_study2$subject) # number of subjects in study 2
 ```
 
@@ -59,7 +64,7 @@ kable(head(df_study2,13), digits = 1, caption = "Data frame for study 2")
 The data has the following columns:
 
 * __subject__: Participant ID, e.g. `S01`, `S12`
-* __first.session__: Whether participant received `anodal` or `cathodal` tDCS in the first session. Codes for session order.
+* __session.order__: Whether participant received `anodal` or `cathodal` tDCS in the first session (`anodal_first` vs. `cathodal_first`).
 * __stimulation__: Whether participant received `anodal` or `cathodal` tDCS
 * __block__: Whether data is before (`pre), during (`tDCS`) or after (`post`) tDCS
 * __lag__: Whether T2 followed T1 after two distractors (lag `3`) or after 7 distractors (lag `8`)
@@ -179,7 +184,7 @@ __Stray observations:__
 ### Study 1 - T2|T1
 
 * __DV__: `T2.given.T1`: Proportion of trials which T2 was identified correctly, out of the trials in which T1 was idenitified correctly (T2|T1).
-* __Between-subject factor__: `first.session`, 2 levels: Whether participant received _anodal_ or _cathodal_ tDCS in the first session. Codes for session order.
+* __Between-subject factor__: `session.order`, 2 levels: Whether participant received _anodal_ or _cathodal_ tDCS in the first session (`anodal_first` vs. `cathodal_first`).
 * __Within-subject factors__: 
   1. `block`, 3 levels: Whether data is before (_pre_), during (_tDCS_) or after (_post_) tDCS 
   2. `stimulation`, 2 levels: Whether participant received _anodal_ or _cathodal_ tDCS
@@ -187,7 +192,7 @@ __Stray observations:__
 * __Subject identifier__: `subject` (n = `r n_study1`).
 
 ```{r rm anova study 1}
-aov_study1 <- aov_car(T2.given.T1 ~ first.session + Error(subject/(block*stimulation*lag)), 
+aov_study1 <- aov_car(T2.given.T1 ~ session.order + Error(subject/(block*stimulation*lag)), 
         data = df_study1)
 kable(nice(aov_study1), caption = "Study 1: RM ANOVA on T2|T1 performance")
 ```
@@ -222,17 +227,17 @@ Indeed, only a main effect of lag is clearly visible. If anything, the largest d
 #### Interaction: stimulation by session order
 
 ```{r study 1 - plot stimulation by session order, fig.cap="Study 1 - Stimulation by Session Order"}
-afex_plot(aov_study1, x = "stimulation", trace = "first.session")
+afex_plot(aov_study1, x = "stimulation", trace = "session.order")
 ```
 
-_stimulation_ and _first.session_ are not orthogonal: their interaction makes up a new factor _session_, with 2 levels:
+_stimulation_ and _session.order_ are not orthogonal: their interaction makes up a new factor _session_, with 2 levels:
 
 * session 1: 
-    1. _firstsession_ = anodal, _stimulation_ = anodal
-    2. _first.session_ = cathodal, _stimulation_ = cathodal
+    1. _session.order_ = anodal first, _stimulation_ = anodal
+    2. _session.order_ = cathodal first, _stimulation_ = cathodal
 * session 2: 
-    1. _first.session_ = anodal, _stimulation_ = cathodal
-    2. _first.session_ = cathodal, _stimulation_ = anodal
+    1. _session.order_ = anodal first, _stimulation_ = cathodal
+    2. _session.order_ = cathodal first, _stimulation_ = anodal
 
 So my take is this "interaction" actually reflects an across-session learning effect: participants simply do better in their 2nd session than in their 1st.
 
@@ -241,8 +246,7 @@ So my take is this "interaction" actually reflects an across-session learning ef
 There is apparently also a higher order interaction, with _block_:
 
 ```{r study 1 - plot threeway, fig.cap="Study 1 - Stimulation by Session Order by Block"}
-afex_plot(aov_study1, x = "stimulation", trace =  "first.session", panel = "block", 
-          factor_levels = list(first.session = c("anodal first","cathodal first")))
+afex_plot(aov_study1, x = "stimulation", trace = "session.order", panel = "block", error = "none")
 ```
 
 Seems that the crossover interaction (the learning effect) is mostly present in the first two blocks, not the last. This makes sense intuitively: in the third block of the 1st session, participants already performed the task for 40 minutes, so the difference in "time-on-task" between session 1 and 2 is not so great.
@@ -257,7 +261,7 @@ Seems that the crossover interaction (the learning effect) is mostly present in 
 * __Subject identifier__: `subject` (n = `r n_study2`).
 
 ```{r rm anova study 2}
-aov_study2 <- aov_car(T2.given.T1 ~ first.session + Error(subject/(block*stimulation*lag)), 
+aov_study2 <- aov_car(T2.given.T1 ~ session.order + Error(subject/(block*stimulation*lag)), 
         data = df_study2)
 kable(nice(aov_study2), caption = "Study 2: RM ANOVA on T2|T1 performance")
 ```
@@ -290,13 +294,13 @@ The only significant change is in the anodal, lag 8 condition: T2 performance go
 #### Interaction: stimulation by session order
 
 ```{r study 2 - plot stimulation by session order, fig.cap="Study 2 - Stimulation by Session Order"}
-afex_plot(aov_study2, x = "stimulation", trace = "first.session")
+afex_plot(aov_study2, x = "stimulation", trace = "session.order", error = "none")
 ```
 
 In study 1, this interaction also occured and looked like a cross-session learning effect: performance improves in the 2nd session compared to the first. However, here this is only visible for the "anodal first" group.
 
 ```{r study 2 - contrast stimulation by session order}
-pairs(emmeans(aov_study2, ~stimulation|first.session))
+pairs(emmeans(aov_study2, ~stimulation|session.order))
 ```
 
 Indeed, the difference is only significant for the "anodal first" group. It's unlikely, but in principle this could indicate that anodal has a carryover effect, while cathodal does not.
@@ -306,8 +310,8 @@ Indeed, the difference is only significant for the "anodal first" group. It's un
 Apparently this also interacts with Lag (which it also did not do in study 1):
 
 ```{r study 2 - plot stimulation by lag by session order, fig.cap="Study 2 - Stimulation by Session Order by Lag"}
-afex_plot(aov_study2, x = "stimulation", trace = "first.session", panel = "lag", 
-          factor_levels = list(lag = c("lag 3","lag 8")))
+afex_plot(aov_study2, x = "stimulation", trace = "session.order", panel = "lag", 
+          factor_levels = list(lag = c("lag 3","lag 8")), error = "none")
 ```
 
 Interesting: the two-way interaction between _stimulation_ and _session order_ shows no learning effect for both groups (only anodal first). However, this higher-order interaction does seem to show a change in the cathodal group also. But the interaction is only visible in the the short lag condition. That makes sense, as there is not much room for improvement in the long lag condition.
@@ -317,8 +321,8 @@ Interesting: the two-way interaction between _stimulation_ and _session order_ s
 Then, there is a yet higher order interaction, also with _block_:
 
 ```{r study 2 - plot four-way with block, fig.cap="Study 2 - four way interaction, centered on Block"}
-afex_plot(aov_study2, x = "stimulation", trace = c("first.session","lag"), 
-          panel = "block", data_plot = FALSE, factor_levels = list(lag = c("lag 3","lag 8")))
+afex_plot(aov_study2, x = "stimulation", trace = c("session.order","lag"), 
+          panel = "block", data_plot = FALSE, factor_levels = list(lag = c("lag 3","lag 8")), error = "none")
 ```
 
 This suggests that the three-way interaction (cross-session learning effect for short lag) mostly occurs in the `pre` block. Similar to the three-way interaction in study 1 (_stimulation_ by _session order_ by _block_), the "learning effect across sessions" (crossover in short lag trials) diminishes over blocks. This makes sense because the difference between sessions in "task experience" also diminishes over blocks (in the `pre` block, participants are doing the task for the first time in session 1, but in the later blocks of session 1, they've built up experience).
@@ -326,8 +330,8 @@ This suggests that the three-way interaction (cross-session learning effect for 
 However, another take on the four-way interaction is the following: it is actually the hypothesized effect (three-way interaction of _stimulation_, _block_, and _lag_), but it only occurs for a certain session order:
 
 ```{r study 2 - plot four-way with first session, fig.cap="Study 2 - four way interaction, centered on Session Order"}
-afex_plot(aov_study2, x = "block", trace = c("stimulation","lag"), panel = "first.session", data_plot = FALSE,
-          factor_levels = list(lag = c("lag 3","lag 8"), first.session = c("anodal first","cathodal first")))
+afex_plot(aov_study2, x = "block", trace = c("stimulation","lag"), panel = "session.order", data_plot = FALSE,
+          factor_levels = list(lag = c("lag 3","lag 8")), error = "none")
 ```
 
 Most of the changes occur in the "anodal first" group. There we can actually see the hypothesized effect: increased performance on short-lag trials during/after tDCS compared to before.
@@ -335,7 +339,7 @@ Most of the changes occur in the "anodal first" group. There we can actually see
 Lets's therefore look at the hypothesized three-way interaction separately for each "group" (anodal first, cathodal first):
 
 ```{r three-way interaction by group}
-joint_tests(aov_study2, by = "first.session")
+joint_tests(aov_study2, by = "session.order")
 ```
 
 Indeed, so the three-way interaction is significant in the "anodal first" group, but not the "cathodal first" group.
@@ -343,7 +347,7 @@ Indeed, so the three-way interaction is significant in the "anodal first" group,
 Finally, let's also look at the pairwise contrasts for _block_ for each combination of factors:
 
 ```{r study 2 - contrast four-way with first session}
-pairs(emmeans(aov_study2, ~block|first.session*stimulation*lag))
+pairs(emmeans(aov_study2, ~block|session.order*stimulation*lag))
 ```
 
 The `pre - post` contrast for lag 3, anodal stimulation in the anodal-first group is indeed significant (but the `pre - tDCS` difference is not). There is also an effect for lag 8, the `pre - tDCS` contrast is significant there (but not `pre - post`). 
@@ -358,7 +362,7 @@ However, all in all, I favor the 1st interpretation of the four-way interaction 
 ### Study 2 - T1
 
 * __DV__: `T1`: Proportion of trials in which T1 was identified correctly.
-* __Between-subject factor__: `first.session`, 2 levels: Whether participant received _anodal_ or _cathodal_ tDCS in the first session. Codes for session order.
+* __Between-subject factor__: `session.order`, 2 levels: Whether participant received _anodal_ or _cathodal_ tDCS in the first session (`anodal_first` vs. `cathodal_first`).
 * __Within-subject factors__: 
   1. `block`, 3 levels: Whether data is before (_pre_), during (_tDCS_) or after (_post_) tDCS 
   2. `stimulation`, 2 levels: Whether participant received _anodal_ or _cathodal_ tDCS
@@ -366,7 +370,7 @@ However, all in all, I favor the 1st interpretation of the four-way interaction 
 * __Subject identifier__: `subject` (n = `r n_study2`).
 
 ```{r rm anova study 2 T1}
-aov_study2_T1 <- aov_car(T1 ~ first.session + Error(subject/(block*stimulation*lag)), 
+aov_study2_T1 <- aov_car(T1 ~ session.order + Error(subject/(block*stimulation*lag)), 
         data = df_study2)
 kable(nice(aov_study2_T1), caption = "Study 2: RM ANOVA on T1 performance")
 ```
@@ -390,7 +394,7 @@ T1 performance seems to decrease slightly over the session. In study 1 this was 
 #### Interaction: stimulation by session order
 
 ```{r study 2 T1 - plot stimulation by session order, fig.cap="Study 2 - T1: Stimulation by Session Order"}
-afex_plot(aov_study2_T1, x = "stimulation", trace = "first.session")
+afex_plot(aov_study2_T1, x = "stimulation", trace = "session.order", error = "none")
 ```
 
 This interaction was also present for T2|T1 in both studies. There it seemed to reflect a learning effect, but here it goes in the opposite direction: T1 performance is worse in the 2nd session than the first...
@@ -400,7 +404,7 @@ This interaction was also present for T2|T1 in both studies. There it seemed to 
 There is also a higher-order interaction with Block:
 
 ```{r study 2 - T1 plot threeway, fig.cap="Study 2 - T1: Stimulation by Session Order by Block"}
-afex_plot(aov_study2_T1, x = "stimulation", trace =  "first.session", panel = "block", factor_levels = list(first.session = c("anodal first","cathodal first")))
+afex_plot(aov_study2_T1, x = "stimulation", trace =  "session.order", panel = "block", error = "none")
 ```
 
 The two-way interaction is strongest in the later two blocks. Again, this is the inverse of the learning effect, which was strongest in the first block.
@@ -490,7 +494,7 @@ plot_change_from_baseline(ABmagChange_study2)
 pcorr_change_baseline <- function(df) {
   df %>%
     ungroup() %>%
-    mutate(first.session = as.numeric(first.session)) %>% # dummy code
+    mutate(session.order = as.numeric(session.order)) %>% # dummy code
     nest(baseline, change.score, .key = 'value_col') %>% # combine the two performance columns into a list
     # make 2 separate list-columns: AB.magnitude and T1. short
     spread(key = measure, value = value_col) %>% # each contains two vectors: baseline performance and change score
@@ -498,10 +502,10 @@ pcorr_change_baseline <- function(df) {
     select(-T1.short_baseline) %>% # drop the baseline value for T1.short: not used in partial correlation
     group_by(stimulation,change) %>% # for anodal/cathodal during/after
     # make a data frame out of all 4 columns we need for the partial correlation
-    nest(first.session, AB.magnitude_baseline, AB.magnitude_change.score, T1.short_change.score) %>% 
+    nest(session.order, AB.magnitude_baseline, AB.magnitude_change.score, T1.short_change.score) %>% 
     # partial correlation between baseline and T2|T1 change score, given session order and T1 change score
     mutate(r = map_dbl(data, ~pcor(c("AB.magnitude_baseline","AB.magnitude_change.score",
-                                     "first.session", "T1.short_change.score"), var(.)))) %>% 
+                                     "session.order", "T1.short_change.score"), var(.)))) %>% 
     group_by(stimulation,change) %>%
     mutate(stats = list(as.data.frame(pcor.test(r, 2, n_distinct(df$subject))))) %>% # significance of partial correlations
     unnest(stats, .drop = TRUE) # combine all into one data frame
@@ -561,7 +565,7 @@ Maloney and Rastogi (1970)[^ref_maloney] (equation in Tu & Gilthorpe (2007)) and
 var_test <- function(df) {
 df %>%
   ungroup() %>%
-  select(-T1.short, -first.session) %>% # drop columns we don't need
+  select(-T1.short, -session.order) %>% # drop columns we don't need
   spread(block, AB.magnitude) %>% # create 3 columns of scores, one for each block
   gather(condition, retest, tDCS, post) %>% # gather the tdcs and post blocks into one "retest score" column
   unite(comparison, stimulation, condition) %>% # create all 2x2 combinations for the correlations
@@ -948,7 +952,11 @@ subject_info <- read_csv2(here("data", "subject_info.csv"), col_names = TRUE, pr
   first.session = readr::col_factor(c("anodal", "cathodal")),
   gender = readr::col_factor(c("male", "female")),
   age = col_integer())) %>%
-  filter(!(subject %in% c(subs_incomplete, "S42")))
+  filter(!(subject %in% c(subs_incomplete, "S42"))) %>%
+   # recode first.session ("anodal" or "cathodal") to session.order ("anodal first", "cathodal first")
+  mutate(first.session = parse_factor(paste(first.session, "first"), 
+                                      levels = c("anodal first", "cathodal first"))) %>%
+  rename(session.order = first.session)
 kable(head(subject_info,5), caption = "Demographics in study 2")
 ```
 
@@ -968,7 +976,7 @@ subject_info %>%
 
 ```{r session order breakdown}
 subject_info %>%
- count(first.session) %>%
+ count(session.order) %>%
   kable(caption = "Session order breakdown in study 2")
 ```
 
