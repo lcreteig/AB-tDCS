@@ -35,6 +35,9 @@ source(here("src", "lib", "corr_change_baseline.R")) # variance test / baseline 
 source(here("src", "lib", "appendixCodeFunctionsJeffreys.R")) # replication Bayes factors
 ```
 
+- Match interpretations with statistics
+- Match with outline Rmd
+
 # Load task data
 
 ## Study 2
@@ -622,6 +625,7 @@ Partial correlation between anodal and cathodal AB magnitude change score (tDCS 
 ```{r partial correlation anodal vs cathodal study 1}
 p_r_1 <- pcorr_anodal_cathodal(ABmagChange_study1)
 r_study1 <- p_r_1$r
+n_study1_pc <- n_study1 - 1 # lose one degree of freedom due to "controlling" for one variable in partial correlation
 kable(p_r_1)
 ```
 
@@ -653,6 +657,7 @@ Partial correlation between anodal and cathodal AB magnitude change score (tDCS 
 ```{r partial correlation anodal vs cathodal study 2}
 p_r_2 <- pcorr_anodal_cathodal(ABmagChange_study2)
 r_study2 <- p_r_2$r
+n_study2_pc <- n_study2 - 1 # lose one degree of freedom due to "controlling" for one variable in partial correlation
 kable(p_r_2)
 ```
 
@@ -754,7 +759,7 @@ First, create a new data frame with all the information:
 
 ```{r data frame for meta-analysis}
 df_meta <- tibble(authors = c("London & Slagter","Reteig et al."), year = c(2015,2018), 
-                  ni = c(n_study1, n_study2), 
+                  ni = c(n_study1_pc, n_study2_pc), 
                   ri = c(r_study1, r_study2))
 kable(df_meta)
 ```
@@ -797,7 +802,7 @@ To evaluate whether the result observed in study 2 is consistent with study 1, w
 If the original study were replicated 100 times, 95 of the observed correlation coefficients would fall within the 95% prediction interval. Note that this is different from a _confidence interval_, which quantifies uncertainty about the (unknown) true correlation in the population (95 out of every hundred 95% CIs contain the true population parameter).
 
 ```{r prediction interval}
-pi.r(r = r_study1, n = n_study1, rep.n = n_study2)
+pi.r(r = r_study1, n = n_study1_pc, rep.n = n_study2_pc)
 ```
 
 The observed correlation in study 2 (_r_ = `r round(r_study2,2)`) falls within the 95% PI. Therefore, the results of study 2 are technically consistent with study 1, so we could conclude that study 2 was a succesful replication. 
@@ -831,8 +836,8 @@ While a default Bayes factor adresses the question ("Is there more evidence that
 This Bayes factor was proposed by Wagenmakers, Verhagen & Ly (2016)[^ref_wagenmakers] and is computed using [their provided code](https://osf.io/9d4ip/).
 
 ```{r replication Bayes Factor}
-bf0RStudy1 <- 1/repBfR0(nOri = n_study1, rOri = r_study1,
-                        nRep = n_study2, rRep = r_study2)
+bf0RStudy1 <- 1/repBfR0(nOri = n_study1_pc, rOri = r_study1,
+                        nRep = n_study2_pc, rRep = r_study2)
 bf0RStudy1
 ```
 
@@ -849,8 +854,8 @@ Equivalence tests allow you to test for the _absence_ of an effect of a specific
 The "Small Telescopes" approach (Simonsohn, 2015)[^ref_simonsohn] suggests that the SESOI should be the effect size the original study had 33% power to detect, the idea being that anything smaller than that could not have been properly investigated in the original study in the first place (as the odds were already stacked 2:1 against finding the effect).
 
 ```{r small telescopes test, fig.cap='test for equivalence to 33% power effect size'}
-small_telescopes <- pwr.r.test(n_study1, power = 0.33) # r value with 33% power in study 1
-TOSTr(n = n_study2, r = r_study2, 
+small_telescopes <- pwr.r.test(n_study1_pc, power = 0.33) # r value with 33% power in study 1
+TOSTr(n = n_study2_pc, r = r_study2, 
       high_eqbound_r = small_telescopes$r, 
       low_eqbound_r = -small_telescopes$r, alpha = 0.05) # equivalence test
 ```
@@ -873,9 +878,9 @@ critical.r <- function(n, alpha = .05 ) {
 ```
 
 ```{r critical r test, fig.cap='test for equivalence to critical effect size'}
-TOSTr(n = n_study2, r = r_study2, 
-      high_eqbound_r = critical.r(n_study1), 
-      low_eqbound_r = -critical.r(n_study1), 
+TOSTr(n = n_study2_pc, r = r_study2, 
+      high_eqbound_r = critical.r(n_study1_pc), 
+      low_eqbound_r = -critical.r(n_study1_pc), 
       alpha = 0.05)
 ```
 
@@ -886,7 +891,7 @@ TOSTr(n = n_study2, r = r_study2,
 Finally, we can also take the original effect size as the SESOI.
 
 ```{r original effect size, fig.cap='test for equivalence to original effect size'}
-TOSTr(n = n_study2, r = r_study2, high_eqbound_r =  -r_study1, low_eqbound_r = r_study1, alpha = 0.05)
+TOSTr(n = n_study2_pc, r = r_study2, high_eqbound_r =  -r_study1, low_eqbound_r = r_study1, alpha = 0.05)
 ```
 
 Here the effect size is actually significant, so based on study 2 we can reject the presence of a correlation at least as large as in study 1.
