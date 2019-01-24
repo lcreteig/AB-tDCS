@@ -15,19 +15,38 @@ task/log/*
 Thumbs.db
 *.smbdelete*
 
-# Office files
+# Documents
 *.xlsx
+*.xls
+*.doc
+*.docx
+*.ppt
+*.pptx
+*.pdf
 
 # Folders
+*.zip
 doc/*
+misc/*
 IRB/*
 data/*
 figures/*
+talk/*
+paper/*
+forms/*
+src/eeg/preproc/eeglab*
+
 # always still version control the readme files
 !README.md
 !IRB/2014-BC-3883
 IRB/2014-BC-3883/*
 !IRB/2014-BC-3883/README.md
 
+!data/pilot
+data/pilot/*
+!data/pilot/README.md
+
+# R files
 .Rproj.user/
 .Rproj.user
+packrat/lib*/
