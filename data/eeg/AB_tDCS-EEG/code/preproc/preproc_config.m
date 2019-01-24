@@ -67,16 +67,16 @@ preproc.do_removechans = [0 0];    % 7. remove unused channels from data set
 preproc.do_chanlookup = [0 0];     % 8. import standard channel locations
 preproc.do_filter = [0 1];         % 9. high-pass filter the data
 
-preproc.do_recodeTrigs = [1 0];    % 10. recode original marker values to more meaningful ones for analysis
-preproc.do_zerochans = [1 0];      % 11. set all values at unused channels (blocked by tDCS electrodes) to zero
-preproc.do_epoch = [1 0];          % 12. split continous data into epochs
-preproc.do_baseline = [1 0];       % 13. subtract a (pre-stimulus) baseline from each epoch
+preproc.do_recodeTrigs = [0 0];    % 10. recode original marker values to more meaningful ones for analysis
+preproc.do_zerochans = [0 0];      % 11. set all values at unused channels (blocked by tDCS electrodes) to zero
+preproc.do_epoch = [0 0];          % 12. split continous data into epochs
+preproc.do_baseline = [0 0];       % 13. subtract a (pre-stimulus) baseline from each epoch
 
 preproc.do_trialrej = [0 1];       % 14. manually identify trials for rejection and save trial indices
-preproc.do_badchans = [1 0];       % 15. zero-out additional bad channels (that should not be interpolated) after data inspection
-preproc.do_interpepochs = [1 0];   % 16. interpolate channel on a single epoch
-preproc.do_interpchans = [1 0];    % 17. interpolate all points of channels
-preproc.do_removetrials = [1 0];   % 18. remove trials previously identified for rejection (if they exist)
+preproc.do_badchans = [0 0];       % 15. zero-out additional bad channels (that should not be interpolated) after data inspection
+preproc.do_interpepochs = [0 0];   % 16. interpolate channel on a single epoch
+preproc.do_interpchans = [0 0];    % 17. interpolate all points of channels
+preproc.do_removetrials = [0 0];   % 18. remove trials previously identified for rejection (if they exist)
 preproc.do_averef = [0 0];         % 19. re-reference the data to the common average
 preproc.do_ica = [0 1];            % 20. run independent component analysis
 
@@ -105,19 +105,13 @@ paths.sendMail = sendMail; % send e-mail when preprocessing script finishes or c
 
 %% paths
 
-%assumes running from master project directory
-
-if ispc
-        drive = 'Z:'; % default prefix for PCs
-    else
-        drive = '/Volumes/students$/'; % default prefix for macs
-end
+here = pwd;
 
 %directories for storing EEG data
-paths.rawDir = fullfile(drive, 'reteig students', 'AB_tDCS-EEG', 'data', 'EEG results', 'raw'); % raw (completely unprocessed) data - each subject has all files in its own folder
-paths.procDir = fullfile('data', 'main', 'processed'); % processed eeg data
+paths.rawDir = fullfile(here, '..', filesep, '..', 'sourcedata'); % raw (completely unprocessed) data - each subject has all files in its own folder
+paths.procDir = fullfile(here, '..', filesep, '..', 'derivatives'); % processed eeg data
 
-paths.srcDir = fullfile('src', 'eeg', 'preproc'); % directory containing all preprocessing code for the project
+paths.srcDir = fullfile(here); % directory containing all preprocessing code for the project
 paths.libDir = fullfile(paths.srcDir, 'lib');
 paths.funcDir = fullfile(paths.srcDir, 'func');
 paths.eeglab = fullfile(paths.srcDir, eeglabVersion); % Tested with 'eeglab13_5_4b' on MATLAB r2012b & r2015a. On r2010b, use 'eeglab8_0_3_5b' (this version also loads in data correctly; does not mess up trigger values).
