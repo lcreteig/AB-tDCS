@@ -49,7 +49,7 @@ The following participants are excluded from further analysis at this point, bec
 * `S31` was excluded as a precaution after session 1, as they developed a severe headache and we could not rule out the possibility this was related to the tDCS
 
 ```{r load study 2 data}
-dataDir_study2 <- here("data","main") # root folder with AB task data
+dataDir_study2 <- here("data") # root folder with AB task data
 subs_incomplete <- c("S03", "S14", "S25", "S29", "S31", "S38", "S43", "S46") # don't try to load data from these participants
 df_study2 <- load_data_study2(dataDir_study2, subs_incomplete) %>%
   filter(complete.cases(.)) %>% # discard rows with data from incomplete subjects
