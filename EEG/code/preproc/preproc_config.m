@@ -57,11 +57,11 @@ function [preproc, paths, trig] = preproc_config(subjects, sessions, blocks, eeg
 % Lists all pre-processing steps in the order they will be carried out
 % First element: if true, perform this step. 2nd element: if true, write EEG data to disk afterwards
 
-preproc.do_importdata = 0;         % 1. import the data from the bdf files into EEGlab
-preproc.do_cutdata = [0 0];        % 2. select segment of continuous data to keep
-preproc.do_detrend = [0 0];        % 3. remove the DC component from each channel
-preproc.do_buffer = [0 0];         % 4. splice some mirrored data to either end, to accomodate filter edge artefacts
-preproc.do_reref = [0 0];          % 5. re-reference the data to earlobes
+preproc.do_importdata = 1;         % 1. import the data from the bdf files into EEGlab
+preproc.do_cutdata = [1 0];        % 2. select segment of continuous data to keep
+preproc.do_detrend = [1 0];        % 3. remove the DC component from each channel
+preproc.do_buffer = [1 0];         % 4. splice some mirrored data to either end, to accomodate filter edge artefacts
+preproc.do_reref = [1 1];          % 5. re-reference the data to earlobes
 preproc.do_bipolar = [0 0];        % 6. bipolarize external channels (subtract pairs from each other, e.g. both HEOG channels)
 preproc.do_removechans = [0 0];    % 7. remove unused channels from data set
 preproc.do_chanlookup = [0 0];     % 8. import standard channel locations
@@ -127,7 +127,7 @@ addpath(paths.funcDir); % add preprocessing code for project
 addpath(paths.libDir); % add general preprocessing code
 
 if strcmp(eeglabVersion, 'eeglab13_5_4b')
-    addpath(fullfile(pwd, paths.eeglab)); % for the new version, add just root folder
+    addpath(fullfile(paths.eeglab)); % for the new version, add just root folder
 elseif strcmp(eeglabVersion, 'eeglab8_0_3_5b')
     addpath(genpath(paths.eeglab)); % for the older, add with subfolders
 else
