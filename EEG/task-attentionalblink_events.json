@@ -1,0 +1,38 @@
+{
+    "onset": {
+        "Description": "Onset of the event",
+        "Units": "seconds"
+    },
+    "duration": {
+        "Description": "Duration of the event",
+        "Units": "seconds"
+    },
+    "sample": {
+        "Description": "The sample within the EEG data at which an event occurred"
+    },
+    "type": {
+        "Description": "The type of the event",
+        "Levels": {
+            "Epoch": "Automatically sent at start of recording",
+            "CM_in_range": "Automatically sent at start of recording",
+            "STATUS": "Sent by task program (except for the very first one, which is sent automatically)"
+          }
+    },
+    "value": {
+        "Description": "The trigger/marker value associated with the event",
+        "Levels": {
+            "61450": "onset of pre-stream fixation cross (duration: 1500 ms)",
+            "61463": "onset of letter stream; lag 3 trial (duration: 1375 ms)",
+            "61468": "onset of letter stream; lag 8 trial (duration: 1375 ms)",
+            "61471": "onset of T1 (first target, in red, duration: 91.66 ms)",
+            "61472": "onset of T2 (second target, in green duration: 91.66 ms)",
+            "61480": "onset of post-stream fixation cross (duration: 1000 ms)",
+            "61490": "onset of T1 question ('Which letter was red?')",
+            "61500": "onset of T2 question ('Which letter was green?'); T1 question answered incorrectly",
+            "61501": "onset of T2 question ('Which letter was green?'); T1 question answered correctly",
+            "61510": "onset of post-response fixation cross (duration: 250 ms); T2 question answered incorrectly",
+            "61511": "onset of post-response fixation cross (duration: 250 ms); T2 question answered correctly",
+            "61694": "trigger to start EEG recording (occurs at start of block after a break)"
+        }
+    }
+}

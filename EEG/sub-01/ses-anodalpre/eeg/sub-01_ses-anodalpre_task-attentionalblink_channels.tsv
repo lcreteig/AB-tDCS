@@ -1,0 +1,74 @@
+name	type	units	sampling_frequency	description	status	status_description
+Fp1	eeg	uV	512	EEG channel	good	n/a
+AF7	eeg	uV	512	EEG channel	good	n/a
+AF3	eeg	uV	512	EEG channel	bad	channel not plugged into cap; slot was blocked by tDCS electrode on scalp
+F1	eeg	uV	512	EEG channel	bad	channel not plugged into cap; slot was blocked by tDCS electrode on scalp
+F3	eeg	uV	512	EEG channel	bad	channel not plugged into cap; slot was blocked by tDCS electrode on scalp
+F5	eeg	uV	512	EEG channel	bad	channel not plugged into cap; slot was blocked by tDCS electrode on scalp
+F7	eeg	uV	512	EEG channel	good	n/a
+FT7	eeg	uV	512	EEG channel	good	n/a
+FC5	eeg	uV	512	EEG channel	good	n/a
+FC3	eeg	uV	512	EEG channel	bad	channel not plugged into cap; slot was blocked by tDCS electrode on scalp
+FC1	eeg	uV	512	EEG channel	good	n/a
+C1	eeg	uV	512	EEG channel	good	n/a
+C3	eeg	uV	512	EEG channel	good	n/a
+C5	eeg	uV	512	EEG channel	good	n/a
+T7	eeg	uV	512	EEG channel	good	n/a
+TP7	eeg	uV	512	EEG channel	good	n/a
+CP5	eeg	uV	512	EEG channel	good	n/a
+CP3	eeg	uV	512	EEG channel	good	n/a
+CP1	eeg	uV	512	EEG channel	good	n/a
+P1	eeg	uV	512	EEG channel	good	n/a
+P3	eeg	uV	512	EEG channel	good	n/a
+P5	eeg	uV	512	EEG channel	good	n/a
+P7	eeg	uV	512	EEG channel	good	n/a
+P9	eeg	uV	512	EEG channel	good	n/a
+PO7	eeg	uV	512	EEG channel	good	n/a
+PO3	eeg	uV	512	EEG channel	good	n/a
+O1	eeg	uV	512	EEG channel	good	n/a
+Iz	eeg	uV	512	EEG channel	good	n/a
+Oz	eeg	uV	512	EEG channel	good	n/a
+POz	eeg	uV	512	EEG channel	good	n/a
+Pz	eeg	uV	512	EEG channel	good	n/a
+CPz	eeg	uV	512	EEG channel	good	n/a
+Fpz	eeg	uV	512	EEG channel	good	n/a
+Fp2	eeg	uV	512	EEG channel	bad	channel not plugged into cap; slot was blocked by tDCS electrode on scalp
+AF8	eeg	uV	512	EEG channel	bad	channel not plugged into cap; slot was blocked by tDCS electrode on scalp
+AF4	eeg	uV	512	EEG channel	good	n/a
+AFz	eeg	uV	512	EEG channel	good	n/a
+Fz	eeg	uV	512	EEG channel	good	n/a
+F2	eeg	uV	512	EEG channel	good	n/a
+F4	eeg	uV	512	EEG channel	good	n/a
+F6	eeg	uV	512	EEG channel	good	n/a
+F8	eeg	uV	512	EEG channel	good	n/a
+FT8	eeg	uV	512	EEG channel	good	n/a
+FC6	eeg	uV	512	EEG channel	good	n/a
+FC4	eeg	uV	512	EEG channel	good	n/a
+FC2	eeg	uV	512	EEG channel	good	n/a
+FCz	eeg	uV	512	EEG channel	good	n/a
+Cz	eeg	uV	512	EEG channel	good	n/a
+C2	eeg	uV	512	EEG channel	good	n/a
+C4	eeg	uV	512	EEG channel	good	n/a
+C6	eeg	uV	512	EEG channel	good	n/a
+T8	eeg	uV	512	EEG channel	good	n/a
+TP8	eeg	uV	512	EEG channel	good	n/a
+CP6	eeg	uV	512	EEG channel	good	n/a
+CP4	eeg	uV	512	EEG channel	good	n/a
+CP2	eeg	uV	512	EEG channel	good	n/a
+P2	eeg	uV	512	EEG channel	good	n/a
+P4	eeg	uV	512	EEG channel	good	n/a
+P6	eeg	uV	512	EEG channel	good	n/a
+P8	eeg	uV	512	EEG channel	good	n/a
+P10	eeg	uV	512	EEG channel	good	n/a
+PO8	eeg	uV	512	EEG channel	good	n/a
+PO4	eeg	uV	512	EEG channel	good	n/a
+O2	eeg	uV	512	EEG channel	good	n/a
+EXG1	eog	uV	512	above left eyebrow (VEOG1)	good	n/a
+EXG2	eog	uV	512	below left eye (VEOG2)	good	n/a
+EXG3	misc	uV	512	left earlobe (for re-referencing)	good	n/a
+EXG4	misc	uV	512	right earlobe (for re-referencing)	good	n/a
+EXG5	eog	uV	512	left outer canthus (HEOG1)	good	n/a
+EXG6	eog	uV	512	right outer canthus (HEOG2)	good	n/a
+EXG7	misc	uV	512	empty (not plugged in)	good	n/a
+EXG8	misc	uV	512	empty (not plugged in)	good	n/a
+Status	trig	unknown	512	triggers	good	n/a

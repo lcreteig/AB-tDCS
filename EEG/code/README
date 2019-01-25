@@ -1,0 +1,21 @@
+Raw BIDS data
+--------
+
+bidsify.m was used (MATLAB version 2015a) to convert the data from sourcedata and create the BIDS-compliant (BrainVision format) EEG data in the sub*- folders, along with all the the .json and .tsv sidecar/metadata files in those folders.
+
+bidsify.m requires the fieldtrip toolbox [1]; the root should be in code/fieldtrip-20190115 (the version that was used). It also requires the blocked_chans.m function (in code/blocked_chans.m), to pull data required for the "status" and "status_description" columns in each _channels.tsv file
+
+Preprocessed data (derivatives)
+--------
+
+The code in the preproc folder was used to create the preprocessed data in the derivatives folder.
+
+The different preprocessing steps are marked and explained in the preproc/preproc_config.m function. Set which steps you want to perform there, then run the function with the default outputs. Subsequently, run the preproc/func/preprocess.m script to load the data, perform the steps, and save the preprocessed data. All other functions are called in either one of these files.
+
+The data were preprocessed using EEGLAB [2], version 8_0_3_5b and 13_5_4b. The scripts expect at least one of these folders to be present in code/preproc.
+
+References
+--------
+1. Robert Oostenveld, Pascal Fries, Eric Maris, and Jan-Mathijs Schoffelen. FieldTrip: Open Source Software for Advanced Analysis of MEG, EEG, and Invasive Electrophysiological Data. Computational Intelligence and Neuroscience, vol. 2011, Article ID 156869, 9 pages, 2011. doi:10.1155/2011/156869.
+
+2. Delorme, A., & Makeig, S. (2004). EEGLAB: an open source toolbox for analysis of single-trial EEG dynamics including independent component analysis. Journal of neuroscience methods, 134(1), 9-21.

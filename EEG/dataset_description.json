@@ -1,0 +1,15 @@
+{
+    "Name": "EEG study of the attentional blink; before, during, and after transcranial Direct Current Stimulation (tDCS)",
+    "BIDSVersion": "1.1.1",
+    "License": "CC0",
+    "Authors": [
+        "Leon C. Reteig",
+        "Lionel A. Newman",
+        "K. Richard Ridderinkhof",
+        "Heleen A. Slagter"
+    ],
+    "Acknowledgements": "Daphne Box and Esther van der Giessen for assistance with data collection",
+    "HowToAcknowledge": "Please cite this paper: [FIXME] PUBLICATION LINK HERE",
+    "Funding": "NWO Research Talent Grant 406-12-079",
+    "DatasetDOI": "[FIXME] DATA DOI HERE"
+}

@@ -24,6 +24,18 @@ Thumbs.db
 *.pptx
 *.pdf
 
+# EEG data
+*.bdf
+*.eeg
+*.vhdr
+*.vmrk
+
+# R files
+.Rproj.user/
+.Rproj.user
+packrat/lib*/
+
+
 # Folders
 *.zip
 doc/*
@@ -34,7 +46,11 @@ figures/*
 talk/*
 paper/*
 forms/*
-src/eeg/preproc/eeglab*
+EEG/sourcedata/*
+EEG/derivatives/*
+EEG/sub-*/*
+EEG/code/preproc/eeglab*/*
+EEG/code/fieldtrip*/*
 
 # always still version control the readme files
 !README.md
@@ -46,7 +62,8 @@ IRB/2014-BC-3883/*
 data/pilot/*
 !data/pilot/README.md
 
-# R files
-.Rproj.user/
-.Rproj.user
-packrat/lib*/
+!EEG/sourcedata/README
+!EEG/derivatives/README
+
+# Also do one example subject
+!EEG/sub-01/*

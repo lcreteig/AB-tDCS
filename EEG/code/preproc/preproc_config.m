@@ -61,30 +61,30 @@ preproc.do_importdata = 1;         % 1. import the data from the bdf files into 
 preproc.do_cutdata = [1 0];        % 2. select segment of continuous data to keep
 preproc.do_detrend = [1 0];        % 3. remove the DC component from each channel
 preproc.do_buffer = [1 0];         % 4. splice some mirrored data to either end, to accomodate filter edge artefacts
-preproc.do_reref = [1 1];          % 5. re-reference the data to earlobes
-preproc.do_bipolar = [0 0];        % 6. bipolarize external channels (subtract pairs from each other, e.g. both HEOG channels)
-preproc.do_removechans = [0 0];    % 7. remove unused channels from data set
-preproc.do_chanlookup = [0 0];     % 8. import standard channel locations
-preproc.do_filter = [0 1];         % 9. high-pass filter the data
+preproc.do_reref = [1 0];          % 5. re-reference the data to earlobes
+preproc.do_bipolar = [1 0];        % 6. bipolarize external channels (subtract pairs from each other, e.g. both HEOG channels)
+preproc.do_removechans = [1 0];    % 7. remove unused channels from data set
+preproc.do_chanlookup = [1 0];     % 8. import standard channel locations
+preproc.do_filter = [1 0];         % 9. high-pass filter the data
 
-preproc.do_recodeTrigs = [0 0];    % 10. recode original marker values to more meaningful ones for analysis
-preproc.do_zerochans = [0 0];      % 11. set all values at unused channels (blocked by tDCS electrodes) to zero
-preproc.do_epoch = [0 0];          % 12. split continous data into epochs
-preproc.do_baseline = [0 0];       % 13. subtract a (pre-stimulus) baseline from each epoch
+preproc.do_recodeTrigs = [1 0];    % 10. recode original marker values to more meaningful ones for analysis
+preproc.do_zerochans = [1 0];      % 11. set all values at unused channels (blocked by tDCS electrodes) to zero
+preproc.do_epoch = [1 0];          % 12. split continous data into epochs
+preproc.do_baseline = [1 0];       % 13. subtract a (pre-stimulus) baseline from each epoch
 
-preproc.do_trialrej = [0 1];       % 14. manually identify trials for rejection and save trial indices
-preproc.do_badchans = [0 0];       % 15. zero-out additional bad channels (that should not be interpolated) after data inspection
-preproc.do_interpepochs = [0 0];   % 16. interpolate channel on a single epoch
-preproc.do_interpchans = [0 0];    % 17. interpolate all points of channels
-preproc.do_removetrials = [0 0];   % 18. remove trials previously identified for rejection (if they exist)
+preproc.do_trialrej = [1 0];       % 14. manually identify trials for rejection and save trial indices
+preproc.do_badchans = [1 0];       % 15. zero-out additional bad channels (that should not be interpolated) after data inspection
+preproc.do_interpepochs = [1 0];   % 16. interpolate channel on a single epoch
+preproc.do_interpchans = [1 0];    % 17. interpolate all points of channels
+preproc.do_removetrials = [1 0];   % 18. remove trials previously identified for rejection (if they exist)
 preproc.do_averef = [0 0];         % 19. re-reference the data to the common average
-preproc.do_ica = [0 1];            % 20. run independent component analysis
+preproc.do_ica = [1 1];            % 20. run independent component analysis
 
-preproc.do_plotIC = [0 0];         % 21. plot results of independent component analyis and save component indices
-preproc.do_removeIC = [0 0];       % 22. subtract marked components from the data
-preproc.do_removebipolars = [0 0]; % 23. drop bipolars from the dataset, leaving only the leave scalp channels
+preproc.do_plotIC = [1 0];         % 21. plot results of independent component analyis and save component indices
+preproc.do_removeIC = [1 0];       % 22. subtract marked components from the data
+preproc.do_removebipolars = [1 0]; % 23. drop bipolars from the dataset, leaving only the leave scalp channels
 preproc.do_laplacian = [0 0];      % 24. apply scalp laplacian
-preproc.do_conditions = 0;         % 25. re-epoch into separate conditions
+preproc.do_conditions = 1;         % 25. re-epoch into separate conditions
 
 %% Inputs
 
