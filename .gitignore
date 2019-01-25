@@ -46,6 +46,8 @@ figures/*
 talk/*
 paper/*
 forms/*
+IRB/*
+pilot/*
 EEG/sourcedata/*
 EEG/derivatives/*
 EEG/sub-*/*
@@ -53,15 +55,6 @@ EEG/code/preproc/eeglab*/*
 EEG/code/fieldtrip*/*
 
 # always still version control the readme files
-!README.md
-!IRB/2014-BC-3883
-IRB/2014-BC-3883/*
-!IRB/2014-BC-3883/README.md
-
-!data/pilot
-data/pilot/*
-!data/pilot/README.md
-
 !EEG/sourcedata/README
 !EEG/derivatives/README
 
