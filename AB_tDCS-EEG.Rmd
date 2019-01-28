@@ -225,7 +225,7 @@ Indeed, only a main effect of lag is clearly visible. If anything, the largest d
 #### Interaction: stimulation by session order
 
 ```{r study 1 - plot stimulation by session order, fig.cap="Study 1 - Stimulation by Session Order"}
-afex_plot(aov_study1, x = "stimulation", trace = "session.order")
+afex_plot(aov_study1, x = "stimulation", trace = "session.order", error = "none")
 ```
 
 _stimulation_ and _session.order_ are not orthogonal: their interaction makes up a new factor _session_, with 2 levels:
@@ -255,7 +255,7 @@ Seems that the crossover interaction (the learning effect) is mostly present in 
 * __Within-subject factors__: 
   1. `block`, 3 levels: Whether data is before (_pre_), during (_tDCS_) or after (_post_) tDCS 
   2. `stimulation`, 2 levels: Whether participant received _anodal_ or _cathodal_ tDCS
-  3. `lag`, 3 levels: Whether T2 followed T1 after 2 distractors (_lag 3_), or after 7 distractors (_lag 8_).
+  3. `lag`, 2 levels: Whether T2 followed T1 after 2 distractors (_lag 3_), or after 7 distractors (_lag 8_).
 * __Subject identifier__: `subject` (n = `r n_study2`).
 
 ```{r rm anova study 2}
@@ -364,7 +364,7 @@ However, all in all, I favor the 1st interpretation of the four-way interaction 
 * __Within-subject factors__: 
   1. `block`, 3 levels: Whether data is before (_pre_), during (_tDCS_) or after (_post_) tDCS 
   2. `stimulation`, 2 levels: Whether participant received _anodal_ or _cathodal_ tDCS
-  3. `lag`, 3 levels: Whether T2 followed T1 after 2 distractors (_lag 3_), or after 7 distractors (_lag 8_).
+  3. `lag`, 2 levels: Whether T2 followed T1 after 2 distractors (_lag 3_), or after 7 distractors (_lag 8_).
 * __Subject identifier__: `subject` (n = `r n_study2`).
 
 ```{r rm anova study 2 T1}
@@ -411,7 +411,7 @@ The two-way interaction is strongest in the later two blocks. Again, this is the
 
 ## Calculate change scores
 
-First we calculate attentional blink magnitude:
+First we calculate attentional blink magnitude: the difference between short-lag and long-lag T2|T1 performance.
 
 ```{r Function to calculate AB magnitude}
 ```
@@ -419,7 +419,7 @@ First we calculate attentional blink magnitude:
 ```{r calculate AB magnitude}
 ABmag_study1 <- calc_ABmag(df_study1)
 ABmag_study2 <- calc_ABmag(df_study2)
-kable(head(ABmag_study2,7), digits = 1, caption = "AB magnitude data frame in study 2")
+kable(head(ABmag_study2,7), digits = 2, caption = "AB magnitude data frame in study 2")
 ```
 
 * __AB.magnitude__: the difference in T2|T1 performance at the longest lag (study 1: lag 10, study 2: lag 8) vs. the shortest lag (study 1: lag 2, study 2: lag 3)
@@ -433,7 +433,7 @@ Next, we calculate change from baseline for both of these measures:
 ```{r calculate change scores}
 ABmagChange_study1 <- calc_change_scores(ABmag_study1)
 ABmagChange_study2 <- calc_change_scores(ABmag_study2)
-kable(head(ABmagChange_study2,9), digits = 1, caption = "Change scores data frame in study 2")
+kable(head(ABmagChange_study2,9), digits = 2, caption = "Change scores data frame in study 2")
 ```
 
 * __baseline__ is the score in the "pre" block for this _measure_ (`AB.magnitude` or `T1.short`)
@@ -497,7 +497,7 @@ Partial correlation between:
 * baseline AB magnitude
 * AB magnitude change from baseline (tDCS - baseline; post - baseline)
 
-Given ("controlling for"):
+Given (adjusing for):
 
 * session order
 * change from baseline in T1 accuracy at lag 2
@@ -509,7 +509,7 @@ kable(pcorr_change_baseline(ABmagChange_study1),
       digits = 3, caption = "Study 1: partial correlation change from baseline")
 ```
 
-In study 1, all correlations except for `cathodal, tDCS - baseline` are significant (without correcting for multiple comparisons). The correlation for `anodal, tDCS - baseline`) is the strongest.
+In study 1, all correlations except for `cathodal, tDCS - baseline` are significant (without correcting for multiple comparisons). The correlation for `anodal, tDCS - baseline` is the strongest.
 
 #### Study 2
 
@@ -581,6 +581,10 @@ kable(var_test(ABmag_study2), digits = 3, caption = "Study 2: test of variance i
 In study 2 also all variance tests are not significant, again suggesting the two significant partial correlations are spurious.
 
 # Anodal vs. cathodal
+
+Study 1 reported that the "effects of" anodal and cathodal tDCS (`tDCS - baseline`) are anticorrelated: those participants that improve their performance (smaller AB magnitude) in the anodal session worsen in the cathodal session (and vice versa).
+
+However, this correlation is not clearly present (and is not significant) in study 2:
 
 ## Plots {.tabset .tabset-fade .tabset-pills}
 
@@ -655,7 +659,7 @@ extractBF(correlationBF(
 
 ### Study 2
 
-Partial correlation between anodal and cathodal AB magnitude change score (tDCS - baseline), "controlling" for session order:
+Partial correlation between anodal and cathodal AB magnitude change score (tDCS - baseline), attempting to adjust for session order:
 
 ```{r partial correlation anodal vs cathodal study 2}
 p_r_2 <- pcorr_anodal_cathodal(ABmagChange_study2)
@@ -725,7 +729,7 @@ The negative correlation is larger in study 1, and the data points from study 1 
 
 ### Statistics
 
-Partial correlation between anodal and cathodal AB magnitude change score (tDCS - baseline), "controlling" for session order:
+Partial correlation between anodal and cathodal AB magnitude change score (tDCS - baseline), attempting to adjust for session order:
 
 ```{r partial correlation anodal vs cathodal pooled}
 pcorr_anodal_cathodal(ABmagChange_pooled) %>%
@@ -878,6 +882,7 @@ critical.r <- function(n, alpha = .05 ) {
     critical.r <- sqrt( (critical.t^2) / ( (critical.t^2) + df ) )
     return( critical.r )
 }
+critical.r(n_study1_pc)
 ```
 
 ```{r critical r test, fig.cap='test for equivalence to critical effect size'}
