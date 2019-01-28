@@ -3,6 +3,9 @@ title: AB_tDCS-EEG
 author: Leon Reteig
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: 
+  github_document:
+    toc: true
+    toc_depth: 3
   rmdformats::html_clean:
     highlight: pygments
     gallery: true
