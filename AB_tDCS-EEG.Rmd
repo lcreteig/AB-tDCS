@@ -332,9 +332,9 @@ afex_plot(aov_study2, x = "block", trace = c("stimulation","lag"), panel = "sess
           factor_levels = list(lag = c("lag 3","lag 8")), error = "none")
 ```
 
-Most of the changes occur in the "anodal first" group. There we can actually see the hypothesized effect: increased performance on short-lag trials during/after tDCS compared to before.
+Most of the changes occur in the "anodal first" group. There we can actually see the hypothesized effect: increased performance on short-lag trials during/after tDCS compared to before. That said, the biggest difference between anodal and cathodal is in the baseline already, and only decreases in the _tDCS_- and _post_-blocks. Also, in the "cathodal first" group, the direction of the "effect" is reversed (and again the differences are largest in the baseline).
 
-Lets's therefore look at the hypothesized three-way interaction separately for each "group" (anodal first, cathodal first):
+Still, lets's look at the hypothesized three-way interaction separately for each "group" (anodal first, cathodal first):
 
 ```{r three-way interaction by group}
 joint_tests(aov_study2, by = "session.order")
@@ -352,10 +352,11 @@ The `pre - post` contrast for lag 3, anodal stimulation in the anodal-first grou
 
 ---
 
-However, all in all, I favor the 1st interpretation of the four-way interaction (i.e. in terms of the learning effect):
+However, all in all, I favor the 1st interpretation of the four-way interaction (i.e. in terms of the learning effect, which does not occur at lag 8):
 
 * It's more consistent with study 1 (also occurs there, albeit in slightly different form)
 * Unless there's really a carryover effect, it's not clear why the hypothesized effect would only occur in the "anodal first" group. A learning effect seems more intuitive.
+* The differences between the two stimulation sessions (anodal and cathodal) are most pronounced _before_ tDCS onset.
 
 ### Study 2 - T1
 
@@ -379,7 +380,7 @@ kable(nice(aov_study2_T1), caption = "Study 2: RM ANOVA on T1 performance")
 afex_plot(aov_study2_T1, x = "lag", error = "within")
 ```
 
-Like T2|T1, T1 performance is also worse for the short lag (though only a little). This was also reported in study 1.
+Like T2|T1, T1 performance is also worse for the short lag (though only a little). Seems to be mostly driven by a few participants with relatively bad short-lag performance for T1. This effect was also reported in study 1.
 
 #### Main effect of block
 
@@ -785,7 +786,7 @@ res
 
 The overall effect is not significant: _p_ = `r round(res$pval,3)`.
 
-The effect size and confidence intervals printed above are _z_-values, as the meta-analysis was performed on Fisher's _r_-to-_z_ transformed correlationn coefficients. Now we transform them back to _r_-values:
+The effect size and confidence intervals printed above are _z_-values, as the meta-analysis was performed on Fisher's _r_-to-_z_ transformed correlation coefficients. Now we transform them back to _r_-values:
 
 ```{r transform to r}
 kable(predict(res, transf = transf.ztor))
@@ -812,9 +813,9 @@ If the original study were replicated 100 times, 95 of the observed correlation 
 pi.r(r = r_study1, n = n_study1_pc, rep.n = n_study2_pc)
 ```
 
-The observed correlation in study 2 (_r_ = `r round(r_study2,2)`) falls within the 95% PI. Therefore, the results of study 2 are technically consistent with study 1, so we could conclude that study 2 was a succesful replication. 
+The observed correlation in study 2 (_r_ = `r round(r_study2,2)`) falls outside the 95% PI. Therefore, the results of study 2 are not consistent with study 1, so we could conclude that study 2 was a succesful replication. 
 
-However, the 95% PI is so wide that almost any negative correlation of a realistic size would fall inside it (it even extends beyond 0 a little). So above all it illustrates that we cannot draw strong conclusions based on the results of either study.
+However, the 95% PI is so wide that almost any negative correlation of a realistic size would fall inside it. So above all it illustrates that we cannot draw strong conclusions based on the results of either study.
 
 ## Bayes Factors with informed priors
 
@@ -838,9 +839,9 @@ This Bayes Factor still provides more evidence for the null than for the alterna
 
 ### "Replication Bayes Factor"
 
-While a default Bayes factor adresses the question ("Is there more evidence that the effect is absent (H~0~) vs. presentt (H~1~), this Bayes factors adresses the question ("Is there more evidence that the effect is absent (the "skeptic's hypothesis") vs. similar to what was found before ( the "proponent's hypothesis"). The "replication Bayes factor" adresses this latter question by using the posterior of study 1 as a prior in the analysis of study 2, i.e. as the proponent's hypothesis.
+While a default Bayes factor adresses the question ("Is there more evidence that the effect is absent (H~0~) vs. present (H~1~), this Bayes factors adresses the question ("Is there more evidence that the effect is absent (the "skeptic's hypothesis") vs. similar to what was found before ( the "proponent's hypothesis"). The "replication Bayes factor" adresses this latter question by using the posterior of study 1 as a prior in the analysis of study 2, i.e. as the proponent's hypothesis.
 
-This Bayes factor was proposed by Wagenmakers, Verhagen & Ly (2016)[^ref_wagenmakers] and is computed using [their provided code](https://osf.io/9d4ip/).
+This Bayes factor was proposed by Wagenmakers, Verhagen & Ly (2016)[^ref_wagenmakers] and is computed using [their provided code](https://osf.io/9d4ip/). Note that it does not "directly" compute a Bayesian correlation, but uses the effect sizes (partial correlations) from both studies.
 
 ```{r replication Bayes Factor}
 bf0RStudy1 <- 1/repBfR0(nOri = n_study1_pc, rOri = r_study1,
@@ -867,11 +868,13 @@ TOSTr(n = n_study2_pc, r = r_study2,
       low_eqbound_r = -small_telescopes$r, alpha = 0.05) # equivalence test
 ```
 
+The overall equivalence test is not significant, so we cannot conclude that the effect is smaller than the SESOI. However, given the original study found a negative effect, it makes sense to only look at the lower equivalence bound. The results of this _inferiority_ test is in fact significant, so we can reject the hypothesis that the effect size is at least that negative.
+
 [^ref_simonsohn]: Simonsohn, U. (2015). Small telescopes: Detectability and the evaluation of replication results. _Psychological Science, 26(5),_, 1–11. doi: [10.1177/0956797614567341](https://doi.org/10.1177/0956797614567341)
 
 ### Critical effect size
 
-Others (e.g. in the paper accompanying the R package for equivalence tesst, by Lakens et al. (2018)[^ref_lakens]) argue that a more appropriate SESOI would be the smallest effect size that would still be significant in the original study. This usually corresponds to the effect size the study had 50% power to detect.
+Others (e.g. in the paper accompanying the R package for equivalence test, by Lakens et al. (2018)[^ref_lakens]) argue that a more appropriate SESOI would be the smallest effect size that would still be significant in the original study. This usually corresponds to the effect size the study had 50% power to detect.
 
 First we derive the critical r-value for the original sample size (function below from <https://www.researchgate.net/post/What_is_the_formula_to_calculate_the_critical_value_of_correlation>).
 
@@ -892,6 +895,8 @@ TOSTr(n = n_study2_pc, r = r_study2,
       alpha = 0.05)
 ```
 
+When we specify the SESOI like this, the CIs do fall within both equivalence bounds.
+
 [^ref_lakens]: Lakens, D., Scheel, A. M., & Isager, P. M. (2018). Equivalence Testing for Psychological Research: A Tutorial. _Advances in Methods and Practices in Psychological Science, 1(2)_, 259–269. doi: [10.1177/2515245918770963](http://doi.org/10.1177/2515245918770963)
 
 ### Original effect size
@@ -902,7 +907,7 @@ Finally, we can also take the original effect size as the SESOI.
 TOSTr(n = n_study2_pc, r = r_study2, high_eqbound_r =  -r_study1, low_eqbound_r = r_study1, alpha = 0.05)
 ```
 
-Here the effect size is actually significant, so based on study 2 we can reject the presence of a correlation at least as large as in study 1.
+This is the least stringent criterion, so naturally this test is also significant, meaning that based on study 2 we can reject the presence of a correlation at least as large as in study 1.
 
 However, given that the original correlation was not very precisely estimated (the confidence intervals were very wide), this is not really a reasonable SESOI.
 
