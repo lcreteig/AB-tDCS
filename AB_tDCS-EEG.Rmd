@@ -3,12 +3,12 @@ title: AB_tDCS-EEG
 author: Leon Reteig
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: 
-  github_document:
-    toc: true
-    toc_depth: 3
   rmdformats::html_clean:
     highlight: pygments
     gallery: true
+  github_document:
+    toc: true
+    toc_depth: 3
 ---
 
 # Setup environment
@@ -111,8 +111,8 @@ We'll use only a subset of columns, with the header structure `block/stim`\_`tar
     5. `td`: "cathodal" tDCS, "tDCS" block (during tDCS)
     6. `nd`: "cathodal" tDCS, "post" block (after tDCS)
 * __target__ is either:
-    1.`T1` (T1 accuracy): proportion of trials in which T1 was identified correctly
-    2. `T2|T1` (T2|T1 accuracy): proportion of trials in which T2 was identified correctly, given T1 was identified correctly
+    1. `T1` (T1 accuracy): proportion of trials in which T1 was identified correctly
+    2. `NB` (T2|T1 accuracy): proportion of trials in which T2 was identified correctly, given T1 was identified correctly
 * __lag__ is either:
     1. `2` (lag 2), when T2 followed T1 after 1 distractor 
     2. `4` (lag 4), when T2 followed T1 after 3 distractors
