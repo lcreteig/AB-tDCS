@@ -23,6 +23,12 @@ Thumbs.db
 *.ppt
 *.pptx
 *.pdf
+# rmarkdown auxiliary
+*.fff
+*.ttt
+
+# Graphics
+*.ai
 
 # EEG data
 *.bdf
@@ -44,7 +50,6 @@ IRB/*
 data/*
 figures/*
 talk/*
-paper/*
 forms/*
 IRB/*
 pilot/*
@@ -53,6 +58,7 @@ EEG/derivatives/*
 EEG/sub-*/*
 EEG/code/preproc/eeglab*/*
 EEG/code/fieldtrip*/*
+paper/AB_tDCS_paper_files/*
 
 # always still version control the readme files
 !EEG/sourcedata/README
