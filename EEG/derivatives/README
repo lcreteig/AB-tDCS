@@ -1,9 +1,9 @@
 The derivatives folder contains preprocessed data (created using the code in the code/preproc folder).
 
-The 'conditions' subfolder contains the fully preprocessed data. This was produced by running all the steps marked in code/preproc/preproc_config (so excluding step 18 [average reference] and step 23 [scalp laplacian]).
+The 'conditions' subfolder contains the fully preprocessed data. This was produced by running all the steps marked in code/preproc/preproc_config (so excluding step 19 [average reference] and step 24 [scalp laplacian]).
 
 The 'ica' subfolder contains partially preprocessed data, up to and including step 20 [running the independent component analysis]. This is provided in addition to the fully preprocessed data, because this is the only step that takes a considerable amount of time---all the others can be recomputed fairly quickly.
 
 All the text files in this folder contain the trial numbers that were manually marked for rejection in step 14 (filename containing "rejectedtrials"), and the indices of the independent components manually selected in step 21 (filename containing "rejectedICs"). These files are used by steps 18 and 22, respectively, to actually change the data. The text files were saved to make the analysis fully reproducible, even if the EEG data were not re-saved at the steps where the manual selection occurred.
 
-preprocessing_log.csv contains some notes on data inspection and trials/components marked for rejection
+preprocessing_log.csv contains some notes on data inspection and trials/components marked for rejection.

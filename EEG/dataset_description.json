@@ -1,6 +1,6 @@
 {
     "Name": "EEG study of the attentional blink; before, during, and after transcranial Direct Current Stimulation (tDCS)",
-    "BIDSVersion": "1.1.1",
+    "BIDSVersion": "v1.2.0-dev",
     "License": "CC0",
     "Authors": [
         "Leon C. Reteig",

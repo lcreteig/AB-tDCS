@@ -22,7 +22,7 @@ sourcedata = fullfile(dir_bids, 'sourcedata');
 sub_list = dir(fullfile(sourcedata, 'S*')); % each subject's folder must start with capital S
 sub_list = {sub_list.name};
 
-for iSub=7%1:numel(sub_list) % for each subject folder
+for iSub=1:numel(sub_list) % for each subject folder
 
     subID = str2double(sub_list{iSub}(2:end)); % strip "S" from name; this should be the subject number
 
@@ -87,14 +87,14 @@ for iSub=7%1:numel(sub_list) % for each subject folder
         % Files
         cfg.dataset                        = fullfile(sourcedata, sub_list{iSub}, f_info(iSess).name); % input source data
         cfg.outputfile                     = fullfile(dir_bids, new_sub_folder, new_ses_folder, sprintf('sub-%02d_ses-%s_task-%s_eeg.vhdr', subID, session_id{iSess}, task)); % BIDS data (BrainVision format)
+
         cfg.eeg.writesidecar               = 'replace';
         cfg.channels.writesidecar          = 'replace';
         cfg.events.writesidecar            = 'replace';
         % cfg.presentationfile
 
         % Institution
-        cfg.InstitutionName                = 'University of Amsterdam';
-        cfg.InstitutionalDepartmentName    = 'Department of Psychology';
+        cfg.InstitutionName                = 'Department of Psychology, University of Amsterdam';
         cfg.InstitutionAddress             = 'Nieuwe Achtergracht 129B; 1018 WS, Amsterdam, The Netherlands';
 
         % task
@@ -115,7 +115,7 @@ for iSub=7%1:numel(sub_list) % for each subject folder
         cfg.eeg.MiscChannelCount           = 4; % 2 earlobes for re-referencing (EXG3, EXG4), 2 empty (EXG7, EXG8) % FIXME data2bids will always overwrite this with header info from data file (which is 9)
         cfg.eeg.TriggerChannelCount        = 1; % Status channel % FIXME data2bids will always overwrite this with header info from data file (which is 0)
         cfg.eeg.CapManufacturer            = 'Biosemi';
-        cfg.eeg.CapModelName               = 'CAP 64 10/20';
+        cfg.eeg.CapManufacturersModelName  = 'CAP 64 10/20';
         cfg.eeg.SoftwareFilters            = 'n/a';
         cfg.eeg.RecordingType              = 'continuous';
         if strcmp(block_info, 'tDCS')

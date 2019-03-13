@@ -7,10 +7,9 @@
         }
     },
     "age": {
-        "Description": "age of the participant at the time of data acquisition"
+        "Description": "age of the participant (at the time of data acquisition)"
     },
-
     "gender": {
-        "Description": "age of the participant at the time of data acquisition"
+        "Description": "gender of the participant (at the time of data acquisition)"
     }
 }

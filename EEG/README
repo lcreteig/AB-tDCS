@@ -17,7 +17,7 @@ Each block for each visit is considered a session here (you could also argue thi
 5. cathodalpre (data from cathodal visit, before tDCS)
 6. cathodaltDCS (data from cathodal visit, during tDCS)
 
-See the _sessions.tsv file in each sub*-folder for details.
+See the _sessions.tsv and _sessions.json files in each sub*-folder for details.
 
 Concurrent tDCS-EEG
 --------
@@ -30,7 +30,9 @@ The rubber tDCS electrodes were affixed to the scalp using conductive paste. Bec
 The tDCS montage was the following:
 
 1. 7x5 mm electrode centered over F3 (long side parallel to midline; connector at posterior end)
-2. 7x5 mm electrode centered on right forehead (approximately Fp2) (short side parallel to midline, connector facing laterally)
+2. 7x5 mm electrode centered on right forehead (approximately Fp2) (short side parallel to midline, connector at lateral end)
+
+Anodal or cathodal tDCS is defined according to the electrode over F3, i.e. "anodal tDCS" means this was the anode (with the cathode over Fp2); "cathodal tDCS" means this was the cathode (with the anode over Fp2).
 
 tDCS artifacts
 ========

@@ -3,7 +3,7 @@ Raw BIDS data
 
 bidsify.m was used (MATLAB version 2015a) to convert the data from sourcedata and create the BIDS-compliant (BrainVision format) EEG data in the sub*- folders, along with all the the .json and .tsv sidecar/metadata files in those folders.
 
-bidsify.m requires the fieldtrip toolbox [1]; the root should be in code/fieldtrip-20190115 (the version that was used). It also requires the blocked_chans.m function (in code/blocked_chans.m), to pull data required for the "status" and "status_description" columns in each _channels.tsv file
+bidsify.m requires the fieldtrip toolbox [1]; the root should be in code/fieldtrip-20190115 (the version that was used). It also requires the blocked_chans.m function (in code/blocked_chans.m), to pull data required for the "status" and "status_description" columns in each _channels.tsv file.
 
 Preprocessed data (derivatives)
 --------

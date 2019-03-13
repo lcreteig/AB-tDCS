@@ -1,0 +1,9 @@
+{
+    "session_order": {
+        "Description": "Participants visited the lab on two different days, to receive either anodal or cathodal tDCS. The order was not the same for each participant (some had anodal tDCS in their first visit; some had cathodal). This column indicates which sessions belong to which lab visit.",
+        "Levels": {
+            "1": "first lab visit",
+            "2": "second lab visit"
+        }
+    }
+}

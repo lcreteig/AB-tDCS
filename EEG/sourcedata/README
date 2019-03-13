@@ -7,7 +7,7 @@ Each subject has its own folder with the subject ID ("S01", "S47", etc.). Each f
 - [POLARITY] codes for the tDCS polarity they received during this visit (see below).
 - [BLOCK] is whether the data were recorded before tDCS ("pre"), during tDCS ("tDCS"), or after tDCS ("post")
 
-When a subject has complete data, each folder should contains 6 files (2 visits, 3 blocks). Some have less because subject only completed one session. Each file corresponds to one session in the BIDS-compliant data.
+When a subject has complete data, each folder should contains 6 files (2 visits, 3 blocks). Some have less because the subject only completed one lab visit. Each file corresponds to one session in the BIDS-compliant data.
 
 Polarity
 --------
