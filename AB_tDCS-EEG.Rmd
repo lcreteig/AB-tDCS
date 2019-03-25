@@ -29,14 +29,19 @@ library(metafor) # meta-analysis
 library(predictionInterval) # prediction intervals (for correlations)
 library(TOSTER) # equivalence tests
 library(pwr) # power analysis
-# Print version info
-print(sessionInfo())
+library(knitrhooks) # printing in rmarkdown outputs
+  output_max_height()
 # Source functions
 source(here("src", "func", "behavioral_analysis.R")) # loading data and calculating measures
 knitr::read_chunk(here("src", "func", "behavioral_analysis.R")) # display code from file in this notebook
 source(here("src", "lib", "corr_change_baseline.R")) # variance test / baseline vs. change-from-baseline correlation 
 source(here("src", "lib", "appendixCodeFunctionsJeffreys.R")) # replication Bayes factors
 ```
+
+```{r session info, output_max_height = "300px"}
+print(sessionInfo())
+```
+
 
 - Match interpretations with statistics
 - Match with outline Rmd
@@ -95,7 +100,7 @@ These data were used for statistical analysis in London & Slagter (2015)[^ref_lo
 
 [^ref_london]: London, R. E., & Slagter, H. A. (2015). Effects of transcranial direct current stimulation over left dorsolateral pFC on the attentional blink depend on individual baseline performance. _Journal of Cognitive Neuroscience, 27(12)_, 2382-2393. doi: [10.1162/jocn_a_00867](https://doi.org/10.1162/jocn_a_00867)
 
-```{r read study 1 data}
+```{r read study 1 data, output_max_height = "300px"}
 dataPath_study1 <- here("data","AB-tDCS_study1.txt")
 data_study1_fromDisk <- read.table(dataPath_study1, header = TRUE, dec = ",")
 glimpse(data_study1_fromDisk)
