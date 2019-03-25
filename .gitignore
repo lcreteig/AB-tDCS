@@ -12,6 +12,7 @@ task/log/*
 
 # Windows / OSX files
 *.DS_store
+*.DS_Store
 Thumbs.db
 *.smbdelete*
 
@@ -59,6 +60,7 @@ EEG/sub-*/*
 EEG/code/preproc/eeglab*/*
 EEG/code/fieldtrip*/*
 paper/AB_tDCS_paper_files/*
+src/lib/*
 
 # always still version control the readme files
 !EEG/sourcedata/README
