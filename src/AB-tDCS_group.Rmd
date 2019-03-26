@@ -1,0 +1,312 @@
+---
+title: AB-tDCS
+subtitle: Group-level analyses
+author: Leon Reteig
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: 
+  rmdformats::html_clean:
+    highlight: pygments
+    gallery: true
+    includes:
+      in_header: header.html
+      after_body: footer.html
+    
+  github_document:
+    toc: true
+    toc_depth: 3
+---
+
+# Setup environment
+
+```{r setup}
+
+# Load packages
+library(tidyverse)  # importing, transforming, and visualizing data frames
+library(here) # (relative) file paths
+library(knitr) # R notebook output
+library(scales) # Percentage axis labels 
+library(afex) # analysis of factorial experiments (repeated measures anova)
+library(emmeans); afex_options(emmeans_model = "multivariate") # post-hoc tests / contrasts, based on multivariate model
+library(knitrhooks) # printing in rmarkdown outputs
+  output_max_height()
+# Source functions
+source(here("src", "func", "behavioral_analysis.R")) # loading data and calculating measures
+load_data_path <- here("src","func","load_data.Rmd") # for rerunning and displaying
+knitr::read_chunk(here("src", "func", "behavioral_analysis.R")) # display code from file in this notebook
+```
+
+```{r session info, output_max_height = "300px"}
+print(sessionInfo())
+```
+
+```{r load data, child=load_data_path}
+```
+
+# Group analysis 
+
+## Line plots cf. London & Slagter (2015) {.tabset .tabset-fade .tabset-pills}
+
+```{r plot lines function}
+plot_lines <- function(df) {
+  df %>%
+  gather(target, proportion_correct, T1, T2.given.T1) %>% # so T1 vs. T2|T1 can be used as a factor
+  
+  ggplot(aes(lag, proportion_correct, color = block, linetype = target)) +
+  facet_wrap(~stimulation) +
+  stat_summary(fun.y = mean, geom = "line", aes(group = interaction(target,block)), position = position_dodge(width = 0.2)) +
+  stat_summary(fun.data = mean_se, geom = "errorbar", position = position_dodge(width = 0.2)) +
+  scale_x_discrete("Lag") +
+  scale_y_continuous("Percentage correct", limits = c(0,1), breaks = seq(0,1,.1), labels = scales::percent_format())
+}
+```
+
+### Study 1
+
+```{r lag line plot study 1, fig.cap="Group effects of tDCS in study 1"}
+plot_lines(df_study1)
+```
+
+### Study 2
+
+```{r lag line plot study 2, fig.cap="Group effects of tDCS in study 2"}
+plot_lines(df_study2)
+```
+
+__Stray observations:__
+
+* T1 performance comparable between both studies
+* Lag 8 performance is comparable to lag 10 (although a little bit lower)
+* Blink at lag 3 is about 10-15 percentage points less than lag 2
+* Slopes differ a bit in study 1, in study 2 especially anodal tDCS lag 8 stands out
+* In both studies, performance at lag 2/3 across anodal/cathodal tDCS and blocks is basically identical
+
+## RM ANOVA {.tabset .tabset-fade}
+
+### Study 1 - T2|T1
+
+* __DV__: `T2.given.T1`: Proportion of trials which T2 was identified correctly, out of the trials in which T1 was idenitified correctly (T2|T1).
+* __Between-subject factor__: `session.order`, 2 levels: Whether participant received _anodal_ or _cathodal_ tDCS in the first session (`anodal_first` vs. `cathodal_first`).
+* __Within-subject factors__: 
+  1. `block`, 3 levels: Whether data is before (_pre_), during (_tDCS_) or after (_post_) tDCS 
+  2. `stimulation`, 2 levels: Whether participant received _anodal_ or _cathodal_ tDCS
+  3. `lag`, 3 levels: Whether T2 followed T1 after 1 distractor (_lag 2_), 3 distractors, (_lag 4_), or after 9 distractors (_lag 10_).
+* __Subject identifier__: `subject` (n = `r n_study1`).
+
+```{r rm anova study 1}
+aov_study1 <- aov_car(T2.given.T1 ~ session.order + Error(subject/(block*stimulation*lag)), 
+        data = df_study1)
+kable(nice(aov_study1), caption = "Study 1: RM ANOVA on T2|T1 performance")
+```
+
+#### Main effect of lag
+
+This is the attentional blink: T2 is seen more often in the long lag(s).
+
+```{r study 1 - plot lag, fig.cap="Study 1 - Attentional blink (main effect of Lag)"}
+afex_plot(aov_study1, x = "lag", error = "within")
+```
+
+#### Main effect of block
+
+```{r study 1 - plot block, fig.cap="Study 1 - main effect of Block"}
+afex_plot(aov_study1, x = "block", error = "within")
+```
+
+Appears to be a time-on-task / fatigue effect: participants get worse each block.
+
+#### Interaction: block by stimulation by lag
+
+The hypothesized effect was that anodal stimulation improves (compared to `pre` block) the attentional blink (short-lag T2 performance), but it was not significant.
+
+```{r study 1 - plot hypothesis, fig.cap="Study 1 - hypothesized interaction: Block by Stimulation by Lag"}
+afex_plot(aov_study1, x = "block", trace =  "stimulation", panel = "lag", 
+          factor_levels = list(lag = c("lag 2","lag 4","lag 10")), error = "within")
+```
+
+Indeed, only a main effect of lag is clearly visible. If anything, the largest difference is in lag 2 though, but in the opposite direction (cathodal slightly improves performance; anodal slightly decreases performance).
+
+#### Interaction: stimulation by session order
+
+```{r study 1 - plot stimulation by session order, fig.cap="Study 1 - Stimulation by Session Order"}
+afex_plot(aov_study1, x = "stimulation", trace = "session.order", error = "none")
+```
+
+_stimulation_ and _session.order_ are not orthogonal: their interaction makes up a new factor _session_, with 2 levels:
+
+* session 1: 
+    1. _session.order_ = anodal first, _stimulation_ = anodal
+    2. _session.order_ = cathodal first, _stimulation_ = cathodal
+* session 2: 
+    1. _session.order_ = anodal first, _stimulation_ = cathodal
+    2. _session.order_ = cathodal first, _stimulation_ = anodal
+
+So my take is this "interaction" actually reflects an across-session learning effect: participants simply do better in their 2nd session than in their 1st.
+
+#### Interaction: stimulation by session order by block
+
+There is apparently also a higher order interaction, with _block_:
+
+```{r study 1 - plot threeway, fig.cap="Study 1 - Stimulation by Session Order by Block"}
+afex_plot(aov_study1, x = "stimulation", trace = "session.order", panel = "block", error = "none")
+```
+
+Seems that the crossover interaction (the learning effect) is mostly present in the first two blocks, not the last. This makes sense intuitively: in the third block of the 1st session, participants already performed the task for 40 minutes, so the difference in "time-on-task" between session 1 and 2 is not so great.
+
+### Study 2 - T2|T1
+
+* __DV__: `T2.given.T1`: Proportion of trials which T2 was identified correctly, out of the trials in which T1 was idenitified correctly (T2|T1).
+* __Within-subject factors__: 
+  1. `block`, 3 levels: Whether data is before (_pre_), during (_tDCS_) or after (_post_) tDCS 
+  2. `stimulation`, 2 levels: Whether participant received _anodal_ or _cathodal_ tDCS
+  3. `lag`, 2 levels: Whether T2 followed T1 after 2 distractors (_lag 3_), or after 7 distractors (_lag 8_).
+* __Subject identifier__: `subject` (n = `r n_study2`).
+
+```{r rm anova study 2}
+aov_study2 <- aov_car(T2.given.T1 ~ session.order + Error(subject/(block*stimulation*lag)), 
+        data = df_study2)
+kable(nice(aov_study2), caption = "Study 2: RM ANOVA on T2|T1 performance")
+```
+
+#### Main effect of lag
+
+```{r study 2 - plot lag, fig.cap="Study 2 - Attentional blink (main effect of Lag)"}
+afex_plot(aov_study2, x = "lag", error = "within")
+```
+
+Again simply the attentional blink.
+
+#### Interaction: block by stimulation by lag
+
+Like in study 1, this was the hypothesized effect, but it is not significant.
+
+```{r study 2 - plot hypothesis, fig.cap="Study 2 - hypothesized interaction: Block by Stimulation by Lag"}
+afex_plot(aov_study2, x = "block", trace =  "stimulation", 
+          panel = "lag", factor_levels = list(lag = c("lag 3","lag 8")), error = "within")
+```
+
+Doesn't look like much, but as it's trending (_p_ = `r round(aov_study2$anova_table["block:stimulation:lag","Pr(>F)"],3)`), let's look at the contrasts anyway:
+
+```{r study 2 - contrast hypothesis}
+pairs(emmeans(aov_study2, ~block|stimulation*lag))
+```
+
+The only significant change is in the anodal, lag 8 condition: T2 performance goes down compared to baseline. But because this is not the case for the short lag, this should not be considered an effect on the attentional blink.
+
+#### Interaction: stimulation by session order
+
+```{r study 2 - plot stimulation by session order, fig.cap="Study 2 - Stimulation by Session Order"}
+afex_plot(aov_study2, x = "stimulation", trace = "session.order", error = "none")
+```
+
+In study 1, this interaction also occured and looked like a cross-session learning effect: performance improves in the 2nd session compared to the first. However, here this is only visible for the "anodal first" group.
+
+```{r study 2 - contrast stimulation by session order}
+pairs(emmeans(aov_study2, ~stimulation|session.order))
+```
+
+Indeed, the difference is only significant for the "anodal first" group. It's unlikely, but in principle this could indicate that anodal has a carryover effect, while cathodal does not.
+
+#### Interaction: stimulation by session order by lag
+
+Apparently this also interacts with Lag (which it also did not do in study 1):
+
+```{r study 2 - plot stimulation by lag by session order, fig.cap="Study 2 - Stimulation by Session Order by Lag"}
+afex_plot(aov_study2, x = "stimulation", trace = "session.order", panel = "lag", 
+          factor_levels = list(lag = c("lag 3","lag 8")), error = "none")
+```
+
+Interesting: the two-way interaction between _stimulation_ and _session order_ shows no learning effect for both groups (only anodal first). However, this higher-order interaction does seem to show a change in the cathodal group also. But the interaction is only visible in the the short lag condition. That makes sense, as there is not much room for improvement in the long lag condition.
+
+#### Interaction: stimulation by session order by lag by block
+
+Then, there is a yet higher order interaction, also with _block_:
+
+```{r study 2 - plot four-way with block, fig.cap="Study 2 - four way interaction, centered on Block"}
+afex_plot(aov_study2, x = "stimulation", trace = c("session.order","lag"), 
+          panel = "block", data_plot = FALSE, factor_levels = list(lag = c("lag 3","lag 8")), error = "none")
+```
+
+This suggests that the three-way interaction (cross-session learning effect for short lag) mostly occurs in the `pre` block. Similar to the three-way interaction in study 1 (_stimulation_ by _session order_ by _block_), the "learning effect across sessions" (crossover in short lag trials) diminishes over blocks. This makes sense because the difference between sessions in "task experience" also diminishes over blocks (in the `pre` block, participants are doing the task for the first time in session 1, but in the later blocks of session 1, they've built up experience).
+
+However, another take on the four-way interaction is the following: it is actually the hypothesized effect (three-way interaction of _stimulation_, _block_, and _lag_), but it only occurs for a certain session order:
+
+```{r study 2 - plot four-way with first session, fig.cap="Study 2 - four way interaction, centered on Session Order"}
+afex_plot(aov_study2, x = "block", trace = c("stimulation","lag"), panel = "session.order", data_plot = FALSE,
+          factor_levels = list(lag = c("lag 3","lag 8")), error = "none")
+```
+
+Most of the changes occur in the "anodal first" group. There we can actually see the hypothesized effect: increased performance on short-lag trials during/after tDCS compared to before. That said, the biggest difference between anodal and cathodal is in the baseline already, and only decreases in the _tDCS_- and _post_-blocks. Also, in the "cathodal first" group, the direction of the "effect" is reversed (and again the differences are largest in the baseline).
+
+Still, lets's look at the hypothesized three-way interaction separately for each "group" (anodal first, cathodal first):
+
+```{r three-way interaction by group}
+joint_tests(aov_study2, by = "session.order")
+```
+
+Indeed, so the three-way interaction is significant in the "anodal first" group, but not the "cathodal first" group.
+
+Finally, let's also look at the pairwise contrasts for _block_ for each combination of factors:
+
+```{r study 2 - contrast four-way with first session}
+pairs(emmeans(aov_study2, ~block|session.order*stimulation*lag))
+```
+
+The `pre - post` contrast for lag 3, anodal stimulation in the anodal-first group is indeed significant (but the `pre - tDCS` difference is not). There is also an effect for lag 8, the `pre - tDCS` contrast is significant there (but not `pre - post`). 
+
+---
+
+However, all in all, I favor the 1st interpretation of the four-way interaction (i.e. in terms of the learning effect, which does not occur at lag 8):
+
+* It's more consistent with study 1 (also occurs there, albeit in slightly different form)
+* Unless there's really a carryover effect, it's not clear why the hypothesized effect would only occur in the "anodal first" group. A learning effect seems more intuitive.
+* The differences between the two stimulation sessions (anodal and cathodal) are most pronounced _before_ tDCS onset.
+
+### Study 2 - T1
+
+* __DV__: `T1`: Proportion of trials in which T1 was identified correctly.
+* __Between-subject factor__: `session.order`, 2 levels: Whether participant received _anodal_ or _cathodal_ tDCS in the first session (`anodal_first` vs. `cathodal_first`).
+* __Within-subject factors__: 
+  1. `block`, 3 levels: Whether data is before (_pre_), during (_tDCS_) or after (_post_) tDCS 
+  2. `stimulation`, 2 levels: Whether participant received _anodal_ or _cathodal_ tDCS
+  3. `lag`, 2 levels: Whether T2 followed T1 after 2 distractors (_lag 3_), or after 7 distractors (_lag 8_).
+* __Subject identifier__: `subject` (n = `r n_study2`).
+
+```{r rm anova study 2 T1}
+aov_study2_T1 <- aov_car(T1 ~ session.order + Error(subject/(block*stimulation*lag)), 
+        data = df_study2)
+kable(nice(aov_study2_T1), caption = "Study 2: RM ANOVA on T1 performance")
+```
+
+#### Main effect of lag
+
+```{r study 2 T1- plot lag, fig.cap="Study 2 - T1 main effect of Lag"}
+afex_plot(aov_study2_T1, x = "lag", error = "within")
+```
+
+Like T2|T1, T1 performance is also worse for the short lag (though only a little). Seems to be mostly driven by a few participants with relatively bad short-lag performance for T1. This effect was also reported in study 1.
+
+#### Main effect of block
+
+```{r study 2 T1 - plot block, fig.cap="Study 2 - T1 main effect of Block"}
+afex_plot(aov_study2_T1, x = "block", error = "within")
+```
+
+T1 performance seems to decrease slightly over the session. In study 1 this was also the case, for T1 and T2|T1, though here there was no effect of block on T2|T1.
+
+#### Interaction: stimulation by session order
+
+```{r study 2 T1 - plot stimulation by session order, fig.cap="Study 2 - T1: Stimulation by Session Order"}
+afex_plot(aov_study2_T1, x = "stimulation", trace = "session.order", error = "none")
+```
+
+This interaction was also present for T2|T1 in both studies. There it seemed to reflect a learning effect, but here it goes in the opposite direction: T1 performance is worse in the 2nd session than the first...
+
+#### Interaction: stimulation by session order by block
+
+There is also a higher-order interaction with Block:
+
+```{r study 2 - T1 plot threeway, fig.cap="Study 2 - T1: Stimulation by Session Order by Block"}
+afex_plot(aov_study2_T1, x = "stimulation", trace =  "session.order", panel = "block", error = "none")
+```
+
+The two-way interaction is strongest in the later two blocks. Again, this is the inverse of the learning effect, which was strongest in the first block.

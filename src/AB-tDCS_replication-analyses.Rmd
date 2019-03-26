@@ -1,0 +1,306 @@
+---
+title: AB-tDCS
+subtitle: Replication analyses
+author: Leon Reteig
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: 
+  rmdformats::html_clean:
+    highlight: pygments
+    gallery: true
+    includes:
+      in_header: header.html # prevent overlap with navbar
+    
+  github_document:
+    toc: true
+    toc_depth: 3
+---
+
+# Setup environment
+
+```{r setup}
+
+# Load packages
+library(tidyverse)  # importing, transforming, and visualizing data frames
+library(here) # (relative) file paths
+library(knitr) # R notebook output
+library(scales) # Percentage axis labels 
+library(broom) # transform model outputs into data frames
+library(ggm) # partial correlations
+library(BayesFactor) # Bayesian statistics
+library(metafor) # meta-analysis
+library(predictionInterval) # prediction intervals (for correlations)
+library(TOSTER) # equivalence tests
+library(pwr) # power analysis
+library(knitrhooks) # printing in rmarkdown outputs
+  output_max_height()
+# Source functions
+source(here("src", "func", "behavioral_analysis.R")) # loading data and calculating measures
+knitr::read_chunk(here("src", "func", "behavioral_analysis.R")) # display code from file in this notebook
+load_data_path <- here("src","func","load_data.Rmd") # for rerunning and displaying
+source(here("src", "lib", "appendixCodeFunctionsJeffreys.R")) # replication Bayes factors
+```
+
+```{r session info, output_max_height = "300px"}
+print(sessionInfo())
+```
+
+```{r load data, child=load_data_path}
+```
+
+# Replication analyses
+
+Recreate data from the previous notebook:
+
+```{r recreate data}
+# Recreate data
+ABmagChange_study1 <- df_study1 %>%
+  calc_ABmag() %>%# from the aggregated data, calculate AB magnitude
+  calc_change_scores() # from the AB magnitude, calculate change scores
+
+p_r_1 <- pcorr_anodal_cathodal(ABmagChange_study1)
+r_study1 <- p_r_1$r
+n_study1 <- n_distinct(df_study1$subject)
+n_study1_pc <- n_study1-1 # one less due to additional variable in partial correlation
+  
+ABmagChange_study2 <- df_study2 %>%
+  calc_ABmag() %>%# from the aggregated data, calculate AB magnitude
+  calc_change_scores() # from the AB magnitude, calculate change scores
+
+p_r_2 <- pcorr_anodal_cathodal(ABmagChange_study2)
+r_study2 <- p_r_2$r # r-value in study 2
+n_study2_pc <- n_study2-1 # one less due to additional variable in partial correlation
+```
+
+## Pool study 1 and 2
+
+As the samples in study 1 (n = `r n_study1`) and 2 (n = `r n_study2`) are on the smaller side, pooling the data from both studies might allow us to infer with more confidence whether the effect exists.
+
+The main difference is that study 1 presented T2 at lag 2, 4 or 10, whereas study 2 used lags 3 and 8. The long lags should be fairly comparable, as they are both well outside the attentional blink window. T2|T1 performance for both is between 80-90 % at the group level (although performance is a little better for lag 10).
+
+However, there is a big difference at the short lags: group-level performance at lag 3 (study 2) is 10-15 percentage points higher than at lag 2. Therefore, when comparing both studies, the best bet is to also create a "lag 3" condition in study 1, by imputing lag 2 and lag 4.
+
+```{r Function to create lag 3 in study 1 data}
+```
+
+
+```{r create lag 3 in study 1}
+df_study1_lag3 <- create_lag3_study1(df_study1) 
+kable(head(df_study1_lag3,9), digits = 1, caption = "Data frame for study 1 with lag 3 as the short lag")
+```
+
+Then we redo the further processing, and combine with the data from study 2:
+
+```{r redo further processing on lag 3}
+ABmagChange_pooled <- df_study1_lag3 %>% 
+  calc_ABmag() %>% # calculate AB mangnitude
+  calc_change_scores() %>% # calculate change from baseline
+  bind_rows(.,ABmagChange_study2) %>% # combine with study 2
+  mutate(study = ifelse(grepl("^pp",subject), "1", "2")) # add a "study" column, based on subject ID formatting
+```
+
+### Plot
+
+```{r Function to plot anodal vs cathodal change scores}
+
+```
+
+Recreate the scatter plot with data from both studies:
+
+```{r anodal vs. cathodal plot pooled, fig.cap="Effect of anodal vs. effect of cathodal pooled across studies"}
+plot_anodalVScathodal(ABmagChange_pooled) +
+ aes(colour = study)
+```
+
+The negative correlation is larger in study 1, and the data points from study 1 have a bigger spread. But overall it doesn't look very convincing still.
+
+### Statistics
+
+Partial correlation between anodal and cathodal AB magnitude change score (tDCS - baseline), attempting to adjust for session order:
+
+```{r partial correlation anodal vs cathodal pooled}
+pcorr_anodal_cathodal(ABmagChange_pooled) %>%
+kable(digits = 3, caption = "Pooled data from studies 1 and 2: Partial correlation anodal vs. cathodal")
+```
+
+Zero-order correlation:
+
+```{r zero-order correlation pooled}
+tidy(cor.test(
+  pull(filter(ABmagChange_pooled, stimulation == "anodal", measure == "AB.magnitude", change == "tDCS - baseline"), change.score),
+  pull(filter(ABmagChange_pooled, stimulation == "cathodal", measure == "AB.magnitude", change == "tDCS - baseline"), change.score),
+  method = "pearson")) %>%
+kable(., digits = 3, caption = "Pooled data from studies 1 and 2: Zero-order correlation anodal vs. cathodal")
+```
+
+Bayes factor:
+
+```{r Bayes factor study pooled}
+extractBF(correlationBF(
+  pull(filter(ABmagChange_pooled, stimulation == "anodal", measure == "AB.magnitude", change == "tDCS - baseline"), change.score),
+  pull(filter(ABmagChange_pooled, stimulation == "cathodal", measure == "AB.magnitude", change == "tDCS - baseline"), change.score))) %>%
+  select(bf) %>% # keep only the Bayes Factor
+  kable(digits = 3, caption = "Pooled data from studies 1 and 2: Bayesian correlation")
+```
+
+Neither correlation is significant. The Bayes factor favors the null, but only slightly, and less so than in study 2.
+
+## Meta-analysis
+
+For a more orthodox look on the pooled effect from both studies, let's perform a meta-analysis of the correlation coefficients. 
+
+First, create a new data frame with all the information:
+
+```{r data frame for meta-analysis}
+df_meta <- tibble(authors = c("London & Slagter","Reteig et al."), year = c(2015,2018), 
+                  ni = c(n_study1_pc, n_study2_pc), 
+                  ri = c(r_study1, r_study2))
+kable(df_meta)
+```
+
+* __ni__ is the sample size in each study
+* __ri__ is the correlation coefficient (Pearson's _r_)
+
+We'll specify the meta-analysis as a fixed effects model, as both studies were highly similar and from the same population (same lab, same university student sample). This does mean our inferences are limited to this particular set of two studies, but that's also what we want to know in this case ("how large is the effect when we pool both studies"), not necessarily "how large is the true effect in the population" (which would be a random-effects meta-analysis).
+
+```{r meta-analayze}
+res <- rma(ri = ri, ni = ni, data = df_meta, 
+           measure = "ZCOR", method = "FE", # Fisher-z tranform of r values, fixed effects method
+           slab = paste(authors, year, sep = ", ")) # add study info to "res" list
+res
+```
+
+The overall effect is not significant: _p_ = `r round(res$pval,3)`.
+
+The effect size and confidence intervals printed above are _z_-values, as the meta-analysis was performed on Fisher's _r_-to-_z_ transformed correlation coefficients. Now we transform them back to _r_-values:
+
+```{r transform to r}
+kable(predict(res, transf = transf.ztor))
+```
+
+* __pred__ is the correlation coefficient _r_
+* __ci.lb__ and __ci.ub__ are the upper and lower bounds of the confidence interval around _r_
+
+We can also visualize all of this in a forest plot:
+
+```{r forest plot, fig.cap="Fixed-effects meta-analysis of the anodal vs. cathodal correlation in study 1 and 2"}
+forest(res, transf = transf.ztor)
+```
+
+This shows the r-values (squares) and CIs (error bars) of the individual studies, as well as the meta-analytic effect size (middle of the diamond) and CI (ends of the diamond). The CIs of the meta-analytic effect just overlap zero, so the overall effect is not significant.
+
+## Prediction intervals
+
+To evaluate whether the result observed in study 2 is consistent with study 1, we can construct a _prediction interval_. A prediction interval contains the range of correlation coefficients we can expect to see in study 2, based on the original correlation in study 1, and the sample sizes of both study 1 and 2. 
+
+If the original study were replicated 100 times, 95 of the observed correlation coefficients would fall within the 95% prediction interval. Note that this is different from a _confidence interval_, which quantifies uncertainty about the (unknown) true correlation in the population (95 out of every hundred 95% CIs contain the true population parameter).
+
+```{r prediction interval}
+pi.r(r = r_study1, n = n_study1_pc, rep.n = n_study2_pc)
+```
+
+The observed correlation in study 2 (_r_ = `r round(r_study2,2)`) falls outside the 95% PI. Therefore, the results of study 2 are not consistent with study 1, so we could conclude that study 2 was a succesful replication. 
+
+However, the 95% PI is so wide that almost any negative correlation of a realistic size would fall inside it. So above all it illustrates that we cannot draw strong conclusions based on the results of either study.
+
+## Bayes Factors with informed priors
+
+```{r Bayes factor study 2}
+bf_study2 <- extractBF(correlationBF(
+  pull(filter(ABmagChange_study2, stimulation == "anodal", measure == "AB.magnitude", change == "tDCS - baseline"), change.score),
+  pull(filter(ABmagChange_study2, stimulation == "cathodal", measure == "AB.magnitude", change == "tDCS - baseline"), change.score))) %>%
+  select(bf) # keep only the Bayes Factor
+
+  kable(bf_study2)
+```
+
+### One-sided
+
+The default Bayes Factor uses a prior that assigns equal weight to positive and negative effect sizes (correlation coefficients in our case). However, we can also "fold" all the prior mass to one side, thereby effectively testing a directional hypothesis.
+
+In our case, based on study 1, we expect a negative correlation, so we evaluate the prior only over negative effect sizes (`-1` to `0`)
+
+```{r one-sided Bayes factor study 2}
+bf_one_sided <- extractBF(correlationBF(
+  pull(filter(ABmagChange_study2, stimulation == "anodal", measure == "AB.magnitude", change == "tDCS - baseline"), change.score),
+  pull(filter(ABmagChange_study2, stimulation == "cathodal", measure == "AB.magnitude", change == "tDCS - baseline"), change.score),
+  nullInterval = c(-1,0))) %>%
+  select(bf) # keep only the Bayes Factor
+
+  kable(bf_one_sided)
+```
+
+This Bayes Factor still provides more evidence for the null than for the alternative, but does provide less evidence for the null (BF~01~ = 1 / `r round(bf_one_sided$bf[1],2)` = `r round(1 / bf_one_sided$bf[1],2)`) than the regular Bayes Factor (BF~01~ = 1 / `r round(bf_study2$bf[1],2)` = `r round(1 / bf_study2$bf[1],2)`)
+
+### "Replication Bayes Factor"
+
+While a default Bayes factor adresses the question ("Is there more evidence that the effect is absent (H~0~) vs. present (H~1~), this Bayes factors adresses the question ("Is there more evidence that the effect is absent (the "skeptic's hypothesis") vs. similar to what was found before ( the "proponent's hypothesis"). The "replication Bayes factor" adresses this latter question by using the posterior of study 1 as a prior in the analysis of study 2, i.e. as the proponent's hypothesis.
+
+This Bayes factor was proposed by Wagenmakers, Verhagen & Ly (2016)[^ref_wagenmakers] and is computed using [their provided code](https://osf.io/9d4ip/). Note that it does not "directly" compute a Bayesian correlation, but uses the effect sizes (partial correlations) from both studies.
+
+```{r replication Bayes Factor}
+bf0RStudy1 <- 1/repBfR0(nOri = n_study1_pc, rOri = r_study1,
+                        nRep = n_study2_pc, rRep = r_study2)
+bf0RStudy1
+```
+
+This BF expresses that the data are `r round(bf0RStudy1,2)` times more likely under the skeptic's hypothesis, than under the proponent's hypothesis.
+
+[^ref_wagenmakers]: Wagenmakers, E. J., Verhagen, J., & Ly, A. (2016). How to quantify the evidence for the absence of a correlation. _Behavior Research Methods, 48(2)_, 413-426. doi: [10.3758/s13428-015-0593-0](https://doi.org/10.3758/s13428-015-0593-0)
+
+## Equivalence tests {.tabset .tabset-fade .tabset-pills}
+
+Equivalence tests allow you to test for the _absence_ of an effect of a specific size. Usually this is the smallest effect size of interest (the SESOI). We'll use three different specifications of the SESOI.
+
+### Small telescopes
+
+The "Small Telescopes" approach (Simonsohn, 2015)[^ref_simonsohn] suggests that the SESOI should be the effect size the original study had 33% power to detect, the idea being that anything smaller than that could not have been properly investigated in the original study in the first place (as the odds were already stacked 2:1 against finding the effect).
+
+```{r small telescopes test, fig.cap='test for equivalence to 33% power effect size'}
+small_telescopes <- pwr.r.test(n_study1_pc, power = 0.33) # r value with 33% power in study 1
+TOSTr(n = n_study2_pc, r = r_study2, 
+      high_eqbound_r = small_telescopes$r, 
+      low_eqbound_r = -small_telescopes$r, alpha = 0.05) # equivalence test
+```
+
+The overall equivalence test is not significant, so we cannot conclude that the effect is smaller than the SESOI. However, given the original study found a negative effect, it makes sense to only look at the lower equivalence bound. The results of this _inferiority_ test is in fact significant, so we can reject the hypothesis that the effect size is at least that negative.
+
+[^ref_simonsohn]: Simonsohn, U. (2015). Small telescopes: Detectability and the evaluation of replication results. _Psychological Science, 26(5),_, 1–11. doi: [10.1177/0956797614567341](https://doi.org/10.1177/0956797614567341)
+
+### Critical effect size
+
+Others (e.g. in the paper accompanying the R package for equivalence test, by Lakens et al. (2018)[^ref_lakens]) argue that a more appropriate SESOI would be the smallest effect size that would still be significant in the original study. This usually corresponds to the effect size the study had 50% power to detect.
+
+First we derive the critical r-value for the original sample size (function below from <https://www.researchgate.net/post/What_is_the_formula_to_calculate_the_critical_value_of_correlation>).
+
+```{r critical r function}
+critical.r <- function(n, alpha = .05 ) {
+    df <- n - 2
+    critical.t <- qt( alpha/2, df, lower.tail = F )
+    critical.r <- sqrt( (critical.t^2) / ( (critical.t^2) + df ) )
+    return( critical.r )
+}
+critical.r(n_study1_pc)
+```
+
+```{r critical r test, fig.cap='test for equivalence to critical effect size'}
+TOSTr(n = n_study2_pc, r = r_study2, 
+      high_eqbound_r = critical.r(n_study1_pc), 
+      low_eqbound_r = -critical.r(n_study1_pc), 
+      alpha = 0.05)
+```
+
+When we specify the SESOI like this, the CIs do fall within both equivalence bounds.
+
+[^ref_lakens]: Lakens, D., Scheel, A. M., & Isager, P. M. (2018). Equivalence Testing for Psychological Research: A Tutorial. _Advances in Methods and Practices in Psychological Science, 1(2)_, 259–269. doi: [10.1177/2515245918770963](http://doi.org/10.1177/2515245918770963)
+
+### Original effect size
+
+Finally, we can also take the original effect size as the SESOI.
+
+```{r original effect size, fig.cap='test for equivalence to original effect size'}
+TOSTr(n = n_study2_pc, r = r_study2, high_eqbound_r =  -r_study1, low_eqbound_r = r_study1, alpha = 0.05)
+```
+
+This is the least stringent criterion, so naturally this test is also significant, meaning that based on study 2 we can reject the presence of a correlation at least as large as in study 1.
+
+However, given that the original correlation was not very precisely estimated (the confidence intervals were very wide), this is not really a reasonable SESOI.

@@ -1,0 +1,147 @@
+---
+title: AB-tDCS
+subtitle: Correlation between anodal. vs. cathodal change scores 
+author: Leon Reteig
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: 
+  rmdformats::html_clean:
+    highlight: pygments
+    gallery: true
+    includes:
+      in_header: header.html # prevent overlap with navbar
+    
+  github_document:
+    toc: true
+    toc_depth: 3
+---
+
+```{r setup}
+
+# Load packages
+library(tidyverse)  # importing, transforming, and visualizing data frames
+library(here) # (relative) file paths
+library(knitr) # R notebook output
+library(scales) # Percentage axis labels 
+library(broom) # transform model outputs into data frames
+library(ggm) # partial correlations
+library(BayesFactor) # Bayesian statistics
+library(knitrhooks) # printing in rmarkdown outputs
+  output_max_height()
+# Source functions
+source(here("src", "func", "behavioral_analysis.R")) # loading data and calculating measures
+load_data_path <- here("src","func","load_data.Rmd") # for rerunning and displaying
+knitr::read_chunk(here("src", "func", "behavioral_analysis.R")) # display code from file in this notebook
+```
+
+```{r session info, output_max_height = "300px"}
+print(sessionInfo())
+```
+
+```{r load data, child=load_data_path}
+```
+
+# Anodal vs. cathodal
+
+Recreate data from the previous notebook
+
+```{r recreate data}
+# Recreate data
+ABmagChange_study1 <- df_study1 %>%
+  calc_ABmag() %>%# from the aggregated data, calculate AB magnitude
+  calc_change_scores() # from the AB magnitude, calculate change scores
+  
+ABmagChange_study2 <- df_study2 %>%
+  calc_ABmag() %>%# from the aggregated data, calculate AB magnitude
+  calc_change_scores() # from the AB magnitude, calculate change scores
+```
+
+Study 1 reported that the "effects of" anodal and cathodal tDCS (`tDCS - baseline`) are anticorrelated: those participants that improve their performance (smaller AB magnitude) in the anodal session worsen in the cathodal session (and vice versa).
+
+However, this correlation is not clearly present (and is not significant) in study 2:
+
+## Plots {.tabset .tabset-fade .tabset-pills}
+
+```{r Function to plot anodal vs cathodal change scores}
+
+```
+
+### Study 1
+
+```{r anodal vs. cathodal plot study 1, fig.cap="Effect of anodal vs. effect of cathodal in study 1"}
+plot_anodalVScathodal(ABmagChange_study1)
+```
+
+### Study 2
+
+```{r anodal vs. cathodal plot study 2, fig.cap="Effect of anodal vs. effect of cathodal in study 2"}
+plot_anodalVScathodal(ABmagChange_study2)
+```
+
+## Statistics {.tabset .tabset-fade .tabset-pills}
+
+```{r Function to calculate partial correlations of anodal vs cathodal change scores}
+```
+
+### Study 1
+
+Partial correlation between anodal and cathodal AB magnitude change score (tDCS - baseline), "controlling" for session order:
+
+```{r partial correlation anodal vs cathodal study 1}
+p_r_1 <- pcorr_anodal_cathodal(ABmagChange_study1)
+r_study1 <- p_r_1$r
+n_study1_pc <- n_study1 - 1 # lose one degree of freedom due to "controlling" for one variable in partial correlation
+kable(p_r_1)
+```
+
+Zero-order correlation:
+
+```{r zero-order correlation study 1}
+r_1 <- tidy(cor.test(
+  pull(filter(ABmagChange_study1, stimulation == "anodal", measure == "AB.magnitude", change == "tDCS - baseline"), change.score),
+  pull(filter(ABmagChange_study1, stimulation == "cathodal", measure == "AB.magnitude", change == "tDCS - baseline"), change.score),
+  method = "pearson"))
+kable(r_1)
+
+```
+
+Bayes factor:
+
+```{r Bayes factor study 1}
+extractBF(correlationBF(
+  pull(filter(ABmagChange_study1, stimulation == "anodal", measure == "AB.magnitude", change == "tDCS - baseline"), change.score),
+  pull(filter(ABmagChange_study1, stimulation == "cathodal", measure == "AB.magnitude", change == "tDCS - baseline"), change.score))) %>%
+  select(bf) %>% # keep only the Bayes Factor
+  kable()
+```
+
+### Study 2
+
+Partial correlation between anodal and cathodal AB magnitude change score (tDCS - baseline), attempting to adjust for session order:
+
+```{r partial correlation anodal vs cathodal study 2}
+p_r_2 <- pcorr_anodal_cathodal(ABmagChange_study2)
+r_study2 <- p_r_2$r
+n_study2_pc <- n_study2 - 1 # lose one degree of freedom due to "controlling" for one variable in partial correlation
+kable(p_r_2)
+```
+
+Zero-order correlation:
+
+```{r zero-order correlation study 2}
+r_2 <- tidy(cor.test(
+  pull(filter(ABmagChange_study2, stimulation == "anodal", measure == "AB.magnitude", change == "tDCS - baseline"), change.score),
+  pull(filter(ABmagChange_study2, stimulation == "cathodal", measure == "AB.magnitude", change == "tDCS - baseline"), change.score),
+  method = "pearson"))
+kable(r_2)
+```
+
+Bayes factor:
+
+```{r Bayes factor study 2}
+bf_study2 <- extractBF(correlationBF(
+  pull(filter(ABmagChange_study2, stimulation == "anodal", measure == "AB.magnitude", change == "tDCS - baseline"), change.score),
+  pull(filter(ABmagChange_study2, stimulation == "cathodal", measure == "AB.magnitude", change == "tDCS - baseline"), change.score))) %>%
+  select(bf) # keep only the Bayes Factor
+
+  kable(bf_study2)
+```

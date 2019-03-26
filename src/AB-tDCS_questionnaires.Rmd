@@ -1,0 +1,183 @@
+---
+title: AB-tDCS
+subtitle: Questionnaires
+author: Leon Reteig
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: 
+  github_document:
+    toc: true
+    toc_depth: 3
+  rmdformats::html_clean:
+    
+    highlight: pygments
+    gallery: true
+    includes:
+      in_header: header.html # prevent overlap with navbar
+---
+
+# Setup environment
+
+```{r setup}
+
+# Load packages
+library(tidyverse)  # importing, transforming, and visualizing data frames
+library(here) # (relative) file paths
+library(knitr) # R notebook output
+library(broom) # transform model outputs into data frames
+library(knitrhooks) # printing in rmarkdown outputs
+  output_max_height()
+# Source functions
+source(here("src", "func", "behavioral_analysis.R")) # loading data and calculating measures
+knitr::read_chunk(here("src", "func", "behavioral_analysis.R")) # display code from file in this
+load_data_path <- here("src","func","load_data.Rmd") # for rerunning and displayingnotebook
+```
+
+```{r session info, output_max_height = "300px"}
+print(sessionInfo())
+```
+
+```{r load data, child=load_data_path}
+```
+
+# Questionnaires
+
+## Demographics (study 2)
+
+Load and clean (exclude subjects with incomplete data, and S42 (who did not pass the screening, so had no data)):
+
+```{r load subject info}
+subject_info <- read_csv2(here("data", "subject_info.csv"), col_names = TRUE, progress = FALSE, col_types = cols(
+  first.session = readr::col_factor(c("anodal", "cathodal")),
+  gender = readr::col_factor(c("male", "female")),
+  age = col_integer())) %>%
+  filter(!(subject %in% c(subs_incomplete, "S42"))) %>%
+   # recode first.session ("anodal" or "cathodal") to session.order ("anodal first", "cathodal first")
+  mutate(first.session = parse_factor(paste(first.session, "first"), 
+                                      levels = c("anodal first", "cathodal first"))) %>%
+  rename(session.order = first.session)
+kable(head(subject_info,5), caption = "Demographics in study 2")
+```
+
+Analyze:
+
+```{r gender breakdown}
+subject_info %>%
+ count(gender) %>%
+  kable(caption = "Gender breakdown in study 2")
+```
+
+```{r age descriptives}
+subject_info %>%
+  summarise_at(vars(age), funs(mean, min, max, sd), na.rm = TRUE) %>% # apply summary functions to age column
+  kable(digits = 2, caption = "Age descriptives in study 2")
+```
+
+```{r session order breakdown}
+subject_info %>%
+ count(session.order) %>%
+  kable(caption = "Session order breakdown in study 2")
+```
+
+## tDCS adverse events (study 2)
+
+### Data
+
+```{r load tDCS AEs}
+tDCS_AE <- read_csv2(here("data", "tDCS_AE.csv"), col_names = TRUE, progress = FALSE, col_types = cols(
+  session = readr::col_factor(c("first", "second")), 
+  stimulation = readr::col_factor(c("anodal", "cathodal"))))
+glimpse(tDCS_AE)
+```
+
+Participants were asked to which degree the following sensations were present during stimulation: _tingling_, _itching sensation_, _burning sensation_, _pain_, _headache_, _fatigue_, _dizziness_ and _nausea_. Each was rated on a scale from 0-4:
+
+0. none
+1. a little
+2. moderate
+3. strong
+4. very strong
+
+They also rated their confidence _that the sensations were caused by the stimulation_ on a scale from 0-4 (columns starting with `conf.`):
+
+0. n/a (meaning they rated the sensation a 0 on the previous scale)
+1. unlikely
+2. possibly
+3. likely
+4. very likely
+
+__Factors__:
+
+* _subject_: subject ID (`S01`, `S02`, etc)
+* _session_: Whether data are from the `first` or `second` session
+* _stimulation_: Whether data are from the `anodal` or `cathodal` session
+
+Let's see how many data points we have:
+
+```{r tally sessions}
+tDCS_AE %>%
+  count(stimulation) %>%
+  kable(caption = "number of completed questionnaires per stimulation type")
+```
+
+This is more than the number of subjects (and not the same for anodal and cathodal), because there are a few subjects that only did one session.
+
+For further analysis, make the data long form to easily analyse sensations separately:
+
+```{r Make long form data frame}
+# Make long form data frame of sensation intensity
+intensity <- tDCS_AE %>%
+  select(everything(), -contains("conf"), -notes) %>% # drop other columns
+  gather(sensation, intensity, itching:nausea) # make long form 
+
+# Make long form data frame of sensation confidence
+confidence <- tDCS_AE %>%
+  select(contains("conf"), subject, session, stimulation) %>% 
+  gather(sensation, confidence, conf.itching:conf.nausea) %>%
+  mutate(sensation = str_replace(sensation, "conf.", "")) # get rid of "conf." prefix so it matches the sensation intensity table
+```
+
+Let's see which sensations are reported most frequently, along with their mean level of confidence:
+
+```{r AE frequency and confidence}
+full_join(intensity,confidence) %>%
+  group_by(sensation) %>%
+  summarise(count = sum(intensity > 0, na.rm = TRUE), # count all occurences (rating "0" means no occurence)
+            mean = mean(confidence, na.rm = TRUE)) %>%
+  arrange(desc(count)) %>% # most frequent at the top
+  kable(digits = 1)
+```
+
+Plot all of the data:
+
+```{r plot AE data}
+full_join(intensity,confidence)  %>%
+  gather(measure, rating, intensity, confidence) %>% # gather confidence/intensity to make one plot for each
+  mutate(measure = factor(measure, levels = c("intensity", "confidence"))) %>%
+  
+   ggplot(aes(x = rating, fill = stimulation)) +
+     facet_grid(measure ~ fct_reorder(sensation, rating, .fun = function(x) sum(x > 0, na.rm = TRUE), .desc = TRUE)) +
+    geom_bar(position = "stack") +
+    stat_bin(binwidth = 1, geom = "text", size = 2.5, aes(label = ..count..), position = position_stack(vjust = 0.5)) +
+    scale_fill_manual(values = c("#F25F5C", "#4B93B1")) +
+    xlim(0.5,4.5) + # exclude "0" ratings that were not present
+    ylim(0,sum(!is.na(tDCS_AE$stimulation))) + # bound plot at max number of ratings
+    ylab("number of sessions") +
+    labs(title = "tDCS adverse events", subtitle = "sensations arranged in descending order of frequency")
+```
+
+The physical and local sensations (tingling, itching, burning) are most frequent, but these are fairly common and innocuous. Fatigue is also frequent, but there the confidence ratings are highly skewed: participants don't seem to attribute it to the tDCS. This makes sense as they've just done a task for an hour. Headache is still fairly frequent, and has confidence ratings in the middle, which makes sense as headaches often feel "diffuse". Pain, dizziness and nausea are very rare, and generally low in intensity.
+
+## Statistics
+
+Paired Wilcoxon tests for each sensation:
+
+```{r test AEs}
+intensity %>%
+  filter(!(subject %in% c(subs_incomplete, "S42"))) %>% # set of subjects for which task data are analyzed
+  group_by(sensation) %>%
+  nest() %>%
+  mutate(stats = map(data, ~tidy(wilcox.test(intensity ~ stimulation, paired = TRUE, data = .)))) %>%
+  unnest(stats, .drop = TRUE) %>%
+  kable(digits = 3, caption = "Paired tests of anodal vs. cathodal for each sensation intensity")
+```
+

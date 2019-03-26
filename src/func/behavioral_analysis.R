@@ -1,3 +1,4 @@
+## ---- Function to load data from study 2
 load_data_study2 <- function(dataDir, subs_incomplete) {
   
   subID = list.dirs(dataDir, full.names = FALSE, recursive = FALSE) # get subject names
@@ -158,4 +159,23 @@ pcorr_anodal_cathodal <- function(df) {
     summarise(r = pcor(c("anodal","cathodal","session.order"), var(.))) %>% # partial correlation coefficient
     mutate(stats = list(as.data.frame(pcor.test(r, 1, n_distinct(df$subject))))) %>% # t-stat, df and p-value of coefficient
     unnest(stats) # unpack resulting data frame into separate columns %>%
+}
+
+## ---- Function to plot anodal vs cathodal change scores
+plot_anodalVScathodal <- function(df) {
+  df %>% 
+    # create two columns of AB magnitude change score during tDCS: for anodal and cathodal
+    filter(measure == "AB.magnitude", change == "tDCS - baseline") %>%
+    select(-baseline) %>%
+    spread(stimulation, change.score) %>% 
+    
+    ggplot(aes(anodal, cathodal)) +
+    geom_hline(yintercept = 0, linetype = "dashed") +
+    geom_vline(xintercept = 0, linetype = "dashed") +
+    geom_smooth(method = "lm") +
+    geom_point() +
+    geom_rug() +
+    scale_x_continuous("Effect of anodal tDCS (%)", limits = c(-.4,.4), breaks = seq(-.4,.4,.1), labels = scales::percent_format(accuracy = 1)) +
+    scale_y_continuous("Effect of cathodal tDCS (%)", limits = c(-.4,.4), breaks = seq(-.4,.4,.1), labels = scales::percent_format(accuracy = 1) ) +
+    coord_equal()
 }
