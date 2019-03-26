@@ -45,7 +45,7 @@ packrat/lib*/
 
 # Folders
 *.zip
-doc/*
+records/*
 misc/*
 IRB/*
 data/*
