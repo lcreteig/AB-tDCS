@@ -1,0 +1,31 @@
+name: "AB_tDCS"
+output_dir: _site
+new_session: true
+navbar:
+  left:
+    - text: "About"
+      icon: fa-info
+      href: index.html
+    - text: "Paper"
+      icon: fa-newspaper
+      href: AB-tDCS_paper.html
+    - text: "Analyses"
+      icon: fa-file-code
+      menu:
+        - text: "Individual differences"
+        - text: "Change from baseline"
+          href: AB-tDCS_change-from-baseline.html
+        - text: "Anodal vs. cathodal"
+          href: AB-tDCS_anodal-vs-cathodal.html
+        - text: "Replication analyses"
+          href: AB-tDCS_replication-analyses.html
+        - text: "--------------"
+        - text: "Group-level"
+        - text: "Task"
+          href: AB-tDCS_group.html
+        - text: "Questionnaires"
+          href: AB-tDCS_questionnaires.html
+  right:
+    - text: Source
+      icon: fa-github
+      href: https://github.com/lcreteig/AB-tDCS
