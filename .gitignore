@@ -8,7 +8,6 @@ task/log/*
 # R/Rstudio files
 *.RData
 *.RHistory
-*.Rproj
 
 # Windows / OSX files
 *.DS_store

@@ -121,7 +121,7 @@ N.B. The following folders each have their own `README.md` (GitHub) and/or wiki 
 # Reproducibility
 
 1. Make sure you've downloaded all the data and code and that they're placed in the `data`, `src` and `paper` folders (as outlined in the [Directory structure] section).
-2. Open the `AB_tDCS.Rproj` file in [RStudio](https://www.rstudio.com/).
+2. Open the `AB-tDCS.Rproj` file in [RStudio](https://www.rstudio.com/).
 
 Alternatively, skip these steps and follow this link to create a remote RStudio session in your browser with [Binder](https://mybinder.org/): [![Binder](https://mybinder.org/badge.svg)](FIXME add link)
 
@@ -129,7 +129,7 @@ This will already set everything up for you on the server, including all package
 
 Then, run the `.Rmd` notebooks in the `src` folder to reproduce the contents under the _Analyses_ tab on this website. These contain all analyses (and their results) performed for this project.
 
-Run the `paper/AB_tDCS_paper.Rmd` notebook to reproduce all the results, figures and statistics, and the paper as under the _Paper_ tab or in the preprint (see [Resources]).
+Run the `paper/AB-tDCS_paper.Rmd` notebook to reproduce all the results, figures and statistics, and the paper as under the _Paper_ tab or in the preprint (see [Resources]).
 
 # Licensing
 
