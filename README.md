@@ -109,8 +109,9 @@ AB-tDCS
 
 N.B. The following folders each have their own `README.md` (GitHub) and/or wiki page (OSF) with more detailed information on their contents.
 
-* `data/`: All the behavioral and metadata collected during this project, as well as the task data from [London & Slagter (2015)](https://doi.org/10.1162/jocn_a_00867). There's also an EEG dataset associated with this project; see [Resources]
-* `docs/`: Holds this website's files
+* `EEG/`: Metadata files and one example subject for an EEG dataset in [BIDS] format associated with this project (see [Resources]).
+* `data/`: All the behavioral and metadata collected during this project, as well as the task data from [London & Slagter (2015)](https://doi.org/10.1162/jocn_a_00867).
+* `docs/`: Holds the project website's files
 * `paper/`: `AB_tDCS_paper.Rmd` is the R Markdown source file for the paper; running it produces the rendered version on this website (`.html`) and the preprint (`.pdf`)
 * `records/`: Documentation, logbooks and protocols
 * `site/`: Source code for the website; runs the source code in `paper/` and `src/` to produce the website as in `docs/`
