@@ -58,7 +58,7 @@ EEG/derivatives/*
 EEG/sub-*/*
 EEG/code/preproc/eeglab*/*
 EEG/code/fieldtrip*/*
-paper/AB_tDCS_paper_files/*
+paper/AB-tDCS_paper_files/*
 src/lib/*
 
 # always still version control the readme files

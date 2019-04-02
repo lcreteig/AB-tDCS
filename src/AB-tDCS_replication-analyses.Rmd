@@ -45,6 +45,7 @@ print(sessionInfo())
 ```
 
 ```{r load data, child=load_data_path}
+# Run code in the src/lib/load_data.Rmd file at this point
 ```
 
 # Replication analyses
@@ -58,7 +59,7 @@ ABmagChange_study1 <- df_study1 %>%
   calc_change_scores() # from the AB magnitude, calculate change scores
 
 p_r_1 <- pcorr_anodal_cathodal(ABmagChange_study1)
-r_study1 <- p_r_1$r
+r_study1 <- p_r_1$r[p_r_1$change == "tDCS - baseline"] # r-value in study 1
 n_study1 <- n_distinct(df_study1$subject)
 n_study1_pc <- n_study1-1 # one less due to additional variable in partial correlation
   
@@ -67,7 +68,7 @@ ABmagChange_study2 <- df_study2 %>%
   calc_change_scores() # from the AB magnitude, calculate change scores
 
 p_r_2 <- pcorr_anodal_cathodal(ABmagChange_study2)
-r_study2 <- p_r_2$r # r-value in study 2
+r_study2 <- p_r_2$r[p_r_2$change == "tDCS - baseline"] # r-value in study 2
 n_study2_pc <- n_study2-1 # one less due to additional variable in partial correlation
 ```
 
@@ -118,7 +119,7 @@ The negative correlation is larger in study 1, and the data points from study 1 
 Partial correlation between anodal and cathodal AB magnitude change score (tDCS - baseline), attempting to adjust for session order:
 
 ```{r partial correlation anodal vs cathodal pooled}
-pcorr_anodal_cathodal(ABmagChange_pooled) %>%
+pcorr_anodal_cathodal(filter(ABmagChange_pooled, change == "tDCS - baseline")) %>%
 kable(digits = 3, caption = "Pooled data from studies 1 and 2: Partial correlation anodal vs. cathodal")
 ```
 

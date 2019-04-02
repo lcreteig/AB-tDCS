@@ -217,7 +217,7 @@ img {
 <h1 class="title">AB-tDCS</h1>
 <h1 class="subtitle">Correlation between anodal. vs. cathodal change scores</h1>
 <h4 class="author"><em>Leon Reteig</em></h4>
-<h4 class="date"><em>26 March, 2019</em></h4>
+<h4 class="date"><em>02 April, 2019</em></h4>
 </div>
 
 <div id="content">
@@ -995,28 +995,30 @@ Effect of anodal vs. effect of cathodal in study 2
 <div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb43-1" data-line-number="1">pcorr_anodal_cathodal &lt;-<span class="st"> </span><span class="cf">function</span>(df) {</a>
 <a class="sourceLine" id="cb43-2" data-line-number="2">  df <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb43-3" data-line-number="3"><span class="st">    </span><span class="co"># create two columns of AB magnitude change score during tDCS: for anodal and cathodal</span></a>
-<a class="sourceLine" id="cb43-4" data-line-number="4"><span class="st">    </span><span class="kw">filter</span>(measure <span class="op">==</span><span class="st"> &quot;AB.magnitude&quot;</span>, change <span class="op">==</span><span class="st"> &quot;tDCS - baseline&quot;</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb43-4" data-line-number="4"><span class="st">    </span><span class="kw">filter</span>(measure <span class="op">==</span><span class="st"> &quot;AB.magnitude&quot;</span>) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb43-5" data-line-number="5"><span class="st">    </span><span class="kw">select</span>(<span class="op">-</span>baseline) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb43-6" data-line-number="6"><span class="st">    </span><span class="kw">spread</span>(stimulation, change.score) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb43-7" data-line-number="7"><span class="st">    </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># remove grouping from previous steps, as we need to modify the dataframe</span></a>
-<a class="sourceLine" id="cb43-8" data-line-number="8"><span class="st">    </span><span class="kw">select</span>(session.order, anodal, cathodal) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># keep only relevant columns</span></a>
+<a class="sourceLine" id="cb43-8" data-line-number="8"><span class="st">    </span><span class="kw">select</span>(session.order, change, anodal, cathodal) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># keep only relevant columns</span></a>
 <a class="sourceLine" id="cb43-9" data-line-number="9"><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">session.order =</span> <span class="kw">as.numeric</span>(session.order)) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># dummy code to use as covariate</span></a>
-<a class="sourceLine" id="cb43-10" data-line-number="10"><span class="st">    </span></a>
-<a class="sourceLine" id="cb43-11" data-line-number="11"><span class="st">    </span><span class="co"># partial correlation  </span></a>
-<a class="sourceLine" id="cb43-12" data-line-number="12"><span class="st">    </span><span class="kw">summarise</span>(<span class="dt">r =</span> <span class="kw">pcor</span>(<span class="kw">c</span>(<span class="st">&quot;anodal&quot;</span>,<span class="st">&quot;cathodal&quot;</span>,<span class="st">&quot;session.order&quot;</span>), <span class="kw">var</span>(.))) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># partial correlation coefficient</span></a>
-<a class="sourceLine" id="cb43-13" data-line-number="13"><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">stats =</span> <span class="kw">list</span>(<span class="kw">as.data.frame</span>(<span class="kw">pcor.test</span>(r, <span class="dv">1</span>, <span class="kw">n_distinct</span>(df<span class="op">$</span>subject))))) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># t-stat, df and p-value of coefficient</span></a>
-<a class="sourceLine" id="cb43-14" data-line-number="14"><span class="st">    </span><span class="kw">unnest</span>(stats) <span class="co"># unpack resulting data frame into separate columns %&gt;%</span></a>
-<a class="sourceLine" id="cb43-15" data-line-number="15">}</a></code></pre></div>
+<a class="sourceLine" id="cb43-10" data-line-number="10"><span class="st">    </span><span class="kw">nest</span>(<span class="op">-</span>change) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># split into two data frames, one for each comparison</span></a>
+<a class="sourceLine" id="cb43-11" data-line-number="11"><span class="st">    </span><span class="co"># partial correlation </span></a>
+<a class="sourceLine" id="cb43-12" data-line-number="12"><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">r =</span> <span class="kw">map_dbl</span>(data, <span class="op">~</span><span class="kw">pcor</span>(<span class="kw">c</span>(<span class="st">&quot;anodal&quot;</span>,<span class="st">&quot;cathodal&quot;</span>,<span class="st">&quot;session.order&quot;</span>), <span class="kw">var</span>(.)))) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb43-13" data-line-number="13"><span class="st">    </span><span class="kw">group_by</span>(change) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># for each correlation</span></a>
+<a class="sourceLine" id="cb43-14" data-line-number="14"><span class="st">    </span><span class="co"># get t-stats, df and p-value of coefficient</span></a>
+<a class="sourceLine" id="cb43-15" data-line-number="15"><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">stats =</span> <span class="kw">list</span>(<span class="kw">as.data.frame</span>(<span class="kw">pcor.test</span>(r, <span class="dv">1</span>, <span class="kw">n_distinct</span>(df<span class="op">$</span>subject))))) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb43-16" data-line-number="16"><span class="st">    </span><span class="kw">unnest</span>(stats, <span class="dt">.drop =</span> <span class="ot">TRUE</span>) <span class="co"># unpack resulting data frame into separate column</span></a>
+<a class="sourceLine" id="cb43-17" data-line-number="17">}</a></code></pre></div>
 <div id="study-1-2" class="section level3">
 <h3>Study 1</h3>
 <p>Partial correlation between anodal and cathodal AB magnitude change score (tDCS - baseline), “controlling” for session order:</p>
-<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb44-1" data-line-number="1">p_r_<span class="dv">1</span> &lt;-<span class="st"> </span><span class="kw">pcorr_anodal_cathodal</span>(ABmagChange_study1)</a>
-<a class="sourceLine" id="cb44-2" data-line-number="2">r_study1 &lt;-<span class="st"> </span>p_r_<span class="dv">1</span><span class="op">$</span>r</a>
-<a class="sourceLine" id="cb44-3" data-line-number="3">n_study1_pc &lt;-<span class="st"> </span>n_study1 <span class="op">-</span><span class="st"> </span><span class="dv">1</span> <span class="co"># lose one degree of freedom due to &quot;controlling&quot; for one variable in partial correlation</span></a>
-<a class="sourceLine" id="cb44-4" data-line-number="4"><span class="kw">kable</span>(p_r_<span class="dv">1</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb44-1" data-line-number="1"><span class="kw">pcorr_anodal_cathodal</span>(ABmagChange_study1) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb44-2" data-line-number="2"><span class="kw">kable</span>(<span class="dt">digits =</span> <span class="dv">3</span>, <span class="dt">caption =</span> <span class="st">&quot;Partial correlations study 1&quot;</span>)</a></code></pre></div>
 <table>
+<caption>Partial correlations study 1</caption>
 <thead>
 <tr class="header">
+<th align="left">change</th>
 <th align="right">r</th>
 <th align="right">tval</th>
 <th align="right">df</th>
@@ -1025,22 +1027,38 @@ Effect of anodal vs. effect of cathodal in study 2
 </thead>
 <tbody>
 <tr class="odd">
-<td align="right">-0.4453648</td>
-<td align="right">-2.769519</td>
+<td align="left">tDCS - baseline</td>
+<td align="right">-0.445</td>
+<td align="right">-2.770</td>
 <td align="right">31</td>
-<td align="right">0.009396</td>
+<td align="right">0.009</td>
+</tr>
+<tr class="even">
+<td align="left">post - baseline</td>
+<td align="right">0.278</td>
+<td align="right">1.612</td>
+<td align="right">31</td>
+<td align="right">0.117</td>
 </tr>
 </tbody>
 </table>
 <p>Zero-order correlation:</p>
-<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb45-1" data-line-number="1">r_<span class="dv">1</span> &lt;-<span class="st"> </span><span class="kw">tidy</span>(<span class="kw">cor.test</span>(</a>
-<a class="sourceLine" id="cb45-2" data-line-number="2">  <span class="kw">pull</span>(<span class="kw">filter</span>(ABmagChange_study1, stimulation <span class="op">==</span><span class="st"> &quot;anodal&quot;</span>, measure <span class="op">==</span><span class="st"> &quot;AB.magnitude&quot;</span>, change <span class="op">==</span><span class="st"> &quot;tDCS - baseline&quot;</span>), change.score),</a>
-<a class="sourceLine" id="cb45-3" data-line-number="3">  <span class="kw">pull</span>(<span class="kw">filter</span>(ABmagChange_study1, stimulation <span class="op">==</span><span class="st"> &quot;cathodal&quot;</span>, measure <span class="op">==</span><span class="st"> &quot;AB.magnitude&quot;</span>, change <span class="op">==</span><span class="st"> &quot;tDCS - baseline&quot;</span>), change.score),</a>
-<a class="sourceLine" id="cb45-4" data-line-number="4">  <span class="dt">method =</span> <span class="st">&quot;pearson&quot;</span>))</a>
-<a class="sourceLine" id="cb45-5" data-line-number="5"><span class="kw">kable</span>(r_<span class="dv">1</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb45-1" data-line-number="1">ABmagChange_study1 <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb45-2" data-line-number="2"><span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb45-3" data-line-number="3"><span class="st">  </span><span class="kw">filter</span>(measure <span class="op">==</span><span class="st"> &quot;AB.magnitude&quot;</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb45-4" data-line-number="4"><span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>baseline) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb45-5" data-line-number="5"><span class="st">  </span><span class="kw">spread</span>(stimulation, change.score) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb45-6" data-line-number="6"><span class="st">  </span><span class="kw">nest</span>(<span class="op">-</span>change) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb45-7" data-line-number="7"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">stats =</span> <span class="kw">map</span>(data, <span class="op">~</span><span class="kw">cor.test</span>(.<span class="op">$</span>anodal, .<span class="op">$</span>cathodal, </a>
+<a class="sourceLine" id="cb45-8" data-line-number="8">                                     <span class="dt">alternative =</span> <span class="st">&quot;two.sided&quot;</span>, </a>
+<a class="sourceLine" id="cb45-9" data-line-number="9">                                     <span class="dt">method =</span> <span class="st">&quot;pearson&quot;</span>))) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb45-10" data-line-number="10"><span class="st">  </span><span class="kw">unnest</span>(<span class="kw">map</span>(stats,tidy), <span class="dt">.drop =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb45-11" data-line-number="11"><span class="st">  </span><span class="kw">kable</span>(<span class="dt">digits =</span> <span class="dv">3</span>, <span class="dt">caption =</span> <span class="st">&quot;zero-order correlations study 1&quot;</span>)</a></code></pre></div>
 <table>
+<caption>zero-order correlations study 1</caption>
 <thead>
 <tr class="header">
+<th align="left">change</th>
 <th align="right">estimate</th>
 <th align="right">statistic</th>
 <th align="right">p.value</th>
@@ -1053,34 +1071,62 @@ Effect of anodal vs. effect of cathodal in study 2
 </thead>
 <tbody>
 <tr class="odd">
-<td align="right">-0.3759174</td>
-<td align="right">-2.294828</td>
-<td align="right">0.028449</td>
+<td align="left">tDCS - baseline</td>
+<td align="right">-0.376</td>
+<td align="right">-2.295</td>
+<td align="right">0.028</td>
 <td align="right">32</td>
-<td align="right">-0.6335453</td>
-<td align="right">-0.0432497</td>
+<td align="right">-0.634</td>
+<td align="right">-0.043</td>
+<td align="left">Pearson’s product-moment correlation</td>
+<td align="left">two.sided</td>
+</tr>
+<tr class="even">
+<td align="left">post - baseline</td>
+<td align="right">0.275</td>
+<td align="right">1.615</td>
+<td align="right">0.116</td>
+<td align="right">32</td>
+<td align="right">-0.070</td>
+<td align="right">0.561</td>
 <td align="left">Pearson’s product-moment correlation</td>
 <td align="left">two.sided</td>
 </tr>
 </tbody>
 </table>
 <p>Bayes factor:</p>
-<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb46-1" data-line-number="1"><span class="kw">extractBF</span>(<span class="kw">correlationBF</span>(</a>
-<a class="sourceLine" id="cb46-2" data-line-number="2">  <span class="kw">pull</span>(<span class="kw">filter</span>(ABmagChange_study1, stimulation <span class="op">==</span><span class="st"> &quot;anodal&quot;</span>, measure <span class="op">==</span><span class="st"> &quot;AB.magnitude&quot;</span>, change <span class="op">==</span><span class="st"> &quot;tDCS - baseline&quot;</span>), change.score),</a>
-<a class="sourceLine" id="cb46-3" data-line-number="3">  <span class="kw">pull</span>(<span class="kw">filter</span>(ABmagChange_study1, stimulation <span class="op">==</span><span class="st"> &quot;cathodal&quot;</span>, measure <span class="op">==</span><span class="st"> &quot;AB.magnitude&quot;</span>, change <span class="op">==</span><span class="st"> &quot;tDCS - baseline&quot;</span>), change.score))) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb46-4" data-line-number="4"><span class="st">  </span><span class="kw">select</span>(bf) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># keep only the Bayes Factor</span></a>
-<a class="sourceLine" id="cb46-5" data-line-number="5"><span class="st">  </span><span class="kw">kable</span>()</a></code></pre></div>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb46-1" data-line-number="1">ABmagChange_study1 <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb46-2" data-line-number="2"><span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb46-3" data-line-number="3"><span class="st">  </span><span class="kw">filter</span>(measure <span class="op">==</span><span class="st"> &quot;AB.magnitude&quot;</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb46-4" data-line-number="4"><span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>baseline) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb46-5" data-line-number="5"><span class="st">  </span><span class="kw">spread</span>(stimulation, change.score) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb46-6" data-line-number="6"><span class="st">  </span><span class="kw">nest</span>(<span class="op">-</span>change) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb46-7" data-line-number="7"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">stats =</span> <span class="kw">map</span>(data, <span class="op">~</span><span class="kw">extractBF</span>(<span class="kw">correlationBF</span>(.<span class="op">$</span>anodal, .<span class="op">$</span>cathodal)))) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb46-8" data-line-number="8"><span class="st">  </span><span class="kw">unnest</span>(stats) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb46-9" data-line-number="9"><span class="st">  </span><span class="kw">select</span>(change, bf) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb46-10" data-line-number="10"><span class="st">  </span><span class="kw">kable</span>(<span class="dt">digits =</span> <span class="dv">2</span>, <span class="dt">caption =</span> <span class="st">&quot;Bayesian correlations study 1&quot;</span>)</a></code></pre></div>
+<pre><code>## Warning in bind_rows_(x, .id): Unequal factor levels: coercing to character</code></pre>
+<pre><code>## Warning in bind_rows_(x, .id): binding character and factor vector,
+## coercing into character vector
+
+## Warning in bind_rows_(x, .id): binding character and factor vector,
+## coercing into character vector</code></pre>
 <table>
+<caption>Bayesian correlations study 1</caption>
 <thead>
 <tr class="header">
-<th></th>
+<th align="left">change</th>
 <th align="right">bf</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>Alt., r=0.333</td>
-<td align="right">2.999365</td>
+<td align="left">tDCS - baseline</td>
+<td align="right">3.0</td>
+</tr>
+<tr class="even">
+<td align="left">post - baseline</td>
+<td align="right">1.1</td>
 </tr>
 </tbody>
 </table>
@@ -1088,13 +1134,13 @@ Effect of anodal vs. effect of cathodal in study 2
 <div id="study-2-2" class="section level3">
 <h3>Study 2</h3>
 <p>Partial correlation between anodal and cathodal AB magnitude change score (tDCS - baseline), attempting to adjust for session order:</p>
-<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb47-1" data-line-number="1">p_r_<span class="dv">2</span> &lt;-<span class="st"> </span><span class="kw">pcorr_anodal_cathodal</span>(ABmagChange_study2)</a>
-<a class="sourceLine" id="cb47-2" data-line-number="2">r_study2 &lt;-<span class="st"> </span>p_r_<span class="dv">2</span><span class="op">$</span>r</a>
-<a class="sourceLine" id="cb47-3" data-line-number="3">n_study2_pc &lt;-<span class="st"> </span>n_study2 <span class="op">-</span><span class="st"> </span><span class="dv">1</span> <span class="co"># lose one degree of freedom due to &quot;controlling&quot; for one variable in partial correlation</span></a>
-<a class="sourceLine" id="cb47-4" data-line-number="4"><span class="kw">kable</span>(p_r_<span class="dv">2</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb49-1" data-line-number="1"><span class="kw">pcorr_anodal_cathodal</span>(ABmagChange_study2) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb49-2" data-line-number="2"><span class="kw">kable</span>(<span class="dt">digits =</span> <span class="dv">3</span>, <span class="dt">caption =</span> <span class="st">&quot;Partial correlations study 2&quot;</span>)</a></code></pre></div>
 <table>
+<caption>Partial correlations study 2</caption>
 <thead>
 <tr class="header">
+<th align="left">change</th>
 <th align="right">r</th>
 <th align="right">tval</th>
 <th align="right">df</th>
@@ -1103,22 +1149,38 @@ Effect of anodal vs. effect of cathodal in study 2
 </thead>
 <tbody>
 <tr class="odd">
-<td align="right">0.0209995</td>
-<td align="right">0.1277632</td>
+<td align="left">tDCS - baseline</td>
+<td align="right">0.021</td>
+<td align="right">0.128</td>
 <td align="right">37</td>
-<td align="right">0.8990283</td>
+<td align="right">0.899</td>
+</tr>
+<tr class="even">
+<td align="left">post - baseline</td>
+<td align="right">0.083</td>
+<td align="right">0.505</td>
+<td align="right">37</td>
+<td align="right">0.616</td>
 </tr>
 </tbody>
 </table>
 <p>Zero-order correlation:</p>
-<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb48-1" data-line-number="1">r_<span class="dv">2</span> &lt;-<span class="st"> </span><span class="kw">tidy</span>(<span class="kw">cor.test</span>(</a>
-<a class="sourceLine" id="cb48-2" data-line-number="2">  <span class="kw">pull</span>(<span class="kw">filter</span>(ABmagChange_study2, stimulation <span class="op">==</span><span class="st"> &quot;anodal&quot;</span>, measure <span class="op">==</span><span class="st"> &quot;AB.magnitude&quot;</span>, change <span class="op">==</span><span class="st"> &quot;tDCS - baseline&quot;</span>), change.score),</a>
-<a class="sourceLine" id="cb48-3" data-line-number="3">  <span class="kw">pull</span>(<span class="kw">filter</span>(ABmagChange_study2, stimulation <span class="op">==</span><span class="st"> &quot;cathodal&quot;</span>, measure <span class="op">==</span><span class="st"> &quot;AB.magnitude&quot;</span>, change <span class="op">==</span><span class="st"> &quot;tDCS - baseline&quot;</span>), change.score),</a>
-<a class="sourceLine" id="cb48-4" data-line-number="4">  <span class="dt">method =</span> <span class="st">&quot;pearson&quot;</span>))</a>
-<a class="sourceLine" id="cb48-5" data-line-number="5"><span class="kw">kable</span>(r_<span class="dv">2</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb50-1" data-line-number="1">ABmagChange_study2 <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb50-2" data-line-number="2"><span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb50-3" data-line-number="3"><span class="st">  </span><span class="kw">filter</span>(measure <span class="op">==</span><span class="st"> &quot;AB.magnitude&quot;</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb50-4" data-line-number="4"><span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>baseline) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb50-5" data-line-number="5"><span class="st">  </span><span class="kw">spread</span>(stimulation, change.score) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb50-6" data-line-number="6"><span class="st">  </span><span class="kw">nest</span>(<span class="op">-</span>change) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb50-7" data-line-number="7"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">stats =</span> <span class="kw">map</span>(data, <span class="op">~</span><span class="kw">cor.test</span>(.<span class="op">$</span>anodal, .<span class="op">$</span>cathodal, </a>
+<a class="sourceLine" id="cb50-8" data-line-number="8">                                     <span class="dt">alternative =</span> <span class="st">&quot;two.sided&quot;</span>, </a>
+<a class="sourceLine" id="cb50-9" data-line-number="9">                                     <span class="dt">method =</span> <span class="st">&quot;pearson&quot;</span>))) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb50-10" data-line-number="10"><span class="st">  </span><span class="kw">unnest</span>(<span class="kw">map</span>(stats,tidy), <span class="dt">.drop =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb50-11" data-line-number="11"><span class="st">  </span><span class="kw">kable</span>(<span class="dt">digits =</span> <span class="dv">3</span>, <span class="dt">caption =</span> <span class="st">&quot;zero-order correlations study 2&quot;</span>)</a></code></pre></div>
 <table>
+<caption>zero-order correlations study 2</caption>
 <thead>
 <tr class="header">
+<th align="left">change</th>
 <th align="right">estimate</th>
 <th align="right">statistic</th>
 <th align="right">p.value</th>
@@ -1131,35 +1193,62 @@ Effect of anodal vs. effect of cathodal in study 2
 </thead>
 <tbody>
 <tr class="odd">
-<td align="right">-0.0848172</td>
-<td align="right">-0.5247393</td>
-<td align="right">0.6028125</td>
+<td align="left">tDCS - baseline</td>
+<td align="right">-0.085</td>
+<td align="right">-0.525</td>
+<td align="right">0.603</td>
 <td align="right">38</td>
-<td align="right">-0.3861246</td>
-<td align="right">0.2328442</td>
+<td align="right">-0.386</td>
+<td align="right">0.233</td>
+<td align="left">Pearson’s product-moment correlation</td>
+<td align="left">two.sided</td>
+</tr>
+<tr class="even">
+<td align="left">post - baseline</td>
+<td align="right">-0.065</td>
+<td align="right">-0.404</td>
+<td align="right">0.689</td>
+<td align="right">38</td>
+<td align="right">-0.369</td>
+<td align="right">0.251</td>
 <td align="left">Pearson’s product-moment correlation</td>
 <td align="left">two.sided</td>
 </tr>
 </tbody>
 </table>
 <p>Bayes factor:</p>
-<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb49-1" data-line-number="1">bf_study2 &lt;-<span class="st"> </span><span class="kw">extractBF</span>(<span class="kw">correlationBF</span>(</a>
-<a class="sourceLine" id="cb49-2" data-line-number="2">  <span class="kw">pull</span>(<span class="kw">filter</span>(ABmagChange_study2, stimulation <span class="op">==</span><span class="st"> &quot;anodal&quot;</span>, measure <span class="op">==</span><span class="st"> &quot;AB.magnitude&quot;</span>, change <span class="op">==</span><span class="st"> &quot;tDCS - baseline&quot;</span>), change.score),</a>
-<a class="sourceLine" id="cb49-3" data-line-number="3">  <span class="kw">pull</span>(<span class="kw">filter</span>(ABmagChange_study2, stimulation <span class="op">==</span><span class="st"> &quot;cathodal&quot;</span>, measure <span class="op">==</span><span class="st"> &quot;AB.magnitude&quot;</span>, change <span class="op">==</span><span class="st"> &quot;tDCS - baseline&quot;</span>), change.score))) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb49-4" data-line-number="4"><span class="st">  </span><span class="kw">select</span>(bf) <span class="co"># keep only the Bayes Factor</span></a>
-<a class="sourceLine" id="cb49-5" data-line-number="5"></a>
-<a class="sourceLine" id="cb49-6" data-line-number="6">  <span class="kw">kable</span>(bf_study2)</a></code></pre></div>
+<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb51-1" data-line-number="1">ABmagChange_study2 <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb51-2" data-line-number="2"><span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb51-3" data-line-number="3"><span class="st">  </span><span class="kw">filter</span>(measure <span class="op">==</span><span class="st"> &quot;AB.magnitude&quot;</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb51-4" data-line-number="4"><span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>baseline) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb51-5" data-line-number="5"><span class="st">  </span><span class="kw">spread</span>(stimulation, change.score) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb51-6" data-line-number="6"><span class="st">  </span><span class="kw">nest</span>(<span class="op">-</span>change) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb51-7" data-line-number="7"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">stats =</span> <span class="kw">map</span>(data, <span class="op">~</span><span class="kw">extractBF</span>(<span class="kw">correlationBF</span>(.<span class="op">$</span>anodal, .<span class="op">$</span>cathodal)))) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb51-8" data-line-number="8"><span class="st">  </span><span class="kw">unnest</span>(stats) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb51-9" data-line-number="9"><span class="st">  </span><span class="kw">select</span>(change, bf) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb51-10" data-line-number="10"><span class="st">  </span><span class="kw">kable</span>(<span class="dt">digits =</span> <span class="dv">2</span>, <span class="dt">caption =</span> <span class="st">&quot;Bayesian correlations study 2&quot;</span>)</a></code></pre></div>
+<pre><code>## Warning in bind_rows_(x, .id): Unequal factor levels: coercing to character</code></pre>
+<pre><code>## Warning in bind_rows_(x, .id): binding character and factor vector,
+## coercing into character vector
+
+## Warning in bind_rows_(x, .id): binding character and factor vector,
+## coercing into character vector</code></pre>
 <table>
+<caption>Bayesian correlations study 2</caption>
 <thead>
 <tr class="header">
-<th></th>
+<th align="left">change</th>
 <th align="right">bf</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>Alt., r=0.333</td>
-<td align="right">0.3969199</td>
+<td align="left">tDCS - baseline</td>
+<td align="right">0.40</td>
+</tr>
+<tr class="even">
+<td align="left">post - baseline</td>
+<td align="right">0.38</td>
 </tr>
 </tbody>
 </table>

@@ -38,6 +38,7 @@ print(sessionInfo())
 ```
 
 ```{r load data, child=load_data_path}
+# Run code in the src/lib/load_data.Rmd file at this point
 ```
 
 # Anodal vs. cathodal
@@ -86,62 +87,78 @@ plot_anodalVScathodal(ABmagChange_study2)
 
 Partial correlation between anodal and cathodal AB magnitude change score (tDCS - baseline), "controlling" for session order:
 
-```{r partial correlation anodal vs cathodal study 1}
-p_r_1 <- pcorr_anodal_cathodal(ABmagChange_study1)
-r_study1 <- p_r_1$r
-n_study1_pc <- n_study1 - 1 # lose one degree of freedom due to "controlling" for one variable in partial correlation
-kable(p_r_1)
+```{r partial correlation anodal vs cathodal study 1, results='asis'}
+pcorr_anodal_cathodal(ABmagChange_study1) %>%
+kable(digits = 3, caption = "Partial correlations study 1")
 ```
 
 Zero-order correlation:
 
-```{r zero-order correlation study 1}
-r_1 <- tidy(cor.test(
-  pull(filter(ABmagChange_study1, stimulation == "anodal", measure == "AB.magnitude", change == "tDCS - baseline"), change.score),
-  pull(filter(ABmagChange_study1, stimulation == "cathodal", measure == "AB.magnitude", change == "tDCS - baseline"), change.score),
-  method = "pearson"))
-kable(r_1)
-
+```{r zero-order correlation study 1, results = 'asis'}
+ABmagChange_study1 %>%
+  ungroup() %>%
+  filter(measure == "AB.magnitude") %>%
+  select(-baseline) %>%
+  spread(stimulation, change.score) %>%
+  nest(-change) %>%
+  mutate(stats = map(data, ~cor.test(.$anodal, .$cathodal, 
+                                     alternative = "two.sided", 
+                                     method = "pearson"))) %>% 
+  unnest(map(stats,tidy), .drop = TRUE) %>%
+  kable(digits = 3, caption = "zero-order correlations study 1")
 ```
 
 Bayes factor:
 
 ```{r Bayes factor study 1}
-extractBF(correlationBF(
-  pull(filter(ABmagChange_study1, stimulation == "anodal", measure == "AB.magnitude", change == "tDCS - baseline"), change.score),
-  pull(filter(ABmagChange_study1, stimulation == "cathodal", measure == "AB.magnitude", change == "tDCS - baseline"), change.score))) %>%
-  select(bf) %>% # keep only the Bayes Factor
-  kable()
+ABmagChange_study1 %>%
+  ungroup() %>%
+  filter(measure == "AB.magnitude") %>%
+  select(-baseline) %>%
+  spread(stimulation, change.score) %>%
+  nest(-change) %>%
+  mutate(stats = map(data, ~extractBF(correlationBF(.$anodal, .$cathodal)))) %>%
+  unnest(stats) %>%
+  select(change, bf) %>%
+  kable(digits = 2, caption = "Bayesian correlations study 1")
 ```
 
 ### Study 2
 
 Partial correlation between anodal and cathodal AB magnitude change score (tDCS - baseline), attempting to adjust for session order:
 
-```{r partial correlation anodal vs cathodal study 2}
-p_r_2 <- pcorr_anodal_cathodal(ABmagChange_study2)
-r_study2 <- p_r_2$r
-n_study2_pc <- n_study2 - 1 # lose one degree of freedom due to "controlling" for one variable in partial correlation
-kable(p_r_2)
+```{r partial correlation anodal vs cathodal study 2, results='asis'}
+pcorr_anodal_cathodal(ABmagChange_study2) %>%
+kable(digits = 3, caption = "Partial correlations study 2")
 ```
 
 Zero-order correlation:
 
 ```{r zero-order correlation study 2}
-r_2 <- tidy(cor.test(
-  pull(filter(ABmagChange_study2, stimulation == "anodal", measure == "AB.magnitude", change == "tDCS - baseline"), change.score),
-  pull(filter(ABmagChange_study2, stimulation == "cathodal", measure == "AB.magnitude", change == "tDCS - baseline"), change.score),
-  method = "pearson"))
-kable(r_2)
+ABmagChange_study2 %>%
+  ungroup() %>%
+  filter(measure == "AB.magnitude") %>%
+  select(-baseline) %>%
+  spread(stimulation, change.score) %>%
+  nest(-change) %>%
+  mutate(stats = map(data, ~cor.test(.$anodal, .$cathodal, 
+                                     alternative = "two.sided", 
+                                     method = "pearson"))) %>% 
+  unnest(map(stats,tidy), .drop = TRUE) %>%
+  kable(digits = 3, caption = "zero-order correlations study 2")
 ```
 
 Bayes factor:
 
 ```{r Bayes factor study 2}
-bf_study2 <- extractBF(correlationBF(
-  pull(filter(ABmagChange_study2, stimulation == "anodal", measure == "AB.magnitude", change == "tDCS - baseline"), change.score),
-  pull(filter(ABmagChange_study2, stimulation == "cathodal", measure == "AB.magnitude", change == "tDCS - baseline"), change.score))) %>%
-  select(bf) # keep only the Bayes Factor
-
-  kable(bf_study2)
+ABmagChange_study2 %>%
+  ungroup() %>%
+  filter(measure == "AB.magnitude") %>%
+  select(-baseline) %>%
+  spread(stimulation, change.score) %>%
+  nest(-change) %>%
+  mutate(stats = map(data, ~extractBF(correlationBF(.$anodal, .$cathodal)))) %>%
+  unnest(stats) %>%
+  select(change, bf) %>%
+  kable(digits = 2, caption = "Bayesian correlations study 2")
 ```

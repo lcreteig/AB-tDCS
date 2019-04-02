@@ -148,17 +148,19 @@ calc_change_scores <- function(df) {
 pcorr_anodal_cathodal <- function(df) {
   df %>%
     # create two columns of AB magnitude change score during tDCS: for anodal and cathodal
-    filter(measure == "AB.magnitude", change == "tDCS - baseline") %>%
+    filter(measure == "AB.magnitude") %>%
     select(-baseline) %>%
     spread(stimulation, change.score) %>%
     ungroup() %>% # remove grouping from previous steps, as we need to modify the dataframe
-    select(session.order, anodal, cathodal) %>% # keep only relevant columns
+    select(session.order, change, anodal, cathodal) %>% # keep only relevant columns
     mutate(session.order = as.numeric(session.order)) %>% # dummy code to use as covariate
-    
-    # partial correlation  
-    summarise(r = pcor(c("anodal","cathodal","session.order"), var(.))) %>% # partial correlation coefficient
-    mutate(stats = list(as.data.frame(pcor.test(r, 1, n_distinct(df$subject))))) %>% # t-stat, df and p-value of coefficient
-    unnest(stats) # unpack resulting data frame into separate columns %>%
+    nest(-change) %>% # split into two data frames, one for each comparison
+    # partial correlation 
+    mutate(r = map_dbl(data, ~pcor(c("anodal","cathodal","session.order"), var(.)))) %>%
+    group_by(change) %>% # for each correlation
+    # get t-stats, df and p-value of coefficient
+    mutate(stats = list(as.data.frame(pcor.test(r, 1, n_distinct(df$subject))))) %>%
+    unnest(stats, .drop = TRUE) # unpack resulting data frame into separate column
 }
 
 ## ---- Function to plot anodal vs cathodal change scores

@@ -217,7 +217,7 @@ img {
 <h1 class="title">AB-tDCS</h1>
 <h1 class="subtitle">Replication analyses</h1>
 <h4 class="author"><em>Leon Reteig</em></h4>
-<h4 class="date"><em>26 March, 2019</em></h4>
+<h4 class="date"><em>02 April, 2019</em></h4>
 </div>
 
 <div id="content">
@@ -963,7 +963,7 @@ img {
 <a class="sourceLine" id="cb42-4" data-line-number="4"><span class="st">  </span><span class="kw">calc_change_scores</span>() <span class="co"># from the AB magnitude, calculate change scores</span></a>
 <a class="sourceLine" id="cb42-5" data-line-number="5"></a>
 <a class="sourceLine" id="cb42-6" data-line-number="6">p_r_<span class="dv">1</span> &lt;-<span class="st"> </span><span class="kw">pcorr_anodal_cathodal</span>(ABmagChange_study1)</a>
-<a class="sourceLine" id="cb42-7" data-line-number="7">r_study1 &lt;-<span class="st"> </span>p_r_<span class="dv">1</span><span class="op">$</span>r</a>
+<a class="sourceLine" id="cb42-7" data-line-number="7">r_study1 &lt;-<span class="st"> </span>p_r_<span class="dv">1</span><span class="op">$</span>r[p_r_<span class="dv">1</span><span class="op">$</span>change <span class="op">==</span><span class="st"> &quot;tDCS - baseline&quot;</span>] <span class="co"># r-value in study 1</span></a>
 <a class="sourceLine" id="cb42-8" data-line-number="8">n_study1 &lt;-<span class="st"> </span><span class="kw">n_distinct</span>(df_study1<span class="op">$</span>subject)</a>
 <a class="sourceLine" id="cb42-9" data-line-number="9">n_study1_pc &lt;-<span class="st"> </span>n_study1<span class="dv">-1</span> <span class="co"># one less due to additional variable in partial correlation</span></a>
 <a class="sourceLine" id="cb42-10" data-line-number="10">  </a>
@@ -972,7 +972,7 @@ img {
 <a class="sourceLine" id="cb42-13" data-line-number="13"><span class="st">  </span><span class="kw">calc_change_scores</span>() <span class="co"># from the AB magnitude, calculate change scores</span></a>
 <a class="sourceLine" id="cb42-14" data-line-number="14"></a>
 <a class="sourceLine" id="cb42-15" data-line-number="15">p_r_<span class="dv">2</span> &lt;-<span class="st"> </span><span class="kw">pcorr_anodal_cathodal</span>(ABmagChange_study2)</a>
-<a class="sourceLine" id="cb42-16" data-line-number="16">r_study2 &lt;-<span class="st"> </span>p_r_<span class="dv">2</span><span class="op">$</span>r <span class="co"># r-value in study 2</span></a>
+<a class="sourceLine" id="cb42-16" data-line-number="16">r_study2 &lt;-<span class="st"> </span>p_r_<span class="dv">2</span><span class="op">$</span>r[p_r_<span class="dv">2</span><span class="op">$</span>change <span class="op">==</span><span class="st"> &quot;tDCS - baseline&quot;</span>] <span class="co"># r-value in study 2</span></a>
 <a class="sourceLine" id="cb42-17" data-line-number="17">n_study2_pc &lt;-<span class="st"> </span>n_study2<span class="dv">-1</span> <span class="co"># one less due to additional variable in partial correlation</span></a></code></pre></div>
 <div id="pool-study-1-and-2" class="section level2">
 <h2>Pool study 1 and 2</h2>
@@ -1135,12 +1135,13 @@ Effect of anodal vs. effect of cathodal pooled across studies
 <div id="statistics" class="section level3">
 <h3>Statistics</h3>
 <p>Partial correlation between anodal and cathodal AB magnitude change score (tDCS - baseline), attempting to adjust for session order:</p>
-<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb50-1" data-line-number="1"><span class="kw">pcorr_anodal_cathodal</span>(ABmagChange_pooled) <span class="op">%&gt;%</span></a>
+<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb50-1" data-line-number="1"><span class="kw">pcorr_anodal_cathodal</span>(<span class="kw">filter</span>(ABmagChange_pooled, change <span class="op">==</span><span class="st"> &quot;tDCS - baseline&quot;</span>)) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb50-2" data-line-number="2"><span class="kw">kable</span>(<span class="dt">digits =</span> <span class="dv">3</span>, <span class="dt">caption =</span> <span class="st">&quot;Pooled data from studies 1 and 2: Partial correlation anodal vs. cathodal&quot;</span>)</a></code></pre></div>
 <table>
 <caption>Pooled data from studies 1 and 2: Partial correlation anodal vs. cathodal</caption>
 <thead>
 <tr class="header">
+<th align="left">change</th>
 <th align="right">r</th>
 <th align="right">tval</th>
 <th align="right">df</th>
@@ -1149,6 +1150,7 @@ Effect of anodal vs. effect of cathodal pooled across studies
 </thead>
 <tbody>
 <tr class="odd">
+<td align="left">tDCS - baseline</td>
 <td align="right">-0.176</td>
 <td align="right">-1.509</td>
 <td align="right">71</td>

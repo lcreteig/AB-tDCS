@@ -37,6 +37,7 @@ print(sessionInfo())
 ```
 
 ```{r load data, child=load_data_path}
+# Run code in the src/lib/load_data.Rmd file at this point
 ```
 
 # Questionnaires

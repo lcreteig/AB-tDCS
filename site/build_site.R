@@ -6,13 +6,13 @@ site_src <- "site" # in project root
 site_rendered <- "docs" # in project root, should be named "docs" for gh-pages
 
 # index
-file.copy("README.md", file.path(site_src, "index.Rmd"), overwrite = TRUE) # copy to webiste folder
+file.copy("README.md", file.path(site_src, "index.Rmd"), overwrite = TRUE) # copy to website folder
 
 # analyses
 # names of all the notebooks
 nbs <- c("AB-tDCS_group.Rmd", "AB-tDCS_change-from-baseline.Rmd", "AB-tDCS_anodal-vs-cathodal.Rmd",
          "AB-tDCS_replication-analyses.Rmd", "AB-tDCS_questionnaires.Rmd")
-file.copy(file.path("src", nbs), site_src, overwrite = TRUE) # copy all files) # copy to webiste folder
+file.copy(file.path("src", nbs), site_src, overwrite = TRUE) # copy all files) # copy to website folder
 
 # paper
 # with auxiliary files
