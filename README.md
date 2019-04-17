@@ -127,9 +127,9 @@ Alternatively, skip these steps and follow this link to create a remote RStudio 
 
 This will already set everything up for you on the server, including all packages that the analysis code depends upon.
 
-Then, run the `.Rmd` notebooks in the `src` folder to reproduce the contents under the _Analyses_ tab on this website. These contain all analyses (and their results) performed for this project.
+Then, run the `.Rmd` notebooks in the `src` folder to reproduce the contents under the _Analyses_ tab on the project website. These contain all analyses (and their results) performed for this project.
 
-Run the `paper/AB-tDCS_paper.Rmd` notebook to reproduce all the results, figures and statistics, and the paper as under the _Paper_ tab or in the preprint (see [Resources]).
+Run the `paper/AB-tDCS_paper.Rmd` notebook to reproduce all the results, figures and statistics, and the paper as under the _Paper_ tab on the project website, or in the preprint (see [Resources]).
 
 # Licensing
 
