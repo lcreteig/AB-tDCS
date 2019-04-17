@@ -1,6 +1,6 @@
 ---
 title             : "Effects of tDCS on the attentional blink revisited: A statistical evaluation of a replication attempt"
-shorttitle        : "AB-tDCS"
+shorttitle        : "Replicating tDCS effects on the attentional blink"
 date              : | 
   1. Department of Psychology, University of Amsterdam
   2. Amsterdam Brain and Cognition, University of Amsterdam
@@ -24,16 +24,16 @@ affiliation       :
   - id            : 1
     institution   : "Department of Psychology, University of Amsterdam"
   - id            : 2
-    institution   : "Amsterdam Brain and Cognition"
+    institution   : "Amsterdam Brain and Cognition, University of Amsterdam"
   - id            : 3
     institution   : "Department of Artificial Intelligence and Cognitive Engineering, University of Groningen"
   - id            : 4
     institution   : "Department of Applied and Experimental Psychology, Vrije Universiteit Amsterdam"
-note              : "draft, 2nd version"        
+note              : "preprint version"        
 abstract: |
-  The attentional blink (AB) phenomenon reveals a bottleneck of human information processing: the second of two targets is often missed when they are presented in rapid succession among distractors. A recent study by London & Slagter (_Journal of Cognitive Neuroscience_, _27_, 2382--93, 2015) showed that the size of the AB can be changed by applying transcranial direct current stimulation (tDCS) over the left dorsolateral prefrontal cortex (lDLPFC). Although AB size at the group level remained unchanged, the effects of anodal and cathodal tDCS were negatively correlated: if a given individual's AB size decreased from baseline during anodal tDCS, their AB size would increase during cathodal tDCS, and vice versa. Here, we attempted to replicate this finding. Like London & Slagter, we found no group effects of tDCS, but also no longer found a significant negative correlation. We present a series of statistical measures of replication success, all of which confirm that both studies are not in agreement. First, the correlation here is significantly smaller than a conservative estimate of the original correlation. Second, the difference between the correlations is greater than expected due to sampling error, and our data are more consistent with a zero-effect than with the original estimate. Finally, the overall effect when combining both studies is small and not significant. Our findings thus indicate that the effects of lDPLFC-tDCS on the AB are less substantial than suggested by London & Slagter. Although this should be quite a common scenario, negative findings can be difficult to interpret and are still under-represented in the brain stimulation and cognitive neuroscience literatures. An auxiliary goal of this paper is therefore to provide a tutorial for other researchers, to maximize the evidential value from negative findings.
+  The attentional blink (AB) phenomenon reveals a bottleneck of human information processing: the second of two targets is often missed when they are presented in rapid succession among distractors. A recent study by London & Slagter (_Journal of Cognitive Neuroscience_, _27_, 2382--93, 2015) showed that the size of the AB can be changed by applying transcranial direct current stimulation (tDCS) over the left dorsolateral prefrontal cortex (lDLPFC). Although AB size at the group level remained unchanged, the effects of anodal and cathodal tDCS were negatively correlated: if a given individual's AB size decreased from baseline during anodal tDCS, their AB size would increase during cathodal tDCS, and vice versa. Here, we attempted to replicate this finding. Like London & Slagter, we found no group effects of tDCS, but also no longer found a significant negative correlation. We present a series of statistical measures of replication success, all of which confirm that both studies are not in agreement. First, the correlation here is significantly smaller than a conservative estimate of the original correlation. Second, the difference between the correlations is greater than expected due to sampling error, and our data are more consistent with a zero-effect than with the original estimate. Finally, the overall effect when combining both studies is small and not significant. Our findings thus indicate that the effects of lDPLFC-tDCS on the AB are less substantial than suggested by London & Slagter (2015). Although this should be quite a common scenario, negative findings can be difficult to interpret and are still under-represented in the brain stimulation and cognitive neuroscience literatures. An auxiliary goal of this paper is therefore to provide a tutorial for other researchers, to maximize the evidential value from negative findings.
 keywords          : "attentional blink, tDCS, dlPFC, individual differences, replication"
-wordcount         : "~6500"
+wordcount         : "6725"
 bibliography      : ["AB-tDCS.bib", "r-references.bib"]
 link-citations    : true
 floatsintext      : yes # figures and table not at the end
@@ -49,13 +49,14 @@ always_allow_html : yes
 header-includes   :
   - \raggedbottom
 output:
-  papaja::apa6_word: default #papaja::apa6_pdf: default 
+  papaja::apa6_pdf: default
   bookdown::html_document2:
     toc: true
     toc_float: true
-    code_folding: none
+    code_folding: hide
     highlight: pygments
     theme: paper
+  papaja::apa6_word: default
 ---
 
 ```{r setup, results='hide', message=FALSE, warning=FALSE}
@@ -126,9 +127,9 @@ df_study2 <- load_data_study2(here("data"), subs_incomplete) %>%
 
 # Introduction
 
-The _attentional blink_ (AB) phenomenon clearly demonstrates that our capacity to process incoming information is easily overwhelmed. The AB occurs when two targets are embedded in a rapidly presented stream of distractors [@Raymond1992; for reviews, see @Dux2009; @Martens2010]. The first target (T1) is usually reported with little difficulty. When there is a longer lag between the two targets [> 500 ms, @MacLean2012], accuracy for the second target (T2) can be on par with the first. However, for shorter lags, T2 is most often missed---as if the attentional system momentarily faltered ("blinked").
+The _attentional blink_ (AB) phenomenon clearly demonstrates that our capacity to process incoming information is easily overwhelmed. The AB occurs when two targets are embedded in a rapidly presented stream of distractors [@Raymond1992; for reviews, see @Dux2009; @Martens2010]. The first target (T1) is usually reported with little difficulty. When there is a longer lag between the two targets [> 500 ms; @MacLean2012], accuracy for the second target (T2) can be on par with the first. However, for shorter lags, T2 is most often missed---as if the attentional system momentarily faltered ("blinked").
 
-While the AB might seem to be a fundamental bottleneck, it can under some circumstances be overcome. For example, the size of the AB can be reduced by distracting activities [@Olivers2005; @Olivers2006], or after following an intensive mental training program [@Slagter2007]. Others have tried to use non-invasive brain stimulation [@Dayan2013] as a means to influence the AB. Several studies have shown that repetitive transcranial magnetic stimulation (TMS) can improve target perception in AB tasks [@Cooper2004; @Arasanz2012; @Esterman2017]. Yes, as TMS did not show a differential effect for targets presented at shorter or longer lags, it did not affect the AB itself.
+While the AB might seem to be a fundamental bottleneck, it can under some circumstances be overcome. For example, the size of the AB can be reduced by distracting activities [@Olivers2005; @Olivers2006; @Thomson2015a], or after following an intensive mental training program [@Slagter2007]. Others have tried to use non-invasive brain stimulation [@Dayan2013] as a means to influence the AB. Several studies have shown that repetitive transcranial magnetic stimulation (TMS) can improve target perception in AB tasks [@Cooper2004; @Arasanz2012; @Esterman2017]. Yet, as TMS did not show a differential effect for targets presented at shorter or longer lags, it did not affect the AB itself.
 
 Transcranial direct current stimulation (tDCS) is another brain stimulation technique that has gained traction in the past two decades. In tDCS, an electrical current flows between an anodal and cathodal electrode, which can affect the excitability of the underlying cortex [@Gebodh2019a]. Anodal stimulation generally enhances cortical excitability, while cathodal stimulation may have an inhibitory effect [@Nitsche2000; @Nitsche2001] (though note that this does not hold in all cases [@Parkin2018], and the underlying physiology is complex [@Bikson2019; @Liu2018; @Stagg2018]).
 
@@ -138,7 +139,7 @@ London and Slagter's [-@London2015] findings mesh well with earlier literature s
 
 To foreshadow our results, like @London2015, we do not find a group effect of tDCS on the AB. However, the correlation between the effects of anodal and cathodal tDCS was also not significant. Although this indicates that the two studies may differ, a failure to reject the null hypothesis by itself does not tell us much [@Harms2018]: it is crucial to also take measures of the uncertainty and effect size in both studies into account [@Simonsohn2015].
 
-Therefore, we employ a number of statistical methods to maximize the evidential value in these two studies. We ask three questions that all aim to evaluate to what extent the present study is a successful replication of @London2015 [@Zwaan2018; cf. @Camerer2018; @OSC2015]. First, while the effect in our study was not significant, there might still be a meaningful effect that is simply smaller than anticipated. Therefore, we used equivalence testing [@Lakens2018] to answer the question "_is the correlation in study 2 significantly small?_". Second, although our result differs from @London2015, it could still be more consistent with their findings than with alternative explanations. So in addition, we asked "_is the correlation in study 2 consistent with study 1?_", and aimed to answer this question using prediction intervals [@Spence2016; @Patil2016] and replication Bayes factors [@Wagenmakers2016; @Verhagen2014]. Finally, it could be that the effect in our study alone is not sufficiently large, but the overall effect based on both studies is. This raises the question "_is the effect significant when combining study 1 and 2?_", which we addressed through meta-analysis [@Quintana2015] and by pooling the data.
+Therefore, we employ a number of statistical methods to maximize the evidential value in these two studies. We ask three questions that all aim to evaluate to what extent the present study is a successful replication of @London2015 [@Zwaan2018; cf. @Camerer2018; @OSC2015]. First, while the effect in our study was not significant, there might still be a meaningful effect that is simply smaller than anticipated. Therefore, we used equivalence testing [@Lakens2018] to answer the question "_is the correlation in study 2 significantly small?_". Second, although our result differs from @London2015, it could still be more consistent with their findings than with alternative explanations. So in addition, we asked "_are the correlations consistent across studies 1 and 2?_", and aimed to answer this question using prediction intervals [@Spence2016; @Patil2016] and replication Bayes factors [@Wagenmakers2016; @Verhagen2014]. Finally, it could be that the effect in our study alone is not sufficiently large, but the overall effect based on both studies is. This raises the question "_is the effect significant when combining study 1 and 2?_", which we addressed through meta-analysis [@Quintana2015;@Goh2016] and by pooling the data.
 
 These questions address issues of reproducibility that are currently faced by many in the brain stimulation field [@Heroux2017], and in the cognitive neuroscience community at large [@Munafo2017; @Huber2019]. Therefore, aside from our focus on tDCS and the AB, an auxiliary goal of this article is to provide a tutorial on the statistical evaluation of replication studies. We hope this may prove useful to other researchers who find themselves in similar situations. <!-- Might be effective to have a target group, but in principle all these methods apply to everyone. How does this read? Suggestions on target group and whether to be more specific / general? -->
 
@@ -170,11 +171,11 @@ age_min <- min(subject_info$age, na.rm = TRUE)
 age_max <- max(subject_info$age, na.rm = TRUE)
 ```
 
-Fourty-eight participants took part in total, 8 of which had to be excluded after the first session. Six were excluded because their T1 accuracy was two standard deviations below the mean of a separate pilot study (n = 10, mean T1 accuracy: 63% correct). We used this exclusion criterion to ensure we had enough trials for each participant, as T2 accuracy measure included only trials in which T1 was seen. Of the remaining two participants, one was excluded as a precaution because they developed an atypical headache after the first session, and we could not rule out this was related to the tDCS; the other stopped responding to our requests to schedule the second session.
+Fourty-eight participants took part in total, 8 of which had to be excluded after the first session. Six were excluded because their T1 accuracy was two standard deviations below the mean of a separate pilot study (n = 10, mean T1 accuracy: 63% correct). We used this exclusion criterion to ensure we had enough trials for each participant, as our T2 accuracy measure included only trials in which T1 was seen. Of the remaining two participants, one was excluded as a precaution because they developed an atypical headache after the first session, and we could not rule out this was related to the tDCS; the other stopped responding to our requests to schedule the second session.
 
 This left a final sample of `r n_study2` participants (`r n_female` female, mean age = `r printnum(age_mean)`, _SD_ = `r printnum(age_sd)`, range = `r age_min`--`r age_max`). This sample size was determined a priori to slightly exceed @London2015 (n = 34).
 
-The experiment and recruitment took place at the University of Amsterdam. All procedures for this study were approved by the ethics review board of the Faculty for Social and Behavioral Sciences. All participants provided their written informed consent and were compensated with course credit or €10 per hour (typically €65 for completing two full sessions).
+The experiment and recruitment took place at the University of Amsterdam. All procedures for this study were approved by the ethics review board of the Faculty for Social and Behavioral Sciences, and complied with relevant laws and institutional guidelines. All participants provided their written informed consent and were compensated with course credit or €10 per hour (typically €65 for completing two full sessions).
 
 ## Procedure
 
@@ -184,7 +185,7 @@ The study procedures were identical to @London2015: participants received anodal
 knitr::include_graphics("figures/figure_1_procedure.png", auto_pdf = TRUE)
 ```
 
-First, participants experienced the sensations induced by tDCS in a brief trial stimulation (see the [tDCS] section). Next, participants completed 20 practice trials of the task (see the [Task] section). For the main portion of the experiment, participants performed three blocks of the task (Figure \@ref(fig:fig-procedure)): before tDCS (_baseline_), during anodal/cathodal tDCS (_tDCS_), and after tDCS (_post_). Finally, after completing the three blocks, participants filled in a questionnaire on tDCS-related adverse effects (see Table \@ref(tab:tab-tDCS-AE) and Figure \@ref(fig:fig-tDCS-AE) in the Appendix).
+First, participants experienced the sensations induced by tDCS in a brief trial stimulation (see the [tDCS] section). Next, participants completed 20 practice trials of the task (see the [Task] section). For the main portion of the experiment, participants performed three blocks of the task (Figure \@ref(fig:fig-procedure)): before tDCS (_baseline_), during anodal/cathodal tDCS (_tDCS_), and after tDCS (_post_). Finally, after completing the three blocks, participants filled in a questionnaire on tDCS-related adverse effects (see Table \@ref(tab:tab-tDCS-AE) and Figure \@ref(fig:fig-tDCS-AE) in the [Supplementary Material](#tdcs-adverse-events)).
 
 Within each block of the task, participants took a self-timed break every 50 trials (~5 minutes); between the blocks, the experimenter walked in. Participants performed the task for exactly 20 minutes during the _baseline_ and _post_ blocks. During the _tDCS_ block, the task started after the 1-minute ramp-up of the current was complete, and continued for 21 minutes (constant current, plus 1-minute of ramp-down).
 
@@ -196,10 +197,6 @@ The attentional blink task (Figure \@ref(fig:fig-task)) was almost identical to 
 
 The letter stream was preceded by a fixation cross (same color as the letters) presented for 1750 ms (cf. 480 ms in @London2015) and followed by another fixation cross (cf. none in @London2015). Finally, the participant was prompted to type in (using a standard keyboard) the letter they thought was presented as T1 ("Which letter was red?"), followed by T2 ("Which letter was green?").
 
-```{r fig-task, fig.cap='(ref:caption-fig-task)', results='show', out.width = "\\textwidth", fig.pos = "!h"}
-knitr::include_graphics("figures/figure_2_task.png", auto_pdf = TRUE)
-```
-
 ```{r trial counts}
 trials_study2 <- df_study2 %>%
   group_by(lag) %>%
@@ -207,6 +204,12 @@ trials_study2 <- df_study2 %>%
 ```
 
 Trial duration varied slightly because both the T1 and T2 response questions were self-paced, so some participants completed more trials than others depending on their response times. On average, participants completed `r printnum(trials_study2$mean[trials_study2$lag==3], digits = 0)` short lag trials (_SD_ = `r printnum(trials_study2$sd[trials_study2$lag==3], digits = 0)`; range = `r trials_study2$min[trials_study2$lag==3]`--`r trials_study2$max[trials_study2$lag==3]`) and `r printnum(trials_study2$mean[trials_study2$lag==8], digits = 0)` long lag trials (_SD_ = `r printnum(trials_study2$sd[trials_study2$lag==8], digits = 0)`; range = `r trials_study2$min[trials_study2$lag==8]`--`r trials_study2$max[trials_study2$lag==8]`) per 20-minute block.
+
+```{r fig-task, fig.cap='(ref:caption-fig-task)', results='show', out.extra = '', fig.pos = "H"}
+knitr::include_graphics("figures/figure_2_task.png", auto_pdf = TRUE)
+#, 
+#out.width = "\\textwidth", fig.pos = "!h"
+```
 
 (ref:caption-fig-task) __Attentional blink task__. Participants viewed rapid serial visual presentation streams of 15 letters, all of which were distractors (gray letters) except for T1 and T2. T1 was presented in red at position 5; T2 was presented in green and followed T1 after 2 distractors (_lag 3_, inside the AB window) or 7 distractors (_lag 8_, outside the AB window). At the end of the trial, participants reported the identity of T1 and then T2 (self-paced).
 
@@ -223,7 +226,6 @@ At the start of the experiment, participants received a brief trial stimulation,
 ## EEG
 
 We also recorded EEG during all three task blocks. Originally, we aimed to analyze the EEG data to obtain a neurophysiological correlate of the individual differences in response to tDCS [@Krause2014; @Li2015b; @Harty2017]. However, since we did not replicate the behavioral effect in @London2015, we refrained from further analysis of the EEG data. Instead, we are making the EEG data publicly available at this time [^EEG]. The dataset is formatted according to the new Brain Imaging Data Structure (BIDS) standard [@Gorgolewski2016] for EEG [@Pernet2018], to facilitate re-use. We include the raw data, as well as the fully preprocessed data and the MATLAB code that generated it.
-<!--The dataset has been uploaded, but not been made public yet. If you'd like to review it, please let me know: I can give you access once you've logged in to the OpenNeuro website once.-->
 
 [^EEG]: <https://openneuro.org/datasets/ds001810>
 
@@ -231,7 +233,9 @@ We also recorded EEG during all three task blocks. Originally, we aimed to analy
 
 ```{r citations}
 r_citations <- cite_r(file = "r-references.bib", 
-                      pkgs = c("TOSTER", "predictionInterval", "metafor", "afex", "ggm"), 
+                      pkgs = c("broom","cowplot","here","tidyverse","papaja","knitr",
+                               "psychometric","pwr","kableExtra","BayesFactor","emmeans"), 
+                      withhold = FALSE,
                       footnote = TRUE)
 ```
 
@@ -249,9 +253,9 @@ We reproduced the analysis behind Figure 4 of @London2015, which showed a differ
 
 ### Replication analyses
 
-In contrast to @London2015, the analysis described in the previous section did not produce a significant correlation in our dataset. Therefore, we conducted five follow-up analyses that aim to quantify to what extent our results (do not) replicate @London2015. These all provide a complementary perspective on this question. First, we performed an _equivalence test_ to assess whether the effect in the present study was significantly smaller than in @London2015. While this procedure is more focused on hypothesis testing, we also constructed _prediction intervals_ to capture the range of effect sizes we can expect in a replication of @London2015. Both of these procedures are based on frequentist statistics, which cannot directly quantify the amount of evidence for a (null) hypothesis. Therefore, we also computed a _replication Bayes factor_ that expresses whether the data in the present study are more likely under the null hypothesis that the effect is absent, vs. the alternative hypothesis that the effect is comparable to @London2015. Finally, we directly combined both studies and estimated the size and significance of the overall effect, through _meta-analysis_ of both correlations, and by computing a new correlation on the _pooled dataset_. More details on each analysis can be found in the following sections, and the provided online resources.
+In contrast to @London2015, the analysis described in the previous section did not produce a significant correlation in our dataset. Therefore, we conducted five follow-up analyses that aim to quantify to what extent our results (do not) replicate @London2015. These all provide a complementary perspective on this question. First, we performed an [equivalence test](#eq) (1) to assess whether the effect in the present study was significantly smaller than in @London2015. While this procedure is more focused on hypothesis testing, we also constructed [prediction intervals](#pi) (2) to capture the range of effect sizes we can expect in a replication of @London2015. Both of these procedures are based on frequentist statistics, which cannot directly quantify the amount of evidence for a (null) hypothesis. Therefore, we also computed a [replication Bayes factor](#repBF) that expresses whether the data in the present study are more likely under the null hypothesis that the effect is absent, vs. the alternative hypothesis that the effect is comparable to @London2015. Finally, we directly combined both studies and estimated the size of the overall effect, through [meta-analysis](#meta) (4) of both correlations, and by computing a new correlation on the [pooled dataset](#pool) (5). More details on each analysis can be found in the following sections, and the provided online resources.
 
-#### Equivalence test
+#### Equivalence tests {#eq}
 
 Equivalence tests can be used to test for the _absence_ of an effect of a specific size [see @Lakens2018 for a tutorial]. Usually, the effect size used for the test is the smallest effect size of interest (the SESOI). Typically, equivalence tests are two one-sided tests: one test of the null hypothesis that the effect exceeds the upper equivalence bound (positive SESOI), and one that the effect exceeds the lower equivalence bound (negative SESOI). However, a one-sided test is more appropriate here: @London2015 found that the effects of anodal and cathodal tDCS were anticorrelated, so we are only interested in negative effect sizes. This is known as an inferiority test [@Lakens2018].
 
@@ -261,7 +265,7 @@ There are many possible specifications of the SESOI, none of which are necessari
 
 We conducted an inferiority test using the *TOSTER* package [Version `r packageDescription("TOSTER", fields = "Version", drop = TRUE)`; @R-TOSTER] against the null hypothesis that the correlation coefficient in the present study is at least as negative as $-r_{33\%}$. At a standard alpha level of 0.05, the test is significant if the 90% confidence interval around the observed correlation does not contain $r_{33\%}$. This would mean that the observed correlation should be considered "statistically inferior", as it is then significantly smaller (i.e. less negative) than $-r_{33\%}$.
 
-#### Prediction interval
+#### Prediction interval {#pi}
 
 Prediction intervals contain a range of values we can expect a new observation to fall within. In our case, the observation of interest is the correlation between the effects of anodal and cathodal tDCS. This correlation is estimated based on a sample, and is thus subject to sampling error: any two estimates of the correlation will almost never be exactly the same. Prediction intervals aim to quantify how dissimilar two estimates can be before we should be surprised.
 
@@ -271,7 +275,7 @@ If the original study were replicated 100 times, 95 of the observed correlation 
 
 We calculated a 95% prediction interval for correlations, following @Spence2016, using the *predictionInterval* package [Version `r packageDescription("predictionInterval", fields = "Version", drop = TRUE)`; @R-predictionInterval].
 
-#### Replication Bayes factor
+#### Replication Bayes factor {#repBF}
 
 Bayes factors can be used to express the relative evidence for the null ($H_0$) or alternative hypothesis ($H_1$) [@Wagenmakers2018a]. In a default Bayesian hypothesis test, $H_0$ states the effect size is absent (i.e. exactly zero); $H_1$ states that the effect is present (specified further by a prior distribution of effect sizes). 
 
@@ -279,20 +283,19 @@ In a replication context, we want to decide between two different scenarios [@Ve
 
 We used the replication Bayes factor test for correlations developed by @Wagenmakers2016. The replication Bayes factor $BF_{0r}$ expresses evidence for $H_0$ : "the correlation is 0" relative to $H_r$ : "the correlation is as in the original study". We use the interpretation scheme from @Wagenmakers2018, where $1 < BF_{0r} < 3$ consitutes "anecdotal evidence" for $H_0$, $3 < BF_{0r} < 10$ ~ "moderate evidence", and $10 < BF_{0r} < 30$ ~ "strong evidence".
 
-#### Meta-analysis
+#### Meta-analysis {#meta}
 
-The outcomes from multiple studies on the same phenomenon can be combined through meta-analysis. Here we compute a meta-analytic estimate of the correlation based on the correlations observed here and as reported by @London2015, using the *metafor* package [Version `r packageDescription("metafor", fields = "Version", drop = TRUE)`; @R-metafor]. We weighed the estimate by sample size, so the present study will have a slightly higher influence on the meta-analytic effect size (because its sample size exceeds @London2015). We specified the meta-analysis as a fixed-effects model, as both studies are highly similar and from the same population (e.g., the experiments were conducted in the same location, the sample was from the same university student population). This does mean our inferences are limited to this particular set of two studies, but this is also what we want to know in this case: the size of the effect _when combining both studies_ (a random-effects meta-analysis would be appropriate in case we sought an estimate of _the true effect in the population_, but we would need more than just two studies for this approach).
+The outcomes from multiple studies on the same phenomenon can be combined through meta-analysis. Here we compute a meta-analytic estimate of the correlation based on the correlations observed here and as reported by @London2015, using the *metafor* package [Version `r packageDescription("metafor", fields = "Version", drop = TRUE)`; @R-metafor]. We weighed the estimate by sample size, so the present study will have a slightly higher influence on the meta-analytic effect size (because its sample size exceeds @London2015). We specified the meta-analysis as a fixed-effects model, because both studies are highly similar and from the same population (e.g., the experiments were conducted in the same location, and the sample was from the same university student population). With a fixed-effects analysis, we estimate the size of the effect _in the set of available studies_, meaning our inferences cannot generalize beyond. A random-effects meta-analysis would be appropriate in case the studies were more dissimilar, and if we sought an estimate of _the true effect in the population_, but we would need more than just two studies for this approach. Note that while meta-analyses are a powerful way to assess the overall effect in a series of studies, they are particularly vulnerable to false positives when the selection of studies (or any single study) is biased [@Ueno2016].
 
-#### Pooling the data with @London2015
+#### Pooling the data with @London2015 {#pool}
 
 Another approach is to pool the single-subject data from both studies, and to re-calculate the partial correlation on the combined sample (n = `r 34 + n_study2`). The main difference between the two studies is that @London2015 presented T2 at lags 2, 4 and 10; here we used lags 3 and 8. The long lags (lag 8 vs. lag 10) should be fairly comparable, as they are both well outside the attentional blink window [> 500 ms following T1; @MacLean2012]. However, there should be a sizeable performance difference at the short lags (lag 2 vs. lag 3), as the attentional blink is larger at lag 2 than lag 3. Therefore, we opted to also create a "lag 3" condition in the data from @London2015, by averaging T2|T1 accuracy at lag 2 and lag 4. The difference from lag 2 to 4 (and 4 to 10) in @London2015 looks fairly linear (see their Figure 3), so this seems a fair approximation of "true" lag 3 performance. Afterwards we recomputed the partial correlation between AB magnitude change scores as described previously (see the [Individual differences analysis] section).
+
+Note that this analysis is tailored to this series of studies, and not generally advisable. To get a more accurate estimate of the effect at lag 3, it is necessary to redo the analysis on the larger, combined sample. But repeating a statistical test after collecting more data ("optional stopping") invalidates the interpretation of the p-value and can drastically increase the false positive rate [@Simmons2011]. This would only be acceptable when the analysis plan has been preregistered, and the false positive rate of sequential analyses is controlled [for potential solutions, see @Lakens2014]. We therefore do not report a p-value for this test, but only the effect size and its confidence interval. 
 
 ## Data, materials, and code availability
 
 All of the data and materials from this study and the data from @London2015 are available on the Open Science Framework[^osf]. The analysis code is available on GitHub[^gh] (and also from our OSF page), in the form of an R notebook detailing all the analyses that we ran for this project, along with the results. We also include an Rmarkdown [@Xie2018] source file for this paper that can be run to reproduce the pdf version of the text, along with all the figures and statistics.
-<!-- You should have received an invite to the OSF project. If you don't have an OSF account yet, you'll need to make one to access it. If you'd rather not do that, you can also use this link to view it: https://osf.io/y6hsf/?view_only=eab7a04b58fd41f3b6b7b9ad074a1e3c
-
-The GitHub page is not public yet, but I've connected it to the OSF such that the files should show up there.--> 
 
 [^osf]: <https://osf.io/y6hsf/>
 
@@ -301,14 +304,6 @@ The GitHub page is not public yet, but I've connected it to the OSF such that th
 # Results
 
 ## Group-level analysis
-
-```{r rm anova T2|T1, results='hide', message=FALSE, warning=FALSE}
-aov_T2.given.T1 <- aov_car(T2.given.T1 ~ session.order + Error(subject/(block*stimulation*lag)),
-        data = df_study2)
-apa_aov_T2.given.T1 <- apa_print(aov_T2.given.T1, mse = FALSE, in_paren = TRUE)
-```
-
-Figure \@ref(fig:fig-group) shows the attentional blink (T2|T1 accuracy per lag) for each of the three blocks (pre, tDCS, post) and stimulation conditions separately. The summary statistics and ANOVA results for T2|T1 accuracy can be found in Tables \@ref(tab:tab-descriptives-T2) and \@ref(tab:tab-anova-T2).  There was a clear attentional blink effect on average (main effect of Lag, `r apa_aov_T2.given.T1$statistic$lag`), as T2|T1 accuracy for lag 8 was higher than lag 3. Effects of tDCS at the group-level should manifest as a three-way interaction between Block, Stimulation, and Lag. As in @London2015, this interaction was not significant (`r apa_aov_T2.given.T1$statistic$block_stimulation_lag`). However, the higher-order interaction with Session order did reach significance (`r apa_aov_T2.given.T1$statistic$session_order_block_stimulation_lag`). This interaction appears to be mostly driven by a learning effect across sessions and blocks (the Session order by Stimulation by Lag interaction). From the first to the 2nd session, lag 3 performance improved, while lag 8 performance declined somewhat (leading to a smaller attentional blink). This change was stronger in participants that received anodal tDCS in the first session, and less pronounced in the cathodal-first group. We do not consider this a genuine effect of tDCS on the attentional blink, because there is no clear reason why these randomized groups should differ, and because the largest difference between the anodal and cathodal session occurred in the baseline block already (see Table \@ref(tab:tab-descriptives-T2)).
 
 ```{r data for plot}
 df_plot_T2 <- df_study2 %>%
@@ -330,7 +325,30 @@ df_plot_T1 <- df_study2 %>%
   add_column(measure = "T1")
 ```
 
-```{r fig-group, fig.cap='(ref:caption-fig-group)', fig.width=5.512, fig.height = 3.42}
+```{r rm anova T2|T1, results='hide', message=FALSE, warning=FALSE}
+aov_T2.given.T1 <- aov_car(T2.given.T1 ~ session.order + Error(subject/(block*stimulation*lag)),
+        data = df_study2)
+apa_aov_T2.given.T1 <- apa_print(aov_T2.given.T1, mse = FALSE, in_paren = TRUE)
+```
+
+```{r function to make table rows}
+T2_desc <- function(df, block_in) {
+  df %>%
+    filter(block == block_in) %>%
+    mutate(cond = paste0("lag ", lag, "_", block_in)) %>%
+    unite(ID, stimulation, session.order) %>%
+    group_by(ID, cond) %>%
+    summarise(mean_sd = paste0(printnum(mean(T2.given.T1), digits = 3), " (",
+                               printnum(sd(T2.given.T1), digits = 3), ")")) %>%
+    spread(ID, mean_sd) %>%
+    select(cond, contains("anodal first"), contains("cathodal first"))
+}
+
+```
+
+Figure \@ref(fig:fig-group) shows the attentional blink (T2|T1 accuracy per lag) for each of the three blocks (pre, tDCS, post) and stimulation conditions separately. The summary statistics and ANOVA results for T2|T1 accuracy can be found in Tables \@ref(tab:tab-descriptives-T2) and \@ref(tab:tab-anova-T2).  There was a clear attentional blink effect on average (main effect of Lag, `r apa_aov_T2.given.T1$statistic$lag`), as T2|T1 accuracy for lag 8 was higher than lag 3. 
+
+```{r fig-group, fig.cap='(ref:caption-fig-group)', fig.width=5.512, fig.height = 3.42, out.extra = '', fig.pos = 'H'}
 ggplot(full_join(df_plot_T1,df_plot_T2), 
        aes(lag, Mean, color = stimulation, shape = stimulation, linetype = measure)) +
   facet_wrap(~block) +
@@ -350,22 +368,7 @@ ggplot(full_join(df_plot_T1,df_plot_T2),
         legend.title = element_blank())
 ```
 
-(ref:caption-fig-group) __No effects of tDCS on the attentional blink at the group level__. There was a clear attentional blink effect: a lower % T2 accuracy (given T1 correct: _T2|T1_; dashed lines) for _lag 3_ (T2 presented inside the attentional blink window) than _lag 8_ (T2 presented outside the attentional blink window, on par with _T1 accuracy_). However, the attentional blink did not change systematically over stimulation conditions (_anodal_, _cathodal_) and blocks (_pre_, _tDCS_, _post_). T1 accuracy (solid lines) was also not affected by the tDCS
-
-```{r function to make table rows}
-T2_desc <- function(df, block_in) {
-  df %>%
-    filter(block == block_in) %>%
-    mutate(cond = paste0("lag ", lag, "_", block_in)) %>%
-    unite(ID, stimulation, session.order) %>%
-    group_by(ID, cond) %>%
-    summarise(mean_sd = paste0(printnum(mean(T2.given.T1), digits = 3), " (",
-                               printnum(sd(T2.given.T1), digits = 3), ")")) %>%
-    spread(ID, mean_sd) %>%
-    select(cond, contains("anodal first"), contains("cathodal first"))
-}
-
-```
+(ref:caption-fig-group) __No effects of tDCS on the attentional blink at the group level__. There was a clear attentional blink effect: a lower % T2 accuracy (given T1 correct: _T2|T1_; dashed lines) for _lag 3_ (T2 presented inside the attentional blink window) than _lag 8_ (T2 presented outside the attentional blink window, on par with _T1 accuracy_). However, the attentional blink did not change systematically over stimulation conditions (_anodal_, _cathodal_) and blocks (_pre_, _tDCS_, _post_). T1 accuracy (solid lines) was also not affected by tDCS.
 
 ```{r tab-descriptives-T2, results = 'asis'}
 # Table with kableExtra (html and pdf)
@@ -386,6 +389,8 @@ T2_df %>%
 
 ```
 
+Effects of tDCS at the group-level should manifest as a three-way interaction between Block, Stimulation, and Lag. As in @London2015, this interaction was not significant (`r apa_aov_T2.given.T1$statistic$block_stimulation_lag`). However, the higher-order interaction with Session order did reach significance (`r apa_aov_T2.given.T1$statistic$session_order_block_stimulation_lag`). This interaction appears to be mostly driven by a learning effect across sessions and blocks (the Session order by Stimulation by Lag interaction). From the first to the 2nd session, lag 3 performance improved, while lag 8 performance declined somewhat (leading to a smaller attentional blink). This change was stronger in participants that received anodal tDCS in the first session, and less pronounced in the cathodal-first group. We do not consider this a genuine effect of tDCS on the attentional blink, because there is no clear reason why these randomized groups should differ, and because the largest difference between the anodal and cathodal session occurred in the baseline block already (see Table \@ref(tab:tab-descriptives-T2)).
+
 ```{r tab-anova-T2, results='asis'}
 apa_table(apa_aov_T2.given.T1$table, caption = "Repeated measures ANOVA on T2|T1 accuracy")
 ```
@@ -396,7 +401,7 @@ aov_T1 <- aov_car(T1 ~ session.order + Error(subject/(block*stimulation*lag)),
 apa_aov_T1 <- apa_print(aov_T1, mse = FALSE, in_paren = TRUE)
 ```
 
-We ran the same repeated measures ANOVA for T1 accuracy (Table \@ref(tab:tab-anova-T1)). On average, participants correctly identified T1 in `r round(mean(df_study2$T1) * 100, 1)`% of trials (Figure \@ref(fig:fig-group)). T1 accuracy was also slightly lower for lag 3 than lag 8 (main effect of Lag, `r apa_aov_T1$statistic$lag`). There was a main effect of Block, reflecting that T1 accuracy decreased _within_ a session (`r apa_aov_T1$statistic$block`). Finally, T1 performance also decreased _across_ the sessions (interaction between Session order and Stimulation: `r apa_aov_T1$statistic$session_order_stimulation`).
+We ran the same repeated measures ANOVA for T1 accuracy (Table \@ref(tab:tab-anova-T1)). On average, participants correctly identified T1 in `r round(mean(df_study2$T1) * 100, 0)`% of trials (Figure \@ref(fig:fig-group)). T1 accuracy was also slightly lower for lag 3 than lag 8 (main effect of Lag, `r apa_aov_T1$statistic$lag`). There was a main effect of Block, reflecting that T1 accuracy decreased _within_ a session (`r apa_aov_T1$statistic$block`). Finally, T1 performance also decreased _across_ the sessions (interaction between Session order and Stimulation: `r apa_aov_T1$statistic$session_order_stimulation`).
 
 In sum, we conclude that there is no significant effect of tDCS on the attentional blink or T1 accuracy at the group level, in agreement with @London2015.
 
@@ -451,7 +456,7 @@ Our main aim was to replicate @London2015, who found a negative correlation betw
 
 We ran the same partial correlation (attempting to adjust for Session order) between the anodal and cathodal AB magnitude change scores (_tDCS_ - _baseline_) on our data (Figure \@ref(fig:fig-corr)). However, here the resulting correlation did not go in the same direction (_r_(`r p_r_2$df[p_r_2$change == "tDCS - baseline"]`) = `r printnum( p_r_2$r[p_r_2$change == "tDCS - baseline"], gt1=F)`), and was not significant (_p_ = `r printp( p_r_2$pvalue[p_r_2$change == "tDCS - baseline"])`). In the next sections, we present a number of follow-up analyses that further explore this difference in results between both studies (see the [Replication analyses] subsection in the [Methods] section).
 
-```{r fig-corr, fig.cap='(ref:caption-fig-corr)', fig.width=5.512}
+```{r fig-corr, fig.cap='(ref:caption-fig-corr)', fig.width=5.512, fig.height = 3}
 
 # separate df so arrows only show on one facet
 AB_arrows_y <- tibble(x = c(-.47, -.47),
@@ -502,13 +507,15 @@ ABmagChange_study2 %>%
             aes(x = x, y = y, label = label, hjust = hjust), size = geom_text_size, angle = 90) + 
   # correlation labels
   geom_label(data = corr_labels, aes(label = label),
-            x = -.35, y = .3, hjust = "left", size = geom_text_size, label.size = 0) +
+            x = -.36, y = .26, hjust = "left", size = geom_text_size, label.size = 0) +
   theme_minimal_grid(font_size = base_font_size, font_family = base_font_family) +
   theme(strip.background = element_rect(fill = "grey90"), # facet header background
         panel.spacing.x = unit(1,"lines"), # add horizontal space between facets
         # move axis labels away from annotatations
         axis.title.x = element_text(margin = margin(t = 17.5, r = 0, b = 0, l = 0)),
         axis.title.y = element_text(margin = margin(t = 0, r = 17.5, b = 0, l = 0)))
+        # remove excess top and bottom sapce
+        #plot.margin = unit(c(0.2, 0.2, 0.2, 0.2), "pt"))
 ```
 
 (ref:caption-fig-corr) __The effects of anodal and cathodal tDCS are not correlated in the present study.__ Data points show AB magnitude change scores (_tDCS - baseline_, _post - baseline_) for each participant in the study, in the _anodal_ session (x-axis) and the _cathodal_ session (y-axis). While @London2015 found a negative partial correlation (for _tDCS - baseline_), suggesting opposite effects of anodal and cathodal tDCS, this effect appears to be absent here. The partial correlation coefficients (attempting to adjust for Session order) and p-values are printed in the upper left.
@@ -524,11 +531,11 @@ test_small_telescopes <- TOSTr(n = n_study2_pc,# equivalence test
       alpha = 0.05)
 ```
 
-@London2015 found a medium- to large correlation (_r_ = `r printnum(r_study1, gt1=F)`), but the correlation we find here is much smaller (_r_ = `r printnum(r_study2, gt1=F)`). We use equivalence testing (@Lakens2018; see the [Equivalence test] subsection in the [Methods] section) to assess whether this correlation is significantly smaller than a smallest effect size of interest (SESOI). Following the "small telescopes" approach [@Simonsohn2015], we set the SESOI to $r_{33\%}$, the correlation @London2015 had 33% power to detect. Given their sample size of `r n_study1` participants, $r_{33\%}$ = `r printnum(SESOI_small_telescopes$r, gt1=F)`.
+@London2015 found a medium- to large correlation (_r_ = `r printnum(r_study1, gt1=F)`), but the correlation we find here is much smaller (_r_ = `r printnum(r_study2, gt1=F)`). We use equivalence testing (@Lakens2018; see the [Equivalence tests] subsection in the [Methods] section) to assess whether this correlation is significantly smaller than a smallest effect size of interest (SESOI). Following the "small telescopes" approach [@Simonsohn2015], we set the SESOI to $r_{33\%}$, the correlation @London2015 had 33% power to detect. Given their sample size of `r n_study1` participants, $r_{33\%}$ = `r printnum(SESOI_small_telescopes$r, gt1=F)`.
 
 An inferiority test shows that the correlation here is significantly less negative than $-r_{33\%}$ (_p_ = `r printp(test_small_telescopes$TOST_p1)`) (Figure \@ref(fig:fig-rep-estimate)), although only by a small margin. The effect is therefore "statistically inferior": the correlation does not exceed the lower equivalence bound ($-r_{33\%}$ = `r printnum(-SESOI_small_telescopes$r, gt1=F)`). By this definition, the correlation is too small (i.e. not negative enough) to be considered meaningful, indicating that we did not successfully replicate @London2015.
 
-### Is the correlation in study 2 consistent with study 1?
+### Are the correlations consistent across studies 1 and 2?
 
 To evaluate whether the correlation in the present study was to be expected based on @London2015, we constructed a 95% _prediction interval_ (PI) [@Spence2016], using the correlation in @London2015 and the sample size of both studies (see the [Prediction interval] subsection of the [Methods] section).
 
@@ -536,7 +543,7 @@ To evaluate whether the correlation in the present study was to be expected base
 pred_int <- pi.r(r = r_study1, n = n_study1_pc, rep.n = n_study2_pc, prob.level = 0.95)
 ```
 
-The 95% PI[`r printnum(pred_int$lower_prediction_interval)` -- `r printnum(pred_int$upper_prediction_interval)`] around the original correlation (_r_ = `r printnum(r_study1, gt1=F)`) is very wide, so almost any negative correlation would fall within it. However, it does not include the replication result (_r_ = `r printnum(r_study2, gt1=F)`) (Figure \@ref(fig:fig-rep-estimate)). Assuming the results of both studies differ only due to sampling error, the correlation observed  here has a 95% chance to fall within the interval. This means the correlation in our replication study is inconsistent with the correlation in @London2015, and thus that the replication should not be considered successful.
+The 95% PI[`r printnum(pred_int$lower_prediction_interval)`, `r printnum(pred_int$upper_prediction_interval)`] around the original correlation (_r_ = `r printnum(r_study1, gt1=F)`) is very wide, so almost any negative correlation would fall within it. However, it does not include the replication result (_r_ = `r printnum(r_study2, gt1=F)`) (Figure \@ref(fig:fig-rep-estimate)). Assuming the results of both studies differ only due to sampling error, the correlation observed  here has a 95% chance to fall within the interval. This means the correlation in our replication study is inconsistent with the correlation in @London2015, and thus that the replication should not be considered successful.
 
 Another approach to quantify the consistency between study 1 and 2 is to construct a replication Bayes Factor [@Wagenmakers2016]. We use this Bayes factor to assess evidence for $H_0$ : "the effects of anodal and cathodal tDCS are uncorrelated" relative to $H_r$ : "the effects of anodal and cathodal tDCS are anticorrelated as in @London2015" (see the [Replication Bayes factor] subsection of the [Methods] section).
 
@@ -564,9 +571,9 @@ res_r <- predict(res_z, transf = transf.ztor) # transform back to r-values
 res_z
 ```
 
-The meta-analytic estimate of the correlation is _r_ = `r printnum(res_r$pred)`, 95%CI[`r printnum(res_r$ci.lb)` -- `r printnum(res_r$ci.ub)`], _p_ = `r printp(res_z$pval)` (Figure \@ref(fig:fig-rep-estimate)). So, when combining the correlation from @London2015 and the correlation observed here, the overall effect is no longer significant.
+The meta-analytic estimate of the correlation is _r_ = `r printnum(res_r$pred)`, 95%CI[`r printnum(res_r$ci.lb)`, `r printnum(res_r$ci.ub)`], _p_ = `r printp(res_z$pval)` (Figure \@ref(fig:fig-rep-estimate)). So, when combining the correlation from @London2015 and the correlation observed here, the overall effect is no longer significant.
 
-In addition, we pooled the data from both studies at the single-subject level and re-calculated the partial correlation on the combined sample (n = `r n_study1 + n_study2`). To make the datasets as comparable as possible, we first averaged over  T2|T1 accuracy at lags 2 and 4 in @London2015, to mimic a "lag 3" condition cf. the present study (Figure \@ref(fig:fig-corr-pooled)).
+In addition, we pooled the data from both studies at the single-subject level and re-calculated the partial correlation on the combined sample (n = `r n_study1 + n_study2`). To make the datasets as comparable as possible, we first averaged over T2|T1 accuracy at lags 2 and 4 in @London2015, to mimic a "lag 3" condition cf. the present study (Figure \@ref(fig:fig-corr-pooled)).
 
 ```{r Function to create lag 3 in study 1 data}
 
@@ -587,11 +594,10 @@ ABmagChange_pooled <- df_study1 %>%
 p_r_pooled <- pcorr_anodal_cathodal(filter(ABmagChange_pooled, change == "tDCS - baseline"))
 ```
 
-```{r fig-corr-pooled, fig.cap='(ref:caption-fig-corr-pooled)', fig.width=3.543, out.extra = '', fig.pos = "H"}
+```{r fig-corr-pooled, fig.cap='(ref:caption-fig-corr-pooled)', fig.width=3.543, fig.height = 3.42, out.extra = '', fig.pos = "H"}
 
 corr_label_pooled <- paste0("r(", p_r_pooled$df ,")", " = ", 
-                            printnum(p_r_pooled$r,gt1=F), ", p = ", 
-                            printp(p_r_pooled$pvalue))
+                            printnum(p_r_pooled$r,gt1=F))
 
 ABmagChange_pooled %>%
   # create two columns of AB magnitude change score during tDCS: for anodal and cathodal
@@ -626,18 +632,18 @@ ABmagChange_pooled %>%
   annotate("text", x = -.47, y = .25, label = "Larger AB",
            size = geom_text_size, angle = 90, hjust = "right") +
   annotate("label", label = corr_label_pooled,
-           x = -.35, y = .3, hjust = "left", size = geom_text_size, label.size = 0) +
+           x = -.29, y = .26, hjust = "left", size = geom_text_size, label.size = 0) +
   theme_minimal_grid(font_size = base_font_size, font_family = base_font_family) +
   theme(legend.title = element_blank(), legend.background = element_blank(), 
         legend.position = "top", legend.direction = "horizontal",
         axis.title.x = element_text(margin = margin(t = 17.5, r = 0, b = 0, l = 0)),
         axis.title.y = element_text(margin = margin(t = 0, r = 15, b = 0, l = 0)))
-}
+  }
 ```
 
-(ref:caption-fig-corr-pooled) __The effects of anodal and cathodal tDCS are also not correlated when pooling data from both studies.__ As in Figure \@ref(fig:fig-corr), data points show AB magnitude change scores (_tDCS_ - _baseline_) in the _anodal_ session (x-axis) and the _cathodal_ session (y-axis), but now for each participant in @London2015 (_study 1_) and the present study (_study 2_). While @London2015 found a negative partial correlation, suggesting opposite effects of anodal and cathodal tDCS, this effect appears to be absent when based on the combined data of both studies. The partial correlation coefficient (attempting to adjust for Session order) and p-value is printed in the upper left.
+(ref:caption-fig-corr-pooled) __The effects of anodal and cathodal tDCS are also not correlated when pooling data from both studies.__ As in Figure \@ref(fig:fig-corr), data points show AB magnitude change scores (_tDCS_ - _baseline_) in the _anodal_ session (x-axis) and the _cathodal_ session (y-axis), but now for each participant in @London2015 (_study 1_) and the present study (_study 2_). While @London2015 found a negative partial correlation, suggesting opposite effects of anodal and cathodal tDCS, this effect appears to be absent when based on the combined data of both studies. The partial correlation coefficient (attempting to adjust for Session order) is printed in the upper left.
 
-The partial correlation based on the pooled data is _r_(`r p_r_pooled$df`) = `r printnum(p_r_pooled$r, gt1=F)`, _p_ = `r printp(p_r_pooled$pvalue)` (Figure \@ref(fig:fig-corr-pooled)). Thus, the correlation across a combination of both samples is also not significant (and slightly smaller still than the meta-analytic estimate that included the original correlation from @London2015).
+The partial correlation based on the pooled data is _r_(`r p_r_pooled$df`) = `r printnum(p_r_pooled$r, gt1=F)`. Thus, the correlation across a combination of both samples is a lot smaller than in @London2015, and slightly smaller still than the meta-analytic estimate that included the original correlation from @London2015 (Figure \@ref(fig:fig-rep-estimate)).
 
 ```{r replication plot data frame}
 rep_plot_df <- bind_cols(tibble::tribble(
@@ -662,8 +668,8 @@ rep_plot_df <- bind_cols(tibble::tribble(
     analysis = factor(analysis, 
                       levels = c("London & Slagter (2015)", "Present study", "Equivalence test",
                                  "Prediction interval", "Meta-analysis", "Pooled data")), 
-    label = paste0("r = ", round(estimate,2), ", ", 
-                   int_type, "[",round(int_min,2), ", ", round(int_max,2), "]")
+    label = paste0("r = ", printnum(estimate,gt1=F), ", ", 
+                   int_type, " [",printnum(int_min,gt1=F), ", ", printnum(int_max,gt1=F), "]")
   ) # create labels for plot
 ```
 
@@ -673,7 +679,7 @@ ggplot(rep_plot_df, aes(estimate,analysis)) +
              color = c("black", "#E69F00", "#56B4E9")) +
   geom_errorbarh(aes(y = analysis, xmin = int_min, xmax = int_max), height = .25, color = "gray50") +
   geom_point(shape = 23, aes(fill = source), size = 2) +
-  geom_point(x = -SESOI_small_telescopes$r, y = 4, shape = 4, size = 1, color = "gray50") +
+  geom_point(x = -SESOI_small_telescopes$r, y = 4, shape = 4, size = 1, color = "black") +
   geom_label(x = .45, aes(y = analysis, label = label), hjust = "left", 
              size = geom_text_size, label.size = 0) +
   scale_fill_manual(values = c("gray", "#E69F00", "#56B4E9"), guide = FALSE) +
@@ -685,32 +691,32 @@ ggplot(rep_plot_df, aes(estimate,analysis)) +
   coord_cartesian(c(-1,1), clip = "off") +
   theme_minimal_vgrid(font_size = base_font_size, font_family = base_font_family) +
   theme(axis.line = element_blank(), axis.ticks = element_blank(), 
-        plot.margin = unit(c(1,3.5,1,1), "lines"))
+        plot.margin = unit(c(1,3,1,.25), "lines"))
 ```
 
 (ref:caption-fig-rep-estimate) __Summary of all the replication analyses__ (with exception of the replication Bayes Factor). The first two rows show the partial correlation (attemtping to adjust for Session order) between the AB magnitude change scores (tDCS - baseline) in the anodal and cathodal sessions, for @London2015 and the present study. The first is significantly negative, the second is slightly positive and not significant, because its 95% confidence interval (CI) overlaps with zero. The third row shows the 90% CI around the correlation in the present study. Because this interval does not overlap with the "small telescopes" effect size, (indicated by the `x`: $-r_{33\%}$ = `r printnum(-SESOI_small_telescopes$r, gt1=F)`), this correlation is significantly smaller. The fourth row shows the  95% prediction interval (PI) around the correlation in @London2015. Because this interval does not overlap with the correlation in the present study, both correlations are not consistent. The final two rows show the overall effect when the two correlations are meta-analyzed, and when one correlation is computed over the pooled data from both studies. Neither are significant (95% CI overlaps with zero). Thus, our replication analyses all suggest that we failed to replicate London & Slagter (2015), and when the results are examined in combination, no evidence in support of a negative relationship between the AB magnitude change scores (_tDCS - baseline_) in the anodal and cathodal sessions is obtained.
 
 # Discussion
 
-@London2015 were the first to uncover a potential effect of tDCS on the AB. Although there was no group-level effect of tDCS, they found a negative correlation between the effects of anodal and cathodal tDCS on T2|T1 accuracy across individual. This analysis suggested an interesting pattern of individual differences in response to tDCS: those that tended to benefit from anodal tDCS (i.e., whose AB became smaller compared to baseline) would tend to worsen during cathodal tDCS, and vice versa. This finding seemed plausible given that presence of large individual differences in both the AB [@Willems2016] and the effects of tDCS [@Krause2014] is well-known.
+@London2015 were the first to uncover a potential effect of tDCS on the AB. Although there was no group-level effect of tDCS, they found a negative correlation between the effects of anodal and cathodal tDCS on T2|T1 accuracy across individuals. This analysis suggested an interesting pattern of individual differences in response to tDCS: those that tended to benefit from anodal tDCS (i.e., whose AB became smaller compared to baseline) would tend to worsen during cathodal tDCS, and vice versa. This finding seemed plausible given the substantial and well-documented individual differences in both the AB [@Willems2016] and the effects of tDCS [@Krause2014].
 
-We conducted a replication study, and again found no effect of tDCS at the group level. However, in contrast to @London2015, the correlation between the AB magnitude change scores (tDCS - baseline) in the anodal and cathodal sessions here is not significant, and not in the same direction. We also computed several statistical measures of replication success focused on the negative correlation between anodal and cathodal tDCS. These showed that the correlation is smaller than in @London2015, and than the smallest correlation they could have reasonably detected (i.e., an equivalence test for the lower bound of $r_{33\%}$ [@Simonsohn2015] is significant). The difference between the two studies is greater than expected based on sampling error alone (i.e., the correlation in the present study falls outside of the 95% prediction interval). Further, the data provide moderate to strong evidence for the null hypothesis of zero correlation compared to the alternative that the correlation is as in @London2015 (i.e. we found a replication Bayes factor in favor of the null hypothesis of ~10). Finally, combining both studies yields a non-significant correlation (both in a meta-analysis and by pooling the data).
+We conducted a replication study, and again found no effect of tDCS at the group level. However, in contrast to @London2015, the correlation between the AB magnitude change scores (tDCS - baseline) in the anodal and cathodal sessions here is not significant, and not in the same direction. We also computed several statistical measures of replication success focused on the negative correlation between anodal and cathodal tDCS. These showed that the correlation is smaller than in @London2015, and than the smallest correlation they could have reasonably detected (i.e., an equivalence test for the lower bound of $r_{33\%}$ [@Simonsohn2015] is significant). The difference between the two studies is greater than expected based on sampling error alone (i.e., the correlation in the present study falls outside of the 95% prediction interval). Further, the data provide moderate to strong evidence for the null hypothesis of zero correlation compared to the alternative that the correlation is as in @London2015 (i.e. we found a replication Bayes factor in favor of the null hypothesis of ~10). Finally, combining both studies yields a smaller and non-significant correlation (both in a meta-analysis and by pooling the data).
 
 The overall picture is consistent: all measures indicate that the present study is not a successful replication of @London2015. But because both studies were similar in design and sample size, it is not warranted to dismiss the findings of @London2015. Our analysis revealed substantial variation between both estimates of the effect, and so the conclusion whether tDCS is effective should not be based on any single study.
 
 Still, the marked difference in results of both studies is surprising: they are similar enough that the present study could be considered a direct replication of @London2015 [@Zwaan2018]. We used the exact same electrode montage and tDCS parameters, followed the same experimental design (Figure \@ref(fig:fig-procedure)), ran the experiment in the same location with the same participant population, and used a virtually identical task. Nevertheless, there are some discrepancies between the studies that could have contributed to the different outcome. 
 
-The most important difference is that @London2015 presented T2 at lags 2, 4, and 10, whereas we used lags 3 and 8. This means that AB magnitude (the difference in T2|T1 accuracy the between shortest and longest lag) was on average smaller in the present study. We introduced the change for precisely this reason: to have about as many trials for the EEG analyses in which T2 was seen vs. missed, we needed the AB to be smaller. But this increase in average T2|T1 accuracy may have also reduced the between-subject variability that is essential for analyses that capitalize on individual differences. Indeed, from Figure \@ref(fig:fig-corr-pooled) it seems that the sample in @London2015 had a larger spread, at least in the change scores for AB magnitude.
+The most important difference is that @London2015 presented T2 at lags 2, 4, and 10, whereas we used lags 3 and 8. This means that AB magnitude (the difference in T2|T1 accuracy between the shortest and longest lag) was on average smaller in the present study. We introduced the change for precisely this reason: to have about as many trials for the EEG analyses in which T2 was seen vs. missed, we needed the AB to be smaller. But this increase in average T2|T1 accuracy may have also reduced the between-subject variability that is essential for analyses that capitalize on individual differences. Indeed, from Figure \@ref(fig:fig-corr-pooled) it seems that the sample in @London2015 had a larger spread, at least in the change scores for AB magnitude.
 
 Though the change in lags is probably the most important, the concurrent EEG measurement did introduce other differences as well. Each session took longer to complete, because the EEG setup required extra time, and the pace of the task was slowed down with extra inter-stimulus intervals. Finally, the current flow could have changed due to the presence of the EEG cap and electrodes, as well as the use of conductive paste instead of saline solution.
 
 At the group level, our results are in agreement with @London2015: we find no differential effects of anodal and cathodal tDCS on the AB. This strongly suggests that the AB is not amenable to tDCS over the lDPLFC, at least with our fairly standard electrode montage and stimulation parameters [@Santarnecchi2015]. These null results are consistent with recent reviews and meta-analyses highlighting there is little evidence that prefrontal tDCS can be used to enhance cognition [@Medina2017]; or if so, that its effects are difficult to predict [@Tremblay2014a], rather small [@Dedoncker2016a], and restricted to a limited subset of outcome measures and stimulation parameters [@Imburgio2018].
 
-Interpreting null results is always difficult, especially in brain stimulation studies [@DeGraaf2018]. Ultimately, there exists a myriad of possible underlying explanations, most of which we have no direct access to. For one, we cannot be sure that the current density in the lDLPFC reached sufficient levels [@Kim2014; @Opitz2015] based on our montage alone. More precise targeting of the stimulation towards the lDPLFC [@Datta2009] and modeling of the current flow [@DeBerker2013; @Karabanov2019] could provide some more confidence. But even then, it would be difficult to verify that anodal tDCS and cathodal tDCS indeed had an opposite effect on cortical excitability [@Bestmann2014; @Bestmann2017]. This assumption holds in many cases, and would provide a plausible explanation for the negative correlation in @London2015 [@Krause2014]. But we have no direct measure of cortical excitability, and there is no way tov verify the neurophysiological effects of the stimulation in each individual.
+Interpreting null results is always difficult, especially in brain stimulation studies [@DeGraaf2018]. Ultimately, a myriad of possible underlying explanations may apply, most of which we have no direct access to. For one, we cannot be sure that the current density in the lDLPFC reached sufficient levels [@Kim2014; @Opitz2015] based on our montage alone. More precise targeting of the stimulation towards the lDPLFC [@Datta2009] and modeling of the current flow [@DeBerker2013; @Karabanov2019] could provide some more confidence. Still, it would be difficult to verify that anodal tDCS and cathodal tDCS indeed had an opposite effect on cortical excitability [@Bestmann2014; @Bestmann2017]. This assumption holds in many cases, and would provide a plausible explanation for the negative correlation in @London2015 [@Krause2014]. But ideally, it should be validated with direct measures of cortical excitability. Such measures are hard to obtain, although some recent studies suggest that combining tDCS with magnetic resonance spectroscopy can be used for this purpose [@Filmer2019; @Antonenko2019; @Talsma2018].
 
 It is also possible that we do not find an effect because the studies did not have sufficient statistical power [@Minarik2016]. Especially for the individual differences analyses, the sample size in both studies is on the lower end. For example, to detect a medium-sized correlation (_r_ = 0.3) with 80% power, the required sample size is n = 84. We do approach this sample size when combining both studies (n = `r n_study1 + n_study2`). Also, the correlation in @London2015 was larger (_r_ = `r printnum(r_study1)`), but we cannot have much confidence in the precision of this estimate. To estimate the size of a medium correlation (_r_ = 0.3) within ± 0.15 with 90% confidence, a sample size of n = 134 would be required [@Schonbrodt2013]. Although our analyses suggest that the correlation is small if anything, this means we cannot accurately estimate how small---even with the combined sample.
 
-These are all decisions to be made at the design stage, which can increase the value of a null result [@DeGraaf2018]. However, after the data are in, there are more tools to increase the value of a null result [@Harms2018], especially in the case of a replication study [@Simonsohn2015]. Here, we used a selection of these tools to scrutinize our own two studies on tDCS effects on the attentional blink, as these are the only ones available to date.
+These are all decisions to be made at the design stage, which can increase the value of a null result [@DeGraaf2018]. However, after the data are in, additional tools are available to increase the value of a null result [@Harms2018], especially in the case of a replication study [@Simonsohn2015]. Here, we used a selection of these tools to scrutinize our own two studies on tDCS effects on the attentional blink, as these are the only ones available to date.
 
 In addition, we hope our paper provides inspiration for others in the fields of brain stimulation and cognitive neuroscience. Many speak of a crisis of confidence [@Heroux2017] and fear that the current literature is lacking in evidential value [@Medina2017]. This is certainly not a unique development, as these sentiments [@Baker2015] and low rates of replication abound in many research areas [@OSC2015; @Camerer2018; @Klein2018]. But it is perhaps aggravated by the fact that the brain stimulation field has not matured yet [@Parkin2015]. 
 
@@ -718,20 +724,8 @@ To make sure the literature accurately reflects the efficacy of the technique, i
 
 [^frontiers]: Research Topic in Frontiers, "Non-Invasive Brain Stimulation Effects on Cognition and Brain Activity: Positive Lessons from Negative Findings": https://www.frontiersin.org/research-topics/5535/non-invasive-brain-stimulation-effects-on-cognition-and-brain-activity-positive-lessons-from-negativ
 
-\newpage
-
-# (APPENDIX) Appendix {-} 
-
-```{r echo = FALSE, results = 'asis'}
-#render_appendix('AB_tDCS_appendix.Rmd')
-```
-
-# tDCS adverse events
-
-```{r appendix, child = 'AB-tDCS_appendix.Rmd'}
-```
-
 # Acknowledgements {-} 
+
 This work was supported by a Research Talent Grant from the Netherlands Organization for Scientific Researc (NWO) (452-10-018, to HAS and KRR). We thank Raquel London for sharing all her experience and materials, as well as Daphne Box and Esther van der Giessen for their assistance in data collection.
 
 # References {-} 
@@ -746,3 +740,10 @@ r_refs(file = "r-references.bib", append = FALSE)
 
 <div id = "refs"></div>
 \endgroup
+
+# Supplementary material {-}
+
+## tDCS adverse events {-}
+
+```{r appendix, child = 'AB-tDCS_appendix.Rmd'}
+``` 

@@ -1,3 +1,7 @@
+\renewcommand{\thetable}{S\arabic{table}} \setcounter{table}{0}
+\renewcommand{\thefigure}{S\arabic{figure}} \setcounter{figure}{0}
+\renewcommand{\theequation}{S\arabic{table}} \setcounter{equation}{0}
+
 ```{r}
 tDCS_AE <- read_csv2(here("data", "tDCS_AE.csv"), col_names = TRUE, progress = FALSE, col_types = cols(
   session = readr::col_factor(c("first", "second")), 
