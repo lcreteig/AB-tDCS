@@ -19,15 +19,15 @@ Don't hesitate to get in touch if you have any questions; find my contact detail
 
 # Resources
 
-__Project website__: project website link FIXME
+__Project website__: <https://lcreteig.github.io/AB-tDCS>
 
-__Preprint__: bioRxiv - [bioRxiv link FIXME]
+__Preprint__: [bioRxiv](bioRxiv link FIXME) (not yet available)
 
-__Behavioral data and other resources__: Open Science Framework (OSF) - [OSF link FIXME]
+__Behavioral data and other resources__: [Open Science Framework (OSF)](https://osf.io/y6hsf/)
 
-__EEG data__: OpenNeuro - [OpenNeuro link FIXME]
+__EEG data__: [OpenNeuro](https://openneuro.org/datasets/ds001810)
 
-__Code__: GitHub - [GitHub link FIXME]
+__Code__: [GitHub](https://github.com/lcreteig)
 
 
 # Project setup
@@ -123,7 +123,7 @@ N.B. The following folders each have their own `README.md` (GitHub) and/or wiki 
 1. Make sure you've downloaded all the data and code and that they're placed in the `data`, `src` and `paper` folders (as outlined in the [Directory structure] section).
 2. Open the `AB-tDCS.Rproj` file in [RStudio](https://www.rstudio.com/).
 
-Alternatively, skip these steps and follow this link to create a remote RStudio session in your browser with [Binder](https://mybinder.org/): [![Binder](https://mybinder.org/badge.svg)](FIXME add link)
+In the future, you'll be able to follow this link to create a remote RStudio session in your browser with [Binder](https://mybinder.org/): [![Binder](https://mybinder.org/badge.svg)](FIXME add link)
 
 This will already set everything up for you on the server, including all packages that the analysis code depends upon.
 
