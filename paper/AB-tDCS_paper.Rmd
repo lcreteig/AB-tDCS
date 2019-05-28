@@ -171,7 +171,7 @@ age_min <- min(subject_info$age, na.rm = TRUE)
 age_max <- max(subject_info$age, na.rm = TRUE)
 ```
 
-Fourty-eight participants took part in total, 8 of which had to be excluded after the first session. Six were excluded because their T1 accuracy was two standard deviations below the mean of a separate pilot study (n = 10, mean T1 accuracy: 63% correct). We used this exclusion criterion to ensure we had enough trials for each participant, as our T2 accuracy measure included only trials in which T1 was seen. Of the remaining two participants, one was excluded as a precaution because they developed an atypical headache after the first session, and we could not rule out this was related to the tDCS; the other stopped responding to our requests to schedule the second session.
+Fourty-eight participants took part in total, 8 of whom were excluded after the first session. One participant was excluded excluded as a precaution because they developed an atypical headache after the first session, and we could not rule out this was related to the tDCS. Another stopped responding to our requests to schedule the second session. The remaining six participants were excluded because their mean T1 accuracy in the first session was too low, which would leave too few trials to analyze, because our T2 accuracy measure included only trials in which T1 was seen. We used a cut-off of 63% T1 accuracy as an exclusion criterium, which was two standard deviations below the mean of a separate pilot study (n = 10).
 
 This left a final sample of `r n_study2` participants (`r n_female` female, mean age = `r printnum(age_mean)`, _SD_ = `r printnum(age_sd)`, range = `r age_min`--`r age_max`). This sample size was determined a priori to slightly exceed @London2015 (n = 34).
 
@@ -189,7 +189,7 @@ First, participants experienced the sensations induced by tDCS in a brief trial 
 
 Within each block of the task, participants took a self-timed break every 50 trials (~5 minutes); between the blocks, the experimenter walked in. Participants performed the task for exactly 20 minutes during the _baseline_ and _post_ blocks. During the _tDCS_ block, the task started after the 1-minute ramp-up of the current was complete, and continued for 21 minutes (constant current, plus 1-minute of ramp-down).
 
-(ref:caption-fig-procedure) __Experimental design__. After a baseline block without stimulation, participants performed the task during 20 minutes of anodal (red) or cathodal (blue) tDCS, followed by a post-test block (also without stimulation). The second session (typically 7 days later) was identical, except that the tDCS polarity was reversed.
+(ref:caption-fig-procedure) __Experimental design__. After a baseline block without stimulation, participants performed the attentional blink task during 20 minutes of anodal (red) or cathodal (blue) tDCS, followed by a post-test block (also without stimulation). The second session (typically 7 days later) was identical, except that the tDCS polarity was reversed.
 
 ## Task
 
@@ -396,12 +396,13 @@ apa_table(apa_aov_T2.given.T1$table, caption = "Repeated measures ANOVA on T2|T1
 ```
 
 ```{r rm anova study 2 T1, results='hide', message=FALSE, warning=FALSE}
+mean_T1 <- mean(df_study2$T1)
 aov_T1 <- aov_car(T1 ~ session.order + Error(subject/(block*stimulation*lag)),
         data = df_study2)
 apa_aov_T1 <- apa_print(aov_T1, mse = FALSE, in_paren = TRUE)
 ```
 
-We ran the same repeated measures ANOVA for T1 accuracy (Table \@ref(tab:tab-anova-T1)). On average, participants correctly identified T1 in `r round(mean(df_study2$T1) * 100, 0)`% of trials (Figure \@ref(fig:fig-group)). T1 accuracy was also slightly lower for lag 3 than lag 8 (main effect of Lag, `r apa_aov_T1$statistic$lag`). There was a main effect of Block, reflecting that T1 accuracy decreased _within_ a session (`r apa_aov_T1$statistic$block`). Finally, T1 performance also decreased _across_ the sessions (interaction between Session order and Stimulation: `r apa_aov_T1$statistic$session_order_stimulation`).
+We ran the same repeated measures ANOVA for T1 accuracy (Table \@ref(tab:tab-anova-T1)). On average, participants correctly identified T1 in `r round(mean_T1 * 100, 0)`% of trials (Figure \@ref(fig:fig-group)), which is comparable to previous studies using this task [86% in @London2015; 82% in @Slagter2013]. T1 accuracy was also slightly lower for lag 3 than lag 8 (main effect of Lag, `r apa_aov_T1$statistic$lag`). There was a main effect of Block, reflecting that T1 accuracy decreased _within_ a session (`r apa_aov_T1$statistic$block`). Finally, T1 performance also decreased _across_ the sessions (interaction between Session order and Stimulation: `r apa_aov_T1$statistic$session_order_stimulation`).
 
 In sum, we conclude that there is no significant effect of tDCS on the attentional blink or T1 accuracy at the group level, in agreement with @London2015.
 
