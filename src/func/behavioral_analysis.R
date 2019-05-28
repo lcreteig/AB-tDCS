@@ -119,7 +119,8 @@ create_lag3_study1 <- function(df) {
     separate(condition, c("lag", "measure"), "_") %>% # separate lag and T1/T2|T1
     mutate(lag = str_remove(lag,"lag")) %>%
     mutate(lag = fct_relevel(lag, "3","10")) %>% #remake the lag factor
-    spread(measure, score)  # make a column of T1 and T2|T1
+    spread(measure, score) %>% # make a column of T1 and T2|T1
+    ungroup() # remove grouping to match original df from study 1
 }
 
 ## ---- Function to calculate AB magnitude
@@ -127,7 +128,8 @@ calc_ABmag <- function(df) {
   df %>% 
     group_by(subject, session.order, stimulation, block) %>% # for each unique factor combination
     summarise(AB.magnitude = last(T2.given.T1) - first(T2.given.T1), # subtract lags to replace data with AB magnitude,
-              T1.short = first(T1)) # also keep T1 performance for short lag, to use as a covariate later
+              T1.short = first(T1)) %>% # also keep T1 performance for short lag, to use as a covariate later
+    ungroup()
 }
 
 ## ---- Function to calculate change scores
