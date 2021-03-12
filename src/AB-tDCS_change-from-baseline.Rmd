@@ -111,20 +111,20 @@ pcorr_change_baseline <- function(df) {
   df %>%
     ungroup() %>%
     mutate(session.order = as.numeric(session.order)) %>% # dummy code
-    nest(baseline, change.score, .key = 'value_col') %>% # combine the two performance columns into a list
+    nest_legacy(baseline, change.score, .key = 'value_col') %>% # combine the two performance columns into a list
     # make 2 separate list-columns: AB.magnitude and T1. short
     spread(key = measure, value = value_col) %>% # each contains two vectors: baseline performance and change score
-    unnest(AB.magnitude, T1.short, .sep = '_') %>% # make all 2x2 combinations into 4 columns
+    unnest_legacy(AB.magnitude, T1.short, .sep = '_') %>% # make all 2x2 combinations into 4 columns
     select(-T1.short_baseline) %>% # drop the baseline value for T1.short: not used in partial correlation
     group_by(stimulation,change) %>% # for anodal/cathodal during/after
     # make a data frame out of all 4 columns we need for the partial correlation
-    nest(session.order, AB.magnitude_baseline, AB.magnitude_change.score, T1.short_change.score) %>% 
+    nest_legacy(session.order, AB.magnitude_baseline, AB.magnitude_change.score, T1.short_change.score) %>% 
     # partial correlation between baseline and T2|T1 change score, given session order and T1 change score
     mutate(r = map_dbl(data, ~pcor(c("AB.magnitude_baseline","AB.magnitude_change.score",
                                      "session.order", "T1.short_change.score"), var(.)))) %>% 
     group_by(stimulation,change) %>%
     mutate(stats = list(as.data.frame(pcor.test(r, 2, n_distinct(df$subject))))) %>% # significance of partial correlations
-    unnest(stats, .drop = TRUE) # combine all into one data frame
+    unnest_legacy(stats, .drop = TRUE) # combine all into one data frame
 }
 ```
 
@@ -186,9 +186,9 @@ df %>%
   gather(condition, retest, tDCS, post) %>% # gather the tdcs and post blocks into one "retest score" column
   unite(comparison, stimulation, condition) %>% # create all 2x2 combinations for the correlations
   group_by(comparison) %>% # for each of these
-  nest() %>% # make a data frame out of the test and retest columns
+  nest_legacy() %>% # make a data frame out of the test and retest columns
   mutate(stats = map(data, ~as.data.frame(corr_change_baseline(.$pre, .$retest)))) %>% # apply the variance test
-  unnest(stats, .drop = TRUE) # unpack list into data frame, drop the data
+  unnest_legacy(stats, .drop = TRUE) # unpack list into data frame, drop the data
 }
 ```
 

@@ -100,11 +100,13 @@ ABmagChange_study1 %>%
   filter(measure == "AB.magnitude") %>%
   select(-baseline) %>%
   spread(stimulation, change.score) %>%
-  nest(-change) %>%
+  nest(data = -one_of('change')) %>%
   mutate(stats = map(data, ~cor.test(.$anodal, .$cathodal, 
                                      alternative = "two.sided", 
-                                     method = "pearson"))) %>% 
-  unnest(map(stats,tidy), .drop = TRUE) %>%
+                                     method = "pearson"))) %>%
+  mutate(stats = map(stats, tidy)) %>%
+  select(-data) %>% 
+  unnest(stats) %>%
   kable(digits = 3, caption = "zero-order correlations study 1")
 ```
 
@@ -116,9 +118,9 @@ ABmagChange_study1 %>%
   filter(measure == "AB.magnitude") %>%
   select(-baseline) %>%
   spread(stimulation, change.score) %>%
-  nest(-change) %>%
+  nest_legacy(-change) %>%
   mutate(stats = map(data, ~extractBF(correlationBF(.$anodal, .$cathodal)))) %>%
-  unnest(stats) %>%
+  unnest_legacy(stats) %>%
   select(change, bf) %>%
   kable(digits = 2, caption = "Bayesian correlations study 1")
 ```
@@ -140,11 +142,13 @@ ABmagChange_study2 %>%
   filter(measure == "AB.magnitude") %>%
   select(-baseline) %>%
   spread(stimulation, change.score) %>%
-  nest(-change) %>%
+  nest(data = -one_of('change')) %>%
   mutate(stats = map(data, ~cor.test(.$anodal, .$cathodal, 
                                      alternative = "two.sided", 
                                      method = "pearson"))) %>% 
-  unnest(map(stats,tidy), .drop = TRUE) %>%
+  mutate(stats = map(stats, tidy)) %>%
+  select(-data) %>% 
+  unnest(stats) %>%
   kable(digits = 3, caption = "zero-order correlations study 2")
 ```
 
@@ -156,9 +160,9 @@ ABmagChange_study2 %>%
   filter(measure == "AB.magnitude") %>%
   select(-baseline) %>%
   spread(stimulation, change.score) %>%
-  nest(-change) %>%
+  nest_legacy(-change) %>%
   mutate(stats = map(data, ~extractBF(correlationBF(.$anodal, .$cathodal)))) %>%
-  unnest(stats) %>%
+  unnest_legacy(stats) %>%
   select(change, bf) %>%
   kable(digits = 2, caption = "Bayesian correlations study 2")
 ```

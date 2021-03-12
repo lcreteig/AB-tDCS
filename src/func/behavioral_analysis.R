@@ -156,13 +156,13 @@ pcorr_anodal_cathodal <- function(df) {
     ungroup() %>% # remove grouping from previous steps, as we need to modify the dataframe
     select(session.order, change, anodal, cathodal) %>% # keep only relevant columns
     mutate(session.order = as.numeric(session.order)) %>% # dummy code to use as covariate
-    nest(-change) %>% # split into two data frames, one for each comparison
+    nest_legacy(-change) %>% # split into two data frames, one for each comparison
     # partial correlation 
     mutate(r = map_dbl(data, ~pcor(c("anodal","cathodal","session.order"), var(.)))) %>%
     group_by(change) %>% # for each correlation
     # get t-stats, df and p-value of coefficient
     mutate(stats = list(as.data.frame(pcor.test(r, 1, n_distinct(df$subject))))) %>%
-    unnest(stats, .drop = TRUE) # unpack resulting data frame into separate column
+    unnest_legacy(stats, .drop = TRUE) # unpack resulting data frame into separate column
 }
 
 ## ---- Function to plot anodal vs cathodal change scores
