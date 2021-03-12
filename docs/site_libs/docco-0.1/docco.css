@@ -3,7 +3,7 @@
 
 /* Fonts */
 
-@import url(http://fonts.googleapis.com/css?family=Rambla);
+@import url(https://fonts.googleapis.com/css?family=Rambla);
 
 body {
     font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
@@ -81,15 +81,20 @@ pre, tt, code {
     border: 0;
     padding: 0;
     background: transparent;
+    white-space: pre;
+}
+.page code a {
+  color: inherit;
 }
 
 
 /* Layout */
 
 .main-container {
-  margin: 0 auto;
-  background: #f0f0f0;
-  overflow: hidden;
+    max-width: 940px;
+    margin: 0 auto;
+    background: #f0f0f0;
+    overflow: hidden;
 }
 .page {
     padding: 30px;
@@ -111,6 +116,8 @@ pre, tt, code {
 /* Images */
 
 img {
+    max-width:100%;
+    height: auto;
     margin: 5px auto 50px auto;
 }
 
@@ -143,12 +150,6 @@ img.image-lb {
     font-style: italic;
     font-size: 80%;
     margin: 10px 0px;
-}
-
-img.mfp-img {
-  background-color: #FFFFFF;
-  padding: 0px;
-  margin: 40px auto;
 }
 
 .mfp-figure {
@@ -211,8 +212,18 @@ img.mfp-img {
 .dataTables_length,
 .dataTables_filter,
 .dataTables_info,
-.dataTables_paginate {
+.dataTables_paginate,
+.dataTable {
   font-size: 80%;
+}
+
+#content table.dataTable tbody th, 
+#content table.dataTable tbody td {
+  padding: 4px 10px;  
+}
+
+.dataTables_wrapper {
+  overflow-x: auto;
 }
 
 /* Nav pills */
@@ -248,3 +259,8 @@ img.mfp-img {
     font-style: italic;
     display: table;
 }
+
+.pagedtable-index-current {
+  font-weight: bold;
+}
+
