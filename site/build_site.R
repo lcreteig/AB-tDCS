@@ -16,7 +16,7 @@ file.copy(file.path("src", nbs), site_src, overwrite = TRUE) # copy all files) #
 
 # paper
 # with auxiliary files
-paper_files <- c("AB-tDCS_paper.Rmd", "AB-tDCS_appendix.Rmd", "AB-tDCS.bib", "r-references.bib")
+paper_files <- c("AB-tDCS_paper.Rmd", "AB-tDCS_appendix.Rmd", "AB-tDCS.bib", "AB-tDCS_updated.bib", "r-references.bib")
 dir.create(file.path(site_src, "figures"))
 figure_files <- c("figures/figure_1_procedure.png","figures/figure_2_task.png")
 file.copy(file.path("paper", paper_files), 

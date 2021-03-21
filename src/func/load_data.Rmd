@@ -48,9 +48,9 @@ df_study2 %>%
 
 ## Study 1
 
-These data were used for statistical analysis in London & Slagter (2015)[^ref_london], and were processed by the lead author:
+These data were used for statistical analysis in London & Slagter (2021)[^ref_london], and were processed by the lead author:
 
-[^ref_london]: London, R. E., & Slagter, H. A. (2015). Effects of transcranial direct current stimulation over left dorsolateral pFC on the attentional blink depend on individual baseline performance. _Journal of Cognitive Neuroscience, 27(12)_, 2382-2393. doi: [10.1162/jocn_a_00867](https://doi.org/10.1162/jocn_a_00867)
+[^ref_london]: London, R. E., & Slagter, H. A. (2021). No Effect of Transcranial Direct Current Stimulation over Left Dorsolateral Prefrontal Cortex on Temporal Attention. _Journal of Cognitive Neuroscience, 33(4)_, 756--768. doi: [10.1162/jocn_a_01679](https://doi.org/10.1162/jocn_a_01679)
 
 ```{r read study 1 data, output_max_height = "300px"}
 dataPath_study1 <- here("data","AB-tDCS_study1.txt")

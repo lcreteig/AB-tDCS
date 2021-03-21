@@ -263,7 +263,7 @@
       
       <!-- html_clean authors -->
          <h4 class="author"><em>Leon Reteig</em></h4>
-            <h4 class="date"><em>12 March, 2021</em></h4>
+            <h4 class="date"><em>21 March, 2021</em></h4>
       
       
    
@@ -620,7 +620,7 @@
 </div>
 <div id="study-1" class="section level2">
 <h2>Study 1</h2>
-<p>These data were used for statistical analysis in London &amp; Slagter (2015)<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>, and were processed by the lead author:</p>
+<p>These data were used for statistical analysis in London &amp; Slagter (2021)<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>, and were processed by the lead author:</p>
 <div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" data-line-number="1">dataPath_study1 &lt;-<span class="st"> </span><span class="kw">here</span>(<span class="st">&quot;data&quot;</span>,<span class="st">&quot;AB-tDCS_study1.txt&quot;</span>)</a>
 <a class="sourceLine" id="cb27-2" data-line-number="2">data_study1_fromDisk &lt;-<span class="st"> </span><span class="kw">read.table</span>(dataPath_study1, <span class="dt">header =</span> <span class="ot">TRUE</span>, <span class="dt">dec =</span> <span class="st">&quot;,&quot;</span>)</a>
 <a class="sourceLine" id="cb27-3" data-line-number="3"><span class="kw">glimpse</span>(data_study1_fromDisk)</a></code></pre></div>
@@ -988,8 +988,8 @@
 </div>
 <div id="group-analysis" class="section level1">
 <h1>Group analysis</h1>
-<div id="line-plots-cf.london-slagter-2015" class="section level2 tabset tabset-fade tabset-pills">
-<h2>Line plots cf. London &amp; Slagter (2015)</h2>
+<div id="line-plots-cf.london-slagter-2021" class="section level2 tabset tabset-fade tabset-pills">
+<h2>Line plots cf. London &amp; Slagter (2021)</h2>
 <div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb31-1" data-line-number="1">plot_lines &lt;-<span class="st"> </span><span class="cf">function</span>(df) {</a>
 <a class="sourceLine" id="cb31-2" data-line-number="2">  df <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb31-3" data-line-number="3"><span class="st">  </span><span class="kw">gather</span>(target, proportion_correct, T1, T2.given.T1) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># so T1 vs. T2|T1 can be used as a factor</span></a>
@@ -1824,7 +1824,7 @@ Study 2 - T1: Stimulation by Session Order by Block
 <div class="footnotes">
 <hr />
 <ol>
-<li id="fn1"><p>London, R. E., &amp; Slagter, H. A. (2015). Effects of transcranial direct current stimulation over left dorsolateral pFC on the attentional blink depend on individual baseline performance. <em>Journal of Cognitive Neuroscience, 27(12)</em>, 2382-2393. doi: <a href="https://doi.org/10.1162/jocn_a_00867">10.1162/jocn_a_00867</a><a href="#fnref1" class="footnote-back">↩</a></p></li>
+<li id="fn1"><p>London, R. E., &amp; Slagter, H. A. (2021). No Effect of Transcranial Direct Current Stimulation over Left Dorsolateral Prefrontal Cortex on Temporal Attention. <em>Journal of Cognitive Neuroscience, 33(4)</em>, 756–768. doi: <a href="https://doi.org/10.1162/jocn_a_01679">10.1162/jocn_a_01679</a><a href="#fnref1" class="footnote-back">↩</a></p></li>
 </ol>
 </div>
 </div>
@@ -1854,7 +1854,7 @@ Study 2 - T1: Stimulation by Session Order by Block
        <li><a href="#study-1">Study 1</a></li>
        </ul></li>
        <li><a href="#group-analysis">Group analysis</a><ul>
-       <li><a href="#line-plots-cf.london-slagter-2015">Line plots cf. London &amp; Slagter (2015)</a></li>
+       <li><a href="#line-plots-cf.london-slagter-2021">Line plots cf. London &amp; Slagter (2021)</a></li>
        <li><a href="#rm-anova">RM ANOVA</a></li>
        </ul></li>
        </ul>

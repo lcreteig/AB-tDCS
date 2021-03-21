@@ -1,4 +1,4 @@
-These files run the experimental task, adapted for EEG (longer fixation times, sending of event markers/triggers) from the task used by [Georgopoulou & Slagter (2013)](https://doi.org/10.1371/journal.pone.0064681) and [London & Slagter (2015)](https://doi.org/10.1162/jocn_a_00867).
+These files run the experimental task, adapted for EEG (longer fixation times, sending of event markers/triggers) from the task used by [Georgopoulou & Slagter (2013)](https://doi.org/10.1371/journal.pone.0064681) and [London & Slagter (2021)](https://doi.org/10.1162/jocn_a_01679).
 
 1. Open `AB_tDCS-EEG.exp` with [Presentation](https://www.neurobs.com/) (Neurobehavioral systems, Inc.).
 2. Run `practice.sce` to start the practice version of the task (20 trials), with task instructions.

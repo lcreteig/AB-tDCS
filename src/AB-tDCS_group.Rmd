@@ -45,7 +45,7 @@ print(sessionInfo())
 
 # Group analysis 
 
-## Line plots cf. London & Slagter (2015) {.tabset .tabset-fade .tabset-pills}
+## Line plots cf. London & Slagter (2021) {.tabset .tabset-fade .tabset-pills}
 
 ```{r plot lines function}
 plot_lines <- function(df) {

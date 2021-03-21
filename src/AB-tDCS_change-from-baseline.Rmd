@@ -204,9 +204,7 @@ Variance tests between:
 kable(var_test(ABmag_study1), digits = 3, caption = "Study 1: test of variance in baseline vs. retest")
 ```
 
-Even though three out of four conditions showed a significant negative partial correlation, none of the conditions pass the variance test[^ref_error], suggesting no relation between baseline and change due to tDCS.
-
-[^ref_error]: These values for study 1 are different then in the paper, because of a possible error in the calculation of the variance tests there.
+Even though three out of four conditions showed a significant negative partial correlation, none of the conditions pass the variance test, suggesting no relation between baseline and change due to tDCS.
 
 #### Study 2
 

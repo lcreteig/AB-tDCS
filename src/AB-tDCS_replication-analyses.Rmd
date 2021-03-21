@@ -152,7 +152,7 @@ For a more orthodox look on the pooled effect from both studies, let's perform a
 First, create a new data frame with all the information:
 
 ```{r data frame for meta-analysis}
-df_meta <- tibble(authors = c("London & Slagter","Reteig et al."), year = c(2015,2018), 
+df_meta <- tibble(authors = c("London & Slagter","Reteig et al."), year = c(2021,2021), 
                   ni = c(n_study1_pc, n_study2_pc), 
                   ri = c(r_study1, r_study2))
 kable(df_meta)
