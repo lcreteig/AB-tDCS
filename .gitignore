@@ -59,7 +59,7 @@ EEG/sub-*/*
 EEG/code/preproc/eeglab*/*
 EEG/code/fieldtrip*/*
 paper/AB-tDCS_paper_files/*
-src/lib/*
+src/lib/appendixCodeFunctionsJeffreys.R
 
 # always still version control the readme files
 !EEG/sourcedata/README

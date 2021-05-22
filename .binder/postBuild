@@ -1,1 +1,5 @@
 R -e 'renv::restore()' # restore environment
+R -e 'tinytex::install_tinytex()' # install latex
+R -e 'osfr::osf_download(osfr::osf_ls_files(osfr::osf_retrieve_node("rju7f")), here::here(), recurse = TRUE)' # download data from OSF
+R -e 'download.file("https://osf.io/v7nux/download", here::here("src","lib","appendixCodeFunctionsJeffreys.R"))' # download additional script from OSF
+  
