@@ -10,7 +10,6 @@ author:
   - name          : "Leon C. Reteig"
     affiliation   : "1,2"
     institute     : "1,2"
-    email         : "l.c.reteig@uva.nl"
   - name          : "Lionel A. Newman"
     affiliation   : "1,3"
   - name          : "K. Richard Ridderinkhof"
@@ -29,11 +28,13 @@ affiliation       :
     institution   : "Department of Artificial Intelligence and Cognitive Engineering, University of Groningen"
   - id            : 4
     institution   : "Department of Applied and Experimental Psychology, Vrije Universiteit Amsterdam"
-note              : "preprint version"  
+authornote: |
+  Leon Reteig is now at the Division of Laboratories, Pharmacy and Biomedical Genetics, University Medical Center Utrecht.
+note: "Preprint submitted for peer-review."
 abstract: |
   The attentional blink (AB) phenomenon reveals a bottleneck of human information processing: the second of two targets is often missed when they are presented in rapid succession among distractors. A recent study by London & Slagter (_Journal of Cognitive Neuroscience_, _33_, 756--68, 2021) showed that the size of the AB can be changed by applying transcranial direct current stimulation (tDCS) over the left dorsolateral prefrontal cortex (lDLPFC). Although AB size at the group level remained unchanged, the effects of anodal and cathodal tDCS were negatively correlated: if a given individual's AB size decreased from baseline during anodal tDCS, their AB size would increase during cathodal tDCS, and vice versa. Here, we attempted to replicate this finding. Like London & Slagter, we found no group effects of tDCS, but also no longer found a significant negative correlation. We present a series of statistical measures of replication success, all of which confirm that both studies are not in agreement. First, the correlation here is significantly smaller than a conservative estimate of the original correlation. Second, the difference between the correlations is greater than expected due to sampling error, and our data are more consistent with a zero-effect than with the original estimate. Finally, the overall effect when combining both studies is small and not significant. Our findings thus indicate that the effects of lDPLFC-tDCS on the AB are less substantial than observed by London & Slagter (2021). Although this should be quite a common scenario, null findings can be difficult to interpret and are still under-represented in the brain stimulation and cognitive neuroscience literatures. An important auxiliary goal of this paper is therefore to provide a tutorial for other researchers, to maximize the evidential value from null findings.
 keywords          : "attentional blink, tDCS, dlPFC, individual differences, replication"
-wordcount         : "6725"
+wordcount         : "8076"
 bibliography      : ["AB-tDCS.bib", "AB-tDCS_updated.bib", "r-references.bib"]
 link-citations    : true
 floatsintext      : yes # figures and table not at the end
