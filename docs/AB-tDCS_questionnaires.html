@@ -263,7 +263,7 @@
       
       <!-- html_clean authors -->
          <h4 class="author"><em>Leon Reteig</em></h4>
-            <h4 class="date"><em>22 May, 2021</em></h4>
+            <h4 class="date"><em>23 May, 2021</em></h4>
       
       
    
@@ -318,7 +318,7 @@
 ##  [9] rlang_0.4.10      pillar_1.4.7      glue_1.4.2        withr_2.4.1      
 ## [13] DBI_1.1.1         dbplyr_2.1.0      modelr_0.1.8      readxl_1.3.1     
 ## [17] lifecycle_1.0.0   munsell_0.5.0     gtable_0.3.0      cellranger_1.1.0 
-## [21] rvest_0.3.6       evaluate_0.14     rmdformats_1.0.1  Rcpp_1.0.6       
+## [21] rvest_0.3.6       evaluate_0.14     rmdformats_1.0.2  Rcpp_1.0.6       
 ## [25] renv_0.12.5-72    scales_1.1.1      backports_1.2.1   jsonlite_1.7.2   
 ## [29] fs_1.5.0          hms_1.0.0         digest_0.6.27     stringi_1.5.3    
 ## [33] bookdown_0.21     grid_3.6.2        rprojroot_2.0.2   cli_2.3.0        
@@ -1410,7 +1410,7 @@
 		
  	 	$('#content img').addClass("image-thumb");
 		
-		$('#content img').addClass("image-lb");
+		$('#content img:not(.no-lightbox)').addClass("image-lb");
 	$('#content').magnificPopup({
 	    type:'image',
 	    closeOnContentClick: false,

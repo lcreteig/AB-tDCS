@@ -202,7 +202,7 @@
 <li><strong>Project code</strong>: AB-tDCS</li>
 <li><strong>Authors</strong>: Reteig, L.C., Newman, L.A., Ridderinkhof, K.R., &amp; Slagter, H.A.</li>
 <li><strong>Affiliation</strong>: Department of Psychology, University of Amsterdam</li>
-<li><strong>Year</strong>: 2019</li>
+<li><strong>Year</strong>: 2021</li>
 </ul>
 <p>Don’t hesitate to get in touch if you have any questions; find my contact details on <a href="https://lcreteig.github.io">my personal website</a>.</p>
 <div id="resources" class="section level1">
@@ -220,12 +220,11 @@
 <p>After downloading everything from Github and/or the OSF, your directory structure should look like this (N.B. this is just a sketch; does not include every single file):</p>
 <pre><code>AB-tDCS
 │   AB-tDCS.Rproj
-│   install.R
-│   runtime.txt
+|   renv.lock
 │
 └───data
 │   │   subject_info.csv
-│   │   tdcs_AE.csv
+│   │   tDCS_AE.csv
 │   │   AB-tDCS_study1.txt
 │   │
 │   └───S01
@@ -254,6 +253,11 @@
 │   │   tDCS_blinding.md
 │   │
 │   └───questionnaires
+│
+└───renv
+│   │   .gitignore
+│   │   activate.R
+│   │   settings.dcf
 │
 └───site
 │   │   _site.yml_
@@ -286,7 +290,7 @@
 <h2>Descriptions</h2>
 <ul>
 <li><code>AB-tDCS.Rproj</code>: Config file with options for the R project; also determines top-level folder.</li>
-<li><code>install.R</code> and <code>runtime.txt</code>: configuration files for running the code in the GitHub repository remotely with <a href="https://mybinder.org/">Binder</a>.</li>
+<li><code>renv.lock</code>: Contains information on all the packages and their versions that were used for this project, and (along with the contents of the <code>renv/</code> folder) can be used to recreate the computational environment</li>
 </ul>
 <p>N.B. The following folders each have their own <code>README.md</code> (GitHub) and/or wiki page (OSF) with more detailed information on their contents.</p>
 <ul>
@@ -304,11 +308,20 @@
 <div id="reproducibility" class="section level1">
 <h1>Reproducibility</h1>
 <ol style="list-style-type: decimal">
-<li>Make sure you’ve downloaded all the data and code and that they’re placed in the <code>data</code>, <code>src</code> and <code>paper</code> folders (as outlined in the <a href="#directory-structure">Directory structure</a> section).</li>
+<li>Make sure you’ve downloaded all the data and code and that they’re placed in the <code>data</code>, <code>src</code> and <code>paper</code> folders (as outlined in the <a href="#directory-structure">Directory structure</a> section). To do so:
+<ul>
+<li>Download or clone the <a href="https://github.com/lcreteig/AB-tDCS">GitHub</a> repository, using the big green “Code” button in the top right.</li>
+<li>From the Open Science Framework, download the contents of the <a href="https://osf.io/rju7f/">Data</a> and <a href="https://osf.io/ka3xp/">Records</a> (optional) components.</li>
+<li>Download <code>appendixCodeFunctionsJeffreys.R</code> per the instructions in <code>src/README</code>, and place in <code>src/lib</code>.</li>
+</ul></li>
 <li>Open the <code>AB-tDCS.Rproj</code> file in <a href="https://www.rstudio.com/">RStudio</a>.</li>
+<li>Run the command <code>renv::restore()</code> in the Console to install all the required packages in a separate library for this project.</li>
+<li>If you’re interested in recreating the paper, run the command <code>tinytex::install_tinytex()</code> to install a LaTeX distribution, which will enable you to build the pdf.</li>
 </ol>
-<p>In the future, you’ll be able to follow this link to create a remote RStudio session in your browser with <a href="https://mybinder.org/">Binder</a>: <a href="FIXME%20add%20link"><img src="https://mybinder.org/badge.svg" alt="Binder" /></a></p>
-<p>This will already set everything up for you on the server, including all packages that the analysis code depends upon.</p>
+<blockquote>
+<p>:bulb: Or, if you just want to quickly play around with the code, simply click this link to create a remote RStudio session in your browser with <a href="https://mybinder.org/">Binder</a>: <a href="https://mybinder.org/v2/gh/lcreteig/AB-tDCS/master?urlpath=rstudio"><img src="https://mybinder.org/badge.svg" alt="Binder" /></a></p>
+<p>This will already set everything up for you on the server, including all packages (and LaTeX) that the analysis code depends upon.</p>
+</blockquote>
 <p>Then, run the <code>.Rmd</code> notebooks in the <code>src</code> folder to reproduce the contents under the <em>Analyses</em> tab on the project website. These contain all analyses (and their results) performed for this project.</p>
 <p>Run the <code>paper/AB-tDCS_paper.Rmd</code> notebook to reproduce all the results, figures and statistics, and the paper as under the <em>Paper</em> tab on the project website, or in the preprint (see <a href="#resources">Resources</a>).</p>
 </div>
@@ -351,7 +364,7 @@
 		
  	 	$('#content img').addClass("image-thumb");
 		
-		$('#content img').addClass("image-lb");
+		$('#content img:not(.no-lightbox)').addClass("image-lb");
 	$('#content').magnificPopup({
 	    type:'image',
 	    closeOnContentClick: false,

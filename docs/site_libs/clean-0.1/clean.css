@@ -78,16 +78,17 @@ img.image-lb {
 .figure {
     margin: 5px 10px 30px 0px;
     display: table;
+    text-align: center;
 }
 
 .figure img {
     margin-bottom: 5px;
 }
 
-.figure p.caption {
-    text-align: center;
-    font-style: italic;
-    font-size: 90%;
+p.caption {
+  margin: 0 10px 0 10px;
+  font-style: italic;
+  font-size: 90%;
 }
 
 .mfp-figure {
@@ -97,8 +98,8 @@ img.image-lb {
 /* Tables */
 
 .table {
-    margin: 25px 0px 35px 20px;
-    width: auto !important;
+    margin: 25px 0px 35px 0px;
+    width: auto;
     border-collapse: collapse;
     border-spacing: 0;
     border: 1px solid #CCC;
@@ -111,13 +112,11 @@ img.image-lb {
     box-shadow: 0 1px 0 rgba(255,255,255,.8) inset;
 }
 
-.table thead>tr>th {
-    padding: 3px 15px !important;
+.table th,
+.table td {
+    padding: 3px 15px;
 }
 
-.table tbody>tr>td {
-    padding: 3px 15px !important;
-}
 
 .table tbody tr.even {
     background: #f5f5f5;
@@ -153,6 +152,25 @@ img.image-lb {
 
 .dataTables_wrapper {
   overflow-x: auto;
+}
+
+
+/* Paged table */
+
+
+.pagedtable {
+  overflow: auto;
+}
+
+.pagedtable table {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+}
+
+.pagedtable .table th,
+.pagedtable .table td {
+    padding: 5px;
 }
 
 
