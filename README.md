@@ -13,7 +13,7 @@ In this study we examined whether electrical brain stimulation of the prefrontal
 * __Project code__: AB-tDCS
 * __Authors__: Reteig, L.C., Newman, L.A., Ridderinkhof, K.R., & Slagter, H.A.
 * __Affiliation__: Department of Psychology, University of Amsterdam
-* __Year__: 2019
+* __Year__: 2021
 
 Don't hesitate to get in touch if you have any questions; find my contact details on [my personal website](https://lcreteig.github.io).
 
@@ -39,12 +39,11 @@ After downloading everything from Github and/or the OSF, your directory structur
 ```
 AB-tDCS
 │   AB-tDCS.Rproj
-│   install.R
-│   runtime.txt
+|   renv.lock
 │
 └───data
 │   │   subject_info.csv
-│   │   tdcs_AE.csv
+│   │   tDCS_AE.csv
 │   │   AB-tDCS_study1.txt
 │   │
 │   └───S01
@@ -73,6 +72,11 @@ AB-tDCS
 │   │   tDCS_blinding.md
 │   │
 │   └───questionnaires
+│
+└───renv
+│   │   .gitignore
+│   │   activate.R
+│   │   settings.dcf
 │
 └───site
 │   │   _site.yml_
@@ -105,7 +109,7 @@ AB-tDCS
 ## Descriptions
 
 * `AB-tDCS.Rproj`: Config file with options for the R project; also determines top-level folder.
-* `install.R` and `runtime.txt`: configuration files for running the code in the GitHub repository remotely with [Binder](https://mybinder.org/).
+* `renv.lock`: Contains information on all the packages and their versions that were used for this project, and (along with the contents of the `renv/` folder) can be used to recreate the computational environment
 
 N.B. The following folders each have their own `README.md` (GitHub) and/or wiki page (OSF) with more detailed information on their contents.
 
@@ -120,12 +124,17 @@ N.B. The following folders each have their own `README.md` (GitHub) and/or wiki 
 
 # Reproducibility
 
-1. Make sure you've downloaded all the data and code and that they're placed in the `data`, `src` and `paper` folders (as outlined in the [Directory structure] section).
+1. Make sure you've downloaded all the data and code and that they're placed in the `data`, `src` and `paper` folders (as outlined in the [Directory structure] section). To do so:
+    - Download or clone the [GitHub](https://github.com/lcreteig/AB-tDCS) repository, using the big green "Code" button in the top right.
+    - From the Open Science Framework, download the contents of the [Data](https://osf.io/rju7f/) and [Records](https://osf.io/ka3xp/) (optional) components.
+    - Download `appendixCodeFunctionsJeffreys.R` per the instructions in `src/README`, and place in `src/lib`.
 2. Open the `AB-tDCS.Rproj` file in [RStudio](https://www.rstudio.com/).
+3. Run the command `renv::restore()` in the Console to install all the required packages in a separate library for this project.
+4. If you're interested in recreating the paper, run the command `tinytex::install_tinytex()` to install a LaTeX distribution, which will enable you to build the pdf.
 
-In the future, you'll be able to follow this link to create a remote RStudio session in your browser with [Binder](https://mybinder.org/): [![Binder](https://mybinder.org/badge.svg)](FIXME add link)
-
-This will already set everything up for you on the server, including all packages that the analysis code depends upon.
+> :bulb: Or, if you just want to quickly play around with the code, simply click this link to create a remote RStudio session in your browser with [Binder](https://mybinder.org/): [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/lcreteig/AB-tDCS/master?urlpath=rstudio)
+>
+> This will already set everything up for you on the server, including all packages (and LaTeX) that the analysis code depends upon.
 
 Then, run the `.Rmd` notebooks in the `src` folder to reproduce the contents under the _Analyses_ tab on the project website. These contain all analyses (and their results) performed for this project.
 
