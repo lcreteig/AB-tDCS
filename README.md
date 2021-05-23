@@ -7,6 +7,8 @@ output:
     css: style.css
 ---
 
+[![DOI](https://zenodo.org/badge/177798991.svg)](https://zenodo.org/badge/latestdoi/177798991)
+
 In this study we examined whether electrical brain stimulation of the prefrontal cortex can change the size of the [attentional blink](http://www.scholarpedia.org/article/Attentional_blink).
 
 * __Project title__: _Effects of tDCS on the attentional blink revisited: A statistical evaluation of a replication attempt_
@@ -132,7 +134,7 @@ N.B. The following folders each have their own `README.md` (GitHub) and/or wiki 
 3. Run the command `renv::restore()` in the Console to install all the required packages in a separate library for this project.
 4. If you're interested in recreating the paper, run the command `tinytex::install_tinytex()` to install a LaTeX distribution, which will enable you to build the pdf.
 
-> :bulb: Or, if you just want to quickly play around with the code, simply click this link to create a remote RStudio session in your browser with [Binder](https://mybinder.org/): [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/lcreteig/AB-tDCS/master?urlpath=rstudio)
+> 💡 Or, if you just want to quickly play around with the code, simply click this link to create a remote RStudio session in your browser with [Binder](https://mybinder.org/): [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/lcreteig/AB-tDCS/master?urlpath=rstudio)
 >
 > This will already set everything up for you on the server, including all packages (and LaTeX) that the analysis code depends upon.
 

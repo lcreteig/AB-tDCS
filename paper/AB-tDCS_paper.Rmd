@@ -302,7 +302,7 @@ All of the data and materials from this study and the data from @London2021 are 
 
 [^osf]: <https://doi.org/10.17605/OSF.IO/Y6HSF>
 
-[^gh]: <https://lcreteig.github.io/AB-tDCS>
+[^gh]: <https://doi.org/10.5281/zenodo.4782446>
 
 # Results
 
