@@ -13,11 +13,11 @@ This folder contains the files that make up the journal article.
 The `.pdf` is created from these files using the [`papaja` package](https://github.com/crsh/papaja). Simply open the `AB-tDCS_paper.Rmd` file in [RStudio](https://www.rstudio.com/) and click "Knit" (to `apa6_pdf`), or run the following:
 
 ``` r
-rmarkdown::render("AB-tDCS_paper.Rmd")
+rmarkdown::render("paper/AB-tDCS_paper.Rmd")
 ```
 
 Alternatively, to recreate the `.html` version on the website, click "Knit" > to `html_document2`, (requires the `bookdown` package), or run
 
 ``` r
-rmarkdown::render("AB-tDCS_paper.Rmd", output_format = bookdown::html_document2)
+rmarkdown::render("paper/AB-tDCS_paper.Rmd", output_format = bookdown::html_document2)
 ```
