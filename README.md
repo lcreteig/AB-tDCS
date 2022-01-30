@@ -23,7 +23,9 @@ Don't hesitate to get in touch if you have any questions; find my contact detail
 
 __Project website__: <https://lcreteig.github.io/AB-tDCS>
 
-__Preprint__: [bioRxiv](bioRxiv link FIXME) (not yet available)
+__Published paper__: [PLOS ONE](https://doi.org/10.1371/journal.pone.0262718)
+
+__Preprint__: [bioRxiv](https://doi.org/10.1101/2021.06.16.448698)
 
 __Behavioral data and other resources__: [Open Science Framework (OSF)](https://osf.io/y6hsf/)
 

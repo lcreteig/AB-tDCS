@@ -10,51 +10,54 @@
     
     <title>AB-tDCS</title>
 
-        <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="site_libs/bootstrap-3.3.7/css/bootstrap.min.css" rel="stylesheet" />
-    <script src="site_libs/bootstrap-3.3.7/js/bootstrap.min.js"></script>
-    <script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
-    <script src="site_libs/navigation-1.1/tabsets.js"></script>
-    <link href="site_libs/magnific-popup-1.1.0/magnific-popup.css" rel="stylesheet" />
-    <script src="site_libs/magnific-popup-1.1.0/jquery.magnific-popup.min.js"></script>
-    <link href="site_libs/clean-0.1/clean.css" rel="stylesheet" />
-    <script src="site_libs/clean-0.1/clean.js"></script>
-    <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
-    <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+        <script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+        <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link href="site_libs/bootstrap-3.3.7/css/bootstrap.min.css" rel="stylesheet" />
+        <script src="site_libs/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+        <script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+        <script src="site_libs/navigation-1.1/tabsets.js"></script>
+        <link href="site_libs/magnific-popup-1.1.0/magnific-popup.css" rel="stylesheet" />
+        <script src="site_libs/magnific-popup-1.1.0/jquery.magnific-popup.min.js"></script>
+        <link href="site_libs/clean-0.1/clean.css" rel="stylesheet" />
+        <script src="site_libs/clean-0.1/clean.js"></script>
+        <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+        <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
         <br>
-    <br>
-    <br>
-    &nbsp;
-    <p style="text-align: center;"><a href="https://lcreteig.github.io/AB-tDCS">Project website</a></p>
-    <p style="text-align: center;"> Data and other resources: <a href="https://osf.io/y6hsf/">Open Science Framework</a></p>
-    <p style="text-align: center;"> Source code: <a href="https://github.com/lcreteig/AB-tDCS">Github</a></p>
-    &nbsp;
-    <hr />
+        <br>
+        <br>
+        &nbsp;
+        <p style="text-align: center;"><a href="https://lcreteig.github.io/AB-tDCS">Project website</a></p>
+        <p style="text-align: center;"> Data and other resources: <a href="https://osf.io/y6hsf/">Open Science Framework</a></p>
+        <p style="text-align: center;"> Source code: <a href="https://github.com/lcreteig/AB-tDCS">Github</a></p>
+        &nbsp;
+        <hr />
     
     
         <style type="text/css">code{white-space: pre;}</style>
     <style type="text/css">
-      a.sourceLine { display: inline-block; line-height: 1.25; }
-      a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-      a.sourceLine:empty { height: 1.2em; }
+      pre > code.sourceCode { white-space: pre; position: relative; }
+      pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+      pre > code.sourceCode > span:empty { height: 1.2em; }
       .sourceCode { overflow: visible; }
-      code.sourceCode { white-space: pre; position: relative; }
+      code.sourceCode > span { color: inherit; text-decoration: inherit; }
       div.sourceCode { margin: 1em 0; }
       pre.sourceCode { margin: 0; }
       @media screen {
       div.sourceCode { overflow: auto; }
       }
       @media print {
-      code.sourceCode { white-space: pre-wrap; }
-      a.sourceLine { text-indent: -1em; padding-left: 1em; }
+      pre > code.sourceCode { white-space: pre-wrap; }
+      pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
       }
-      pre.numberSource a.sourceLine
-        { position: relative; left: -4em; }
-      pre.numberSource a.sourceLine::before
-        { content: attr(data-line-number);
+      pre.numberSource code
+        { counter-reset: source-line 0; }
+      pre.numberSource code > span
+        { position: relative; left: -4em; counter-increment: source-line; }
+      pre.numberSource code > span > a:first-child::before
+        { content: counter(source-line);
           position: relative; left: -1em; text-align: right; vertical-align: baseline;
-          border: none; pointer-events: all; display: inline-block;
+          border: none; display: inline-block;
           -webkit-touch-callout: none; -webkit-user-select: none;
           -khtml-user-select: none; -moz-user-select: none;
           -ms-user-select: none; user-select: none;
@@ -63,9 +66,9 @@
         }
       pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
       div.sourceCode
-        {  }
+        {   }
       @media screen {
-      a.sourceLine::before { text-decoration: underline; }
+      pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
       }
       code span.al { color: #ff0000; font-weight: bold; } /* Alert */
       code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -185,85 +188,87 @@
    <div class="container-fluid main-container">
      <div class="row">
        <div class="col-md-10">
-               
+   	
+            
    
       
-   <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
-     <div class="container">
-       <div class="navbar-header">
-         <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
-           <span class="icon-bar"></span>
-           <span class="icon-bar"></span>
-           <span class="icon-bar"></span>
-         </button>
-         <a class="navbar-brand" href="index.html"></a>
-       </div>
-       <div id="navbar" class="navbar-collapse collapse">
-         <ul class="nav navbar-nav">
-           <li>
-     <a href="index.html">
-       <span class="fas fa-info"></span>
-        
-       About
-     </a>
-   </li>
-   <li>
-     <a href="AB-tDCS_paper.html">
-       <span class="fas fa-newspaper"></span>
-        
-       Paper
-     </a>
-   </li>
-   <li class="dropdown">
-     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-       <span class="fas fa-file-code"></span>
-        
-       Analyses
-        
-       <span class="caret"></span>
-     </a>
-     <ul class="dropdown-menu" role="menu">
-       <li class="dropdown-header">Individual differences</li>
-       <li>
-         <a href="AB-tDCS_change-from-baseline.html">Change from baseline</a>
-       </li>
-       <li>
-         <a href="AB-tDCS_anodal-vs-cathodal.html">Anodal vs. cathodal</a>
-       </li>
-       <li>
-         <a href="AB-tDCS_replication-analyses.html">Replication analyses</a>
-       </li>
-       <li class="divider"></li>
-       <li class="dropdown-header">Group-level</li>
-       <li>
-         <a href="AB-tDCS_group.html">Task</a>
-       </li>
-       <li>
-         <a href="AB-tDCS_questionnaires.html">Questionnaires</a>
-       </li>
-     </ul>
-   </li>
-         </ul>
-         <ul class="nav navbar-nav navbar-right">
-           <li>
-     <a href="https://github.com/lcreteig/AB-tDCS">
-       <span class="fas fa-github"></span>
-        
-       Source
-     </a>
-   </li>
-         </ul>
-       </div><!--/.nav-collapse -->
-     </div><!--/.container -->
-   </div><!--/.navbar -->
+      <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+        <div class="container">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="index.html"></a>
+          </div>
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+              <li>
+        <a href="index.html">
+          <span class="fa fa-info"></span>
+           
+          About
+        </a>
+      </li>
+      <li>
+        <a href="AB-tDCS_paper.html">
+          <span class="fa fa-newspaper"></span>
+           
+          Paper
+        </a>
+      </li>
+      <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+          <span class="fa fa-file-code"></span>
+           
+          Analyses
+           
+          <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu" role="menu">
+          <li class="dropdown-header">Individual differences</li>
+          <li>
+            <a href="AB-tDCS_change-from-baseline.html">Change from baseline</a>
+          </li>
+          <li>
+            <a href="AB-tDCS_anodal-vs-cathodal.html">Anodal vs. cathodal</a>
+          </li>
+          <li>
+            <a href="AB-tDCS_replication-analyses.html">Replication analyses</a>
+          </li>
+          <li class="divider"></li>
+          <li class="dropdown-header">Group-level</li>
+          <li>
+            <a href="AB-tDCS_group.html">Task</a>
+          </li>
+          <li>
+            <a href="AB-tDCS_questionnaires.html">Questionnaires</a>
+          </li>
+        </ul>
+      </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+              <li>
+        <a href="https://github.com/lcreteig/AB-tDCS">
+          <span class="fa fa-github"></span>
+           
+          Source
+        </a>
+      </li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div><!--/.container -->
+      </div><!--/.navbar -->
         
       <h1 class="title">AB-tDCS</h1>
          <h1 class="subtitle">Change from baseline analyses</h1>
    
-      
+        
+
       <!-- html_clean authors -->
          <h4 class="author"><em>Leon Reteig</em></h4>
-            <h4 class="date"><em>23 May, 2021</em></h4>
+            <h4 class="date"><em>30 January, 2022</em></h4>
       
       
    
@@ -271,8 +276,8 @@
 <div id="content">
 <div id="setup-environment" class="section level1">
 <h1>Setup environment</h1>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># Load packages</span></a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">library</span>(tidyverse)  <span class="co"># importing, transforming, and visualizing data frames</span></a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load packages</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)  <span class="co"># importing, transforming, and visualizing data frames</span></span></code></pre></div>
 <pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.0 ──</code></pre>
 <pre><code>## ✓ ggplot2 3.3.3     ✓ purrr   0.3.4
 ## ✓ tibble  3.0.6     ✓ dplyr   1.0.4
@@ -281,10 +286,10 @@
 <pre><code>## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
 ## x dplyr::filter() masks stats::filter()
 ## x dplyr::lag()    masks stats::lag()</code></pre>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw">library</span>(here) <span class="co"># (relative) file paths</span></a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here) <span class="co"># (relative) file paths</span></span></code></pre></div>
 <pre><code>## here() starts at /Users/leonreteig/AB-tDCS</code></pre>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw">library</span>(knitr) <span class="co"># R notebook output</span></a>
-<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="kw">library</span>(scales) <span class="co"># Percentage axis labels </span></a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr) <span class="co"># R notebook output</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scales) <span class="co"># Percentage axis labels </span></span></code></pre></div>
 <pre><code>## 
 ## Attaching package: &#39;scales&#39;</code></pre>
 <pre><code>## The following object is masked from &#39;package:purrr&#39;:
@@ -293,8 +298,8 @@
 <pre><code>## The following object is masked from &#39;package:readr&#39;:
 ## 
 ##     col_factor</code></pre>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="kw">library</span>(ggm) <span class="co"># partial correlations</span></a>
-<a class="sourceLine" id="cb11-2" data-line-number="2"><span class="kw">library</span>(BayesFactor) <span class="co"># Bayesian statistics</span></a></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggm) <span class="co"># partial correlations</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(BayesFactor) <span class="co"># Bayesian statistics</span></span></code></pre></div>
 <pre><code>## Loading required package: coda</code></pre>
 <pre><code>## Loading required package: Matrix</code></pre>
 <pre><code>## 
@@ -307,17 +312,17 @@
 ## 
 ## Type BFManual() to open the manual.
 ## ************</code></pre>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1"><span class="kw">library</span>(knitrhooks) <span class="co"># printing in rmarkdown outputs</span></a>
-<a class="sourceLine" id="cb17-2" data-line-number="2">  <span class="kw">output_max_height</span>()</a>
-<a class="sourceLine" id="cb17-3" data-line-number="3"><span class="co"># Source functions</span></a>
-<a class="sourceLine" id="cb17-4" data-line-number="4"><span class="kw">source</span>(<span class="kw">here</span>(<span class="st">&quot;src&quot;</span>, <span class="st">&quot;func&quot;</span>, <span class="st">&quot;behavioral_analysis.R&quot;</span>)) <span class="co"># loading data and calculating measures</span></a>
-<a class="sourceLine" id="cb17-5" data-line-number="5">knitr<span class="op">::</span><span class="kw">read_chunk</span>(<span class="kw">here</span>(<span class="st">&quot;src&quot;</span>, <span class="st">&quot;func&quot;</span>, <span class="st">&quot;behavioral_analysis.R&quot;</span>)) <span class="co"># display code from file in this notebook</span></a>
-<a class="sourceLine" id="cb17-6" data-line-number="6">load_data_path &lt;-<span class="st"> </span><span class="kw">here</span>(<span class="st">&quot;src&quot;</span>,<span class="st">&quot;func&quot;</span>,<span class="st">&quot;load_data.Rmd&quot;</span>) <span class="co"># for rerunning and displaying</span></a>
-<a class="sourceLine" id="cb17-7" data-line-number="7"><span class="kw">source</span>(<span class="kw">here</span>(<span class="st">&quot;src&quot;</span>, <span class="st">&quot;lib&quot;</span>, <span class="st">&quot;corr_change_baseline.R&quot;</span>)) <span class="co"># variance test / baseline vs. change-from-baseline correlation </span></a></code></pre></div>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1"><span class="kw">print</span>(<span class="kw">sessionInfo</span>())</a></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitrhooks) <span class="co"># printing in rmarkdown outputs</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">output_max_height</span>()</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Source functions</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">here</span>(<span class="st">&quot;src&quot;</span>, <span class="st">&quot;func&quot;</span>, <span class="st">&quot;behavioral_analysis.R&quot;</span>)) <span class="co"># loading data and calculating measures</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">read_chunk</span>(<span class="fu">here</span>(<span class="st">&quot;src&quot;</span>, <span class="st">&quot;func&quot;</span>, <span class="st">&quot;behavioral_analysis.R&quot;</span>)) <span class="co"># display code from file in this notebook</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>load_data_path <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">&quot;src&quot;</span>,<span class="st">&quot;func&quot;</span>,<span class="st">&quot;load_data.Rmd&quot;</span>) <span class="co"># for rerunning and displaying</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">here</span>(<span class="st">&quot;src&quot;</span>, <span class="st">&quot;lib&quot;</span>, <span class="st">&quot;corr_change_baseline.R&quot;</span>)) <span class="co"># variance test / baseline vs. change-from-baseline correlation </span></span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">sessionInfo</span>())</span></code></pre></div>
 <pre style = "max-height:300px; overflow-y: auto;">## R version 3.6.2 (2019-12-12)
 ## Platform: x86_64-apple-darwin15.6.0 (64-bit)
-## Running under: macOS Catalina 10.15.7
+## Running under: macOS  10.16
 ## 
 ## Matrix products: default
 ## BLAS:   /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRblas.0.dylib
@@ -342,17 +347,17 @@
 ##  [5] gtools_3.8.2       assertthat_0.2.1   rprojroot_2.0.2    digest_0.6.27     
 ##  [9] R6_2.5.0           cellranger_1.1.0   backports_1.2.1    MatrixModels_0.5-0
 ## [13] reprex_1.0.0       evaluate_0.14      httr_1.4.2         pillar_1.4.7      
-## [17] rlang_0.4.10       readxl_1.3.1       rstudioapi_0.13    rmarkdown_2.7     
-## [21] igraph_1.2.6       munsell_0.5.0      broom_0.7.4.9000   compiler_3.6.2    
-## [25] modelr_0.1.8       xfun_0.21          pkgconfig_2.0.3    htmltools_0.5.1.1 
-## [29] tidyselect_1.1.0   bookdown_0.21      crayon_1.4.1       dbplyr_2.1.0      
-## [33] withr_2.4.1        grid_3.6.2         jsonlite_1.7.2     gtable_0.3.0      
-## [37] lifecycle_1.0.0    DBI_1.1.1          magrittr_2.0.1     rmdformats_1.0.2  
-## [41] cli_2.3.0          stringi_1.5.3      pbapply_1.4-3      renv_0.12.5-72    
-## [45] fs_1.5.0           xml2_1.3.2         ellipsis_0.3.1     generics_0.1.0    
-## [49] vctrs_0.3.6        tools_3.6.2        glue_1.4.2         hms_1.0.0         
-## [53] parallel_3.6.2     yaml_2.2.1         colorspace_2.0-0   rvest_0.3.6       
-## [57] haven_2.3.1
+## [17] rlang_0.4.10       readxl_1.3.1       rstudioapi_0.13    jquerylib_0.1.4   
+## [21] rmarkdown_2.11     igraph_1.2.6       munsell_0.5.0      broom_0.7.4.9000  
+## [25] compiler_3.6.2     modelr_0.1.8       xfun_0.21          pkgconfig_2.0.3   
+## [29] htmltools_0.5.1.1  tidyselect_1.1.0   bookdown_0.21      crayon_1.4.1      
+## [33] dbplyr_2.1.0       withr_2.4.1        grid_3.6.2         jsonlite_1.7.2    
+## [37] gtable_0.3.0       lifecycle_1.0.0    DBI_1.1.1          magrittr_2.0.1    
+## [41] rmdformats_1.0.2   cli_2.3.0          stringi_1.5.3      pbapply_1.4-3     
+## [45] renv_0.12.5-72     fs_1.5.0           xml2_1.3.2         ellipsis_0.3.1    
+## [49] generics_0.1.0     vctrs_0.3.6        tools_3.6.2        glue_1.4.2        
+## [53] hms_1.0.0          parallel_3.6.2     yaml_2.2.1         colorspace_2.0-0  
+## [57] rvest_0.3.6        haven_2.3.1
 </pre>
 </div>
 <div id="load-task-data" class="section level1">
@@ -365,16 +370,16 @@
 <li><code>S25</code> has no data for session 2, as they stopped responding to requests for scheduling the session</li>
 <li><code>S31</code> was excluded as a precaution after session 1, as they developed a severe headache and we could not rule out the possibility this was related to the tDCS</li>
 </ul>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1">dataDir_study2 &lt;-<span class="st"> </span><span class="kw">here</span>(<span class="st">&quot;data&quot;</span>) <span class="co"># root folder with AB task data</span></a>
-<a class="sourceLine" id="cb19-2" data-line-number="2">subs_incomplete &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;S03&quot;</span>, <span class="st">&quot;S14&quot;</span>, <span class="st">&quot;S25&quot;</span>, <span class="st">&quot;S29&quot;</span>, <span class="st">&quot;S31&quot;</span>, <span class="st">&quot;S38&quot;</span>, <span class="st">&quot;S43&quot;</span>, <span class="st">&quot;S46&quot;</span>) <span class="co"># don&#39;t try to load data from these participants</span></a>
-<a class="sourceLine" id="cb19-3" data-line-number="3">df_study2 &lt;-<span class="st"> </span><span class="kw">load_data_study2</span>(dataDir_study2, subs_incomplete) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb19-4" data-line-number="4"><span class="st">  </span><span class="kw">filter</span>(<span class="kw">complete.cases</span>(.)) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># discard rows with data from incomplete subjects</span></a>
-<a class="sourceLine" id="cb19-5" data-line-number="5"><span class="st">   </span><span class="co"># recode first.session (&quot;anodal&quot; or &quot;cathodal&quot;) to session.order (&quot;anodal first&quot;, &quot;cathodal first&quot;)</span></a>
-<a class="sourceLine" id="cb19-6" data-line-number="6"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">first.session =</span> <span class="kw">parse_factor</span>(<span class="kw">paste</span>(first.session, <span class="st">&quot;first&quot;</span>), </a>
-<a class="sourceLine" id="cb19-7" data-line-number="7">                                      <span class="dt">levels =</span> <span class="kw">c</span>(<span class="st">&quot;anodal first&quot;</span>, <span class="st">&quot;cathodal first&quot;</span>))) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb19-8" data-line-number="8"><span class="st">  </span><span class="kw">rename</span>(<span class="dt">session.order =</span> first.session)</a>
-<a class="sourceLine" id="cb19-9" data-line-number="9">n_study2 &lt;-<span class="st"> </span><span class="kw">n_distinct</span>(df_study2<span class="op">$</span>subject) <span class="co"># number of subjects in study 2</span></a></code></pre></div>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1"><span class="kw">kable</span>(<span class="kw">head</span>(df_study2,<span class="dv">13</span>), <span class="dt">digits =</span> <span class="dv">1</span>, <span class="dt">caption =</span> <span class="st">&quot;Data frame for study 2&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>dataDir_study2 <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">&quot;data&quot;</span>) <span class="co"># root folder with AB task data</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>subs_incomplete <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;S03&quot;</span>, <span class="st">&quot;S14&quot;</span>, <span class="st">&quot;S25&quot;</span>, <span class="st">&quot;S29&quot;</span>, <span class="st">&quot;S31&quot;</span>, <span class="st">&quot;S38&quot;</span>, <span class="st">&quot;S43&quot;</span>, <span class="st">&quot;S46&quot;</span>) <span class="co"># don&#39;t try to load data from these participants</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>df_study2 <span class="ot">&lt;-</span> <span class="fu">load_data_study2</span>(dataDir_study2, subs_incomplete) <span class="sc">%&gt;%</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">complete.cases</span>(.)) <span class="sc">%&gt;%</span> <span class="co"># discard rows with data from incomplete subjects</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>   <span class="co"># recode first.session (&quot;anodal&quot; or &quot;cathodal&quot;) to session.order (&quot;anodal first&quot;, &quot;cathodal first&quot;)</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">first.session =</span> <span class="fu">parse_factor</span>(<span class="fu">paste</span>(first.session, <span class="st">&quot;first&quot;</span>), </span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>                                      <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&quot;anodal first&quot;</span>, <span class="st">&quot;cathodal first&quot;</span>))) <span class="sc">%&gt;%</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">session.order =</span> first.session)</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>n_study2 <span class="ot">&lt;-</span> <span class="fu">n_distinct</span>(df_study2<span class="sc">$</span>subject) <span class="co"># number of subjects in study 2</span></span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(<span class="fu">head</span>(df_study2,<span class="dv">13</span>), <span class="at">digits =</span> <span class="dv">1</span>, <span class="at">caption =</span> <span class="st">&quot;Data frame for study 2&quot;</span>)</span></code></pre></div>
 <table>
 <caption>Data frame for study 2</caption>
 <thead>
@@ -538,8 +543,8 @@
 </table>
 <p>The data has the following columns:</p>
 <ul>
-<li><strong>subject</strong>: Participant ID, e.g. <code>S01</code>, <code>S12</code></li>
-<li><strong>session.order</strong>: Whether participant received <code>anodal</code> or <code>cathodal</code> tDCS in the first session (<code>anodal_first</code> vs. <code>cathodal_first</code>).</li>
+<li><strong>subject</strong>: Participant ID, e.g. <code>S01</code>, <code>S12</code></li>
+<li><strong>session.order</strong>: Whether participant received <code>anodal</code> or <code>cathodal</code> tDCS in the first session (<code>anodal_first</code> vs. <code>cathodal_first</code>).</li>
 <li><strong>stimulation</strong>: Whether participant received <code>anodal</code> or <code>cathodal</code> tDCS</li>
 <li><strong>block</strong>: Whether data is before (<code>pre), during (</code>tDCS<code>) or after (</code>post`) tDCS</li>
 <li><strong>lag</strong>: Whether T2 followed T1 after two distractors (lag <code>3</code>) or after 7 distractors (lag <code>8</code>)</li>
@@ -549,10 +554,10 @@
 <li><strong>T2.given.T1</strong>: Proportion of trials which T2 was identified correctly, out of the trials in which T1 was idenitified correctly (T2|T1).</li>
 </ul>
 <p>The number of trials vary from person-to-person, as some completed more trials in a 20-minute block than others (because responses were self-paced):</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1">df_study2 <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb21-2" data-line-number="2"><span class="st">  </span><span class="kw">group_by</span>(lag) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb21-3" data-line-number="3"><span class="st">  </span><span class="kw">summarise_at</span>(<span class="kw">vars</span>(trials), <span class="kw">funs</span>(mean, min, max, sd)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb21-4" data-line-number="4"><span class="st">  </span><span class="kw">kable</span>(<span class="dt">caption =</span> <span class="st">&quot;Descriptive statistics for trial counts per lag&quot;</span>, <span class="dt">digits =</span> <span class="dv">0</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>df_study2 <span class="sc">%&gt;%</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(lag) <span class="sc">%&gt;%</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise_at</span>(<span class="fu">vars</span>(trials), <span class="fu">funs</span>(mean, min, max, sd)) <span class="sc">%&gt;%</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">caption =</span> <span class="st">&quot;Descriptive statistics for trial counts per lag&quot;</span>, <span class="at">digits =</span> <span class="dv">0</span>)</span></code></pre></div>
 <pre><code>## Warning: `funs()` was deprecated in dplyr 0.8.0.
 ## Please use a list of either functions or lambdas: 
 ## 
@@ -596,9 +601,9 @@
 <div id="study-1" class="section level2">
 <h2>Study 1</h2>
 <p>These data were used for statistical analysis in London &amp; Slagter (2021)<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>, and were processed by the lead author:</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1">dataPath_study1 &lt;-<span class="st"> </span><span class="kw">here</span>(<span class="st">&quot;data&quot;</span>,<span class="st">&quot;AB-tDCS_study1.txt&quot;</span>)</a>
-<a class="sourceLine" id="cb23-2" data-line-number="2">data_study1_fromDisk &lt;-<span class="st"> </span><span class="kw">read.table</span>(dataPath_study1, <span class="dt">header =</span> <span class="ot">TRUE</span>, <span class="dt">dec =</span> <span class="st">&quot;,&quot;</span>)</a>
-<a class="sourceLine" id="cb23-3" data-line-number="3"><span class="kw">glimpse</span>(data_study1_fromDisk)</a></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>dataPath_study1 <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">&quot;data&quot;</span>,<span class="st">&quot;AB-tDCS_study1.txt&quot;</span>)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>data_study1_fromDisk <span class="ot">&lt;-</span> <span class="fu">read.table</span>(dataPath_study1, <span class="at">header =</span> <span class="cn">TRUE</span>, <span class="at">dec =</span> <span class="st">&quot;,&quot;</span>)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(data_study1_fromDisk)</span></code></pre></div>
 <pre style = "max-height:300px; overflow-y: auto;">## Rows: 34
 ## Columns: 120
 ## $ SD_T1                           <dbl> 0.3313, 0.0289, -0.8027, -0.5381, -2.…
@@ -754,23 +759,23 @@
 <div id="reformat" class="section level3">
 <h3>Reformat</h3>
 <p>Now we’ll reformat the data to match the data frame for study 2:</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" data-line-number="1">format_study2 &lt;-<span class="st"> </span><span class="cf">function</span>(df) {</a>
-<a class="sourceLine" id="cb24-2" data-line-number="2">  df <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb24-3" data-line-number="3"><span class="st">    </span><span class="kw">select</span>(fileno, First_Session, <span class="kw">ends_with</span>(<span class="st">&quot;_NP&quot;</span>), <span class="op">-</span><span class="kw">contains</span>(<span class="st">&quot;Min&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># keep only relevant columns</span></a>
-<a class="sourceLine" id="cb24-4" data-line-number="4"><span class="st">    </span><span class="kw">gather</span>(key, accuracy, <span class="op">-</span>fileno, <span class="op">-</span>First_Session) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># make long form</span></a>
-<a class="sourceLine" id="cb24-5" data-line-number="5"><span class="st">    </span><span class="co"># split key column to create separate columns for each factor</span></a>
-<a class="sourceLine" id="cb24-6" data-line-number="6"><span class="st">    </span><span class="kw">separate</span>(key, <span class="kw">c</span>(<span class="st">&quot;block&quot;</span>, <span class="st">&quot;stimulation&quot;</span>, <span class="st">&quot;target&quot;</span>, <span class="st">&quot;lag&quot;</span>), <span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">3</span>,<span class="dv">5</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># split after 1st, 3rd, and 5th character</span></a>
-<a class="sourceLine" id="cb24-7" data-line-number="7"><span class="st">    </span><span class="co"># convert to factors, relabel levels to match those in study 2</span></a>
-<a class="sourceLine" id="cb24-8" data-line-number="8"><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">block =</span> <span class="kw">factor</span>(block, <span class="dt">levels =</span> <span class="kw">c</span>(<span class="st">&quot;v&quot;</span>, <span class="st">&quot;t&quot;</span>, <span class="st">&quot;n&quot;</span>), <span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">&quot;pre&quot;</span>, <span class="st">&quot;tDCS&quot;</span>, <span class="st">&quot;post&quot;</span>)),</a>
-<a class="sourceLine" id="cb24-9" data-line-number="9">           <span class="dt">stimulation =</span> <span class="kw">factor</span>(stimulation, <span class="dt">levels =</span> <span class="kw">c</span>(<span class="st">&quot;b_&quot;</span>, <span class="st">&quot;d_&quot;</span>), <span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">&quot;anodal&quot;</span>, <span class="st">&quot;cathodal&quot;</span>)),</a>
-<a class="sourceLine" id="cb24-10" data-line-number="10">           <span class="dt">lag =</span> <span class="kw">factor</span>(lag, <span class="dt">levels =</span> <span class="kw">c</span>(<span class="st">&quot;_2_NP&quot;</span>, <span class="st">&quot;_4_NP&quot;</span>, <span class="st">&quot;_10_NP&quot;</span>), <span class="dt">labels =</span> <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">10</span>)),</a>
-<a class="sourceLine" id="cb24-11" data-line-number="11">           <span class="dt">First_Session =</span> <span class="kw">factor</span>(First_Session, <span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">&quot;anodal first&quot;</span>,<span class="st">&quot;cathodal first&quot;</span>))) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb24-12" data-line-number="12"><span class="st">    </span><span class="kw">spread</span>(target, accuracy) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># create separate columns for T2.given.T1 and T1 performance</span></a>
-<a class="sourceLine" id="cb24-13" data-line-number="13"><span class="st">    </span><span class="kw">rename</span>(<span class="dt">T2.given.T1 =</span> NB, <span class="dt">session.order =</span> First_Session, <span class="dt">subject =</span> fileno)<span class="co"># rename columns to match those in study 2</span></a>
-<a class="sourceLine" id="cb24-14" data-line-number="14">}</a></code></pre></div>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" data-line-number="1">df_study1 &lt;-<span class="st"> </span><span class="kw">format_study2</span>(data_study1_fromDisk)</a>
-<a class="sourceLine" id="cb25-2" data-line-number="2">n_study1 &lt;-<span class="st"> </span><span class="kw">n_distinct</span>(df_study1<span class="op">$</span>subject) <span class="co"># number of subjects in study 1</span></a></code></pre></div>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" data-line-number="1"><span class="kw">kable</span>(<span class="kw">head</span>(df_study1,<span class="dv">19</span>), <span class="dt">digits =</span> <span class="dv">1</span>, <span class="dt">caption =</span> <span class="st">&quot;Data frame for study 1&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>format_study2 <span class="ot">&lt;-</span> <span class="cf">function</span>(df) {</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  df <span class="sc">%&gt;%</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(fileno, First_Session, <span class="fu">ends_with</span>(<span class="st">&quot;_NP&quot;</span>), <span class="sc">-</span><span class="fu">contains</span>(<span class="st">&quot;Min&quot;</span>)) <span class="sc">%&gt;%</span> <span class="co"># keep only relevant columns</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">gather</span>(key, accuracy, <span class="sc">-</span>fileno, <span class="sc">-</span>First_Session) <span class="sc">%&gt;%</span> <span class="co"># make long form</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># split key column to create separate columns for each factor</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">separate</span>(key, <span class="fu">c</span>(<span class="st">&quot;block&quot;</span>, <span class="st">&quot;stimulation&quot;</span>, <span class="st">&quot;target&quot;</span>, <span class="st">&quot;lag&quot;</span>), <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">3</span>,<span class="dv">5</span>)) <span class="sc">%&gt;%</span> <span class="co"># split after 1st, 3rd, and 5th character</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># convert to factors, relabel levels to match those in study 2</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">block =</span> <span class="fu">factor</span>(block, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&quot;v&quot;</span>, <span class="st">&quot;t&quot;</span>, <span class="st">&quot;n&quot;</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">&quot;pre&quot;</span>, <span class="st">&quot;tDCS&quot;</span>, <span class="st">&quot;post&quot;</span>)),</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>           <span class="at">stimulation =</span> <span class="fu">factor</span>(stimulation, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&quot;b_&quot;</span>, <span class="st">&quot;d_&quot;</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">&quot;anodal&quot;</span>, <span class="st">&quot;cathodal&quot;</span>)),</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>           <span class="at">lag =</span> <span class="fu">factor</span>(lag, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&quot;_2_NP&quot;</span>, <span class="st">&quot;_4_NP&quot;</span>, <span class="st">&quot;_10_NP&quot;</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">10</span>)),</span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>           <span class="at">First_Session =</span> <span class="fu">factor</span>(First_Session, <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">&quot;anodal first&quot;</span>,<span class="st">&quot;cathodal first&quot;</span>))) <span class="sc">%&gt;%</span></span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">spread</span>(target, accuracy) <span class="sc">%&gt;%</span> <span class="co"># create separate columns for T2.given.T1 and T1 performance</span></span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rename</span>(<span class="at">T2.given.T1 =</span> NB, <span class="at">session.order =</span> First_Session, <span class="at">subject =</span> fileno)<span class="co"># rename columns to match those in study 2</span></span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>df_study1 <span class="ot">&lt;-</span> <span class="fu">format_study2</span>(data_study1_fromDisk)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>n_study1 <span class="ot">&lt;-</span> <span class="fu">n_distinct</span>(df_study1<span class="sc">$</span>subject) <span class="co"># number of subjects in study 1</span></span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(<span class="fu">head</span>(df_study1,<span class="dv">19</span>), <span class="at">digits =</span> <span class="dv">1</span>, <span class="at">caption =</span> <span class="st">&quot;Data frame for study 1&quot;</span>)</span></code></pre></div>
 <table>
 <caption>Data frame for study 1</caption>
 <thead>
@@ -966,16 +971,16 @@
 <div id="calculate-change-scores" class="section level2">
 <h2>Calculate change scores</h2>
 <p>First we calculate attentional blink magnitude: the difference between short-lag and long-lag T2|T1 performance.</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" data-line-number="1">calc_ABmag &lt;-<span class="st"> </span><span class="cf">function</span>(df) {</a>
-<a class="sourceLine" id="cb27-2" data-line-number="2">  df <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb27-3" data-line-number="3"><span class="st">    </span><span class="kw">group_by</span>(subject, session.order, stimulation, block) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># for each unique factor combination</span></a>
-<a class="sourceLine" id="cb27-4" data-line-number="4"><span class="st">    </span><span class="kw">summarise</span>(<span class="dt">AB.magnitude =</span> <span class="kw">last</span>(T2.given.T1) <span class="op">-</span><span class="st"> </span><span class="kw">first</span>(T2.given.T1), <span class="co"># subtract lags to replace data with AB magnitude,</span></a>
-<a class="sourceLine" id="cb27-5" data-line-number="5">              <span class="dt">T1.short =</span> <span class="kw">first</span>(T1)) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># also keep T1 performance for short lag, to use as a covariate later</span></a>
-<a class="sourceLine" id="cb27-6" data-line-number="6"><span class="st">    </span><span class="kw">ungroup</span>()</a>
-<a class="sourceLine" id="cb27-7" data-line-number="7">}</a></code></pre></div>
-<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" data-line-number="1">ABmag_study1 &lt;-<span class="st"> </span><span class="kw">calc_ABmag</span>(df_study1)</a>
-<a class="sourceLine" id="cb28-2" data-line-number="2">ABmag_study2 &lt;-<span class="st"> </span><span class="kw">calc_ABmag</span>(df_study2)</a>
-<a class="sourceLine" id="cb28-3" data-line-number="3"><span class="kw">kable</span>(<span class="kw">head</span>(ABmag_study2,<span class="dv">7</span>), <span class="dt">digits =</span> <span class="dv">2</span>, <span class="dt">caption =</span> <span class="st">&quot;AB magnitude data frame in study 2&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>calc_ABmag <span class="ot">&lt;-</span> <span class="cf">function</span>(df) {</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  df <span class="sc">%&gt;%</span> </span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(subject, session.order, stimulation, block) <span class="sc">%&gt;%</span> <span class="co"># for each unique factor combination</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarise</span>(<span class="at">AB.magnitude =</span> <span class="fu">last</span>(T2.given.T1) <span class="sc">-</span> <span class="fu">first</span>(T2.given.T1), <span class="co"># subtract lags to replace data with AB magnitude,</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">T1.short =</span> <span class="fu">first</span>(T1)) <span class="sc">%&gt;%</span> <span class="co"># also keep T1 performance for short lag, to use as a covariate later</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ungroup</span>()</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>ABmag_study1 <span class="ot">&lt;-</span> <span class="fu">calc_ABmag</span>(df_study1)</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>ABmag_study2 <span class="ot">&lt;-</span> <span class="fu">calc_ABmag</span>(df_study2)</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(<span class="fu">head</span>(ABmag_study2,<span class="dv">7</span>), <span class="at">digits =</span> <span class="dv">2</span>, <span class="at">caption =</span> <span class="st">&quot;AB magnitude data frame in study 2&quot;</span>)</span></code></pre></div>
 <table>
 <caption>AB magnitude data frame in study 2</caption>
 <thead>
@@ -1052,21 +1057,21 @@
 <li><strong>T1.short</strong>: % T1 correct at the short lag, for use as a covariate in the partial correlation analysis</li>
 </ul>
 <p>Next, we calculate change from baseline for both of these measures:</p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" data-line-number="1">calc_change_scores &lt;-<span class="st"> </span><span class="cf">function</span>(df) {</a>
-<a class="sourceLine" id="cb29-2" data-line-number="2">  df <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb29-3" data-line-number="3"><span class="st">    </span><span class="kw">gather</span>(measure, performance, AB.magnitude, T1.short) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb29-4" data-line-number="4"><span class="st">    </span><span class="kw">group_by</span>(subject, session.order, stimulation, measure) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb29-5" data-line-number="5"><span class="st">    </span><span class="kw">summarise</span>(<span class="dt">baseline =</span> <span class="kw">first</span>(performance), </a>
-<a class="sourceLine" id="cb29-6" data-line-number="6">              <span class="dt">during =</span> <span class="kw">nth</span>(performance,<span class="dv">2</span>) <span class="op">-</span><span class="st"> </span>baseline,</a>
-<a class="sourceLine" id="cb29-7" data-line-number="7">              <span class="dt">after =</span> <span class="kw">last</span>(performance) <span class="op">-</span><span class="st"> </span>baseline) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb29-8" data-line-number="8"><span class="st">    </span><span class="kw">gather</span>(change, change.score, during, after) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb29-9" data-line-number="9"><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">change =</span> <span class="kw">fct_recode</span>(change, <span class="st">&quot;tDCS - baseline&quot;</span> =<span class="st"> &quot;during&quot;</span>, <span class="st">&quot;post - baseline&quot;</span> =<span class="st"> &quot;after&quot;</span>),</a>
-<a class="sourceLine" id="cb29-10" data-line-number="10">           <span class="dt">change =</span> <span class="kw">fct_relevel</span>(change, <span class="st">&quot;tDCS - baseline&quot;</span>)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb29-11" data-line-number="11"><span class="st">    </span><span class="kw">arrange</span>(subject, stimulation)</a>
-<a class="sourceLine" id="cb29-12" data-line-number="12">}</a></code></pre></div>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" data-line-number="1">ABmagChange_study1 &lt;-<span class="st"> </span><span class="kw">calc_change_scores</span>(ABmag_study1)</a>
-<a class="sourceLine" id="cb30-2" data-line-number="2">ABmagChange_study2 &lt;-<span class="st"> </span><span class="kw">calc_change_scores</span>(ABmag_study2)</a>
-<a class="sourceLine" id="cb30-3" data-line-number="3"><span class="kw">kable</span>(<span class="kw">head</span>(ABmagChange_study2,<span class="dv">9</span>), <span class="dt">digits =</span> <span class="dv">2</span>, <span class="dt">caption =</span> <span class="st">&quot;Change scores data frame in study 2&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>calc_change_scores <span class="ot">&lt;-</span> <span class="cf">function</span>(df) {</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  df <span class="sc">%&gt;%</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">gather</span>(measure, performance, AB.magnitude, T1.short) <span class="sc">%&gt;%</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(subject, session.order, stimulation, measure) <span class="sc">%&gt;%</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarise</span>(<span class="at">baseline =</span> <span class="fu">first</span>(performance), </span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>              <span class="at">during =</span> <span class="fu">nth</span>(performance,<span class="dv">2</span>) <span class="sc">-</span> baseline,</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>              <span class="at">after =</span> <span class="fu">last</span>(performance) <span class="sc">-</span> baseline) <span class="sc">%&gt;%</span></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">gather</span>(change, change.score, during, after) <span class="sc">%&gt;%</span></span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">change =</span> <span class="fu">fct_recode</span>(change, <span class="st">&quot;tDCS - baseline&quot;</span> <span class="ot">=</span> <span class="st">&quot;during&quot;</span>, <span class="st">&quot;post - baseline&quot;</span> <span class="ot">=</span> <span class="st">&quot;after&quot;</span>),</span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>           <span class="at">change =</span> <span class="fu">fct_relevel</span>(change, <span class="st">&quot;tDCS - baseline&quot;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">arrange</span>(subject, stimulation)</span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>ABmagChange_study1 <span class="ot">&lt;-</span> <span class="fu">calc_change_scores</span>(ABmag_study1)</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>ABmagChange_study2 <span class="ot">&lt;-</span> <span class="fu">calc_change_scores</span>(ABmag_study2)</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(<span class="fu">head</span>(ABmagChange_study2,<span class="dv">9</span>), <span class="at">digits =</span> <span class="dv">2</span>, <span class="at">caption =</span> <span class="st">&quot;Change scores data frame in study 2&quot;</span>)</span></code></pre></div>
 <table>
 <caption>Change scores data frame in study 2</caption>
 <thead>
@@ -1171,19 +1176,19 @@
 </ul>
 </div>
 <div id="plots" class="section level2 tabset tabset-fade tabset-pills">
-<h2>Plots</h2>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb31-1" data-line-number="1">plot_change_from_baseline &lt;-<span class="st"> </span><span class="cf">function</span>(df)</a>
-<a class="sourceLine" id="cb31-2" data-line-number="2">  <span class="kw">ggplot</span>(<span class="kw">filter</span>(df, measure <span class="op">==</span><span class="st"> &quot;AB.magnitude&quot;</span>), <span class="kw">aes</span>(baseline, change.score)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb31-3" data-line-number="3"><span class="st">  </span><span class="kw">facet_grid</span>(change <span class="op">~</span><span class="st"> </span>stimulation) <span class="op">+</span></a>
-<a class="sourceLine" id="cb31-4" data-line-number="4"><span class="st">  </span><span class="kw">geom_hline</span>(<span class="dt">yintercept =</span> <span class="dv">0</span>, <span class="dt">linetype =</span> <span class="st">&quot;dashed&quot;</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb31-5" data-line-number="5"><span class="st">  </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">&quot;lm&quot;</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb31-6" data-line-number="6"><span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb31-7" data-line-number="7"><span class="st">  </span><span class="kw">geom_rug</span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb31-8" data-line-number="8"><span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="st">&quot;Baseline AB magnitude (%)&quot;</span>, <span class="dt">breaks =</span> <span class="kw">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,.<span class="dv">2</span>), <span class="dt">limits =</span> <span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="dt">labels =</span> scales<span class="op">::</span><span class="kw">percent_format</span>(<span class="dt">accuracy =</span> <span class="dv">1</span>)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb31-9" data-line-number="9"><span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="st">&quot;Change in AB magnitude (%)&quot;</span>, <span class="dt">breaks =</span> <span class="kw">seq</span>(<span class="op">-</span>.<span class="dv">4</span>,.<span class="dv">4</span>,.<span class="dv">1</span>), <span class="dt">limits =</span> <span class="kw">c</span>(<span class="op">-</span>.<span class="dv">4</span>,.<span class="dv">4</span>), <span class="dt">labels =</span> scales<span class="op">::</span><span class="kw">percent_format</span>(<span class="dt">accuracy =</span> <span class="dv">1</span>))</a></code></pre></div>
+<h2 class="tabset tabset-fade tabset-pills">Plots</h2>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>plot_change_from_baseline <span class="ot">&lt;-</span> <span class="cf">function</span>(df)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">filter</span>(df, measure <span class="sc">==</span> <span class="st">&quot;AB.magnitude&quot;</span>), <span class="fu">aes</span>(baseline, change.score)) <span class="sc">+</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(change <span class="sc">~</span> stimulation) <span class="sc">+</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>) <span class="sc">+</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">&quot;lm&quot;</span>) <span class="sc">+</span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_rug</span>() <span class="sc">+</span></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="st">&quot;Baseline AB magnitude (%)&quot;</span>, <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,.<span class="dv">2</span>), <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">percent_format</span>(<span class="at">accuracy =</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="st">&quot;Change in AB magnitude (%)&quot;</span>, <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="sc">-</span>.<span class="dv">4</span>,.<span class="dv">4</span>,.<span class="dv">1</span>), <span class="at">limits =</span> <span class="fu">c</span>(<span class="sc">-</span>.<span class="dv">4</span>,.<span class="dv">4</span>), <span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">percent_format</span>(<span class="at">accuracy =</span> <span class="dv">1</span>))</span></code></pre></div>
 <div id="study-1-1" class="section level3">
 <h3>Study 1</h3>
-<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb32-1" data-line-number="1"><span class="kw">plot_change_from_baseline</span>(ABmagChange_study1)</a></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_change_from_baseline</span>(ABmagChange_study1)</span></code></pre></div>
 <pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
 <div class="figure">
 <img src="AB-tDCS_change-from-baseline_files/figure-html/change%20from%20baseline%20plot%20study%201-1.png" alt="Study 1: change from baseline as a function of baseline performance" width="576" />
@@ -1194,7 +1199,7 @@ Study 1: change from baseline as a function of baseline performance
 </div>
 <div id="study-2-1" class="section level3">
 <h3>Study 2</h3>
-<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb34-1" data-line-number="1"><span class="kw">plot_change_from_baseline</span>(ABmagChange_study2)</a></code></pre></div>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_change_from_baseline</span>(ABmagChange_study2)</span></code></pre></div>
 <pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
 <div class="figure">
 <img src="AB-tDCS_change-from-baseline_files/figure-html/change%20from%20baseline%20plot%20study%202-1.png" alt="Study 2: change from baseline as a function of baseline performance" width="576" />
@@ -1207,26 +1212,26 @@ Study 2: change from baseline as a function of baseline performance
 <div id="statistics" class="section level2">
 <h2>Statistics</h2>
 <div id="partial-correlations" class="section level3 tabset tabset-fade tabset-pills">
-<h3>Partial correlations</h3>
-<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb36-1" data-line-number="1">pcorr_change_baseline &lt;-<span class="st"> </span><span class="cf">function</span>(df) {</a>
-<a class="sourceLine" id="cb36-2" data-line-number="2">  df <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb36-3" data-line-number="3"><span class="st">    </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb36-4" data-line-number="4"><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">session.order =</span> <span class="kw">as.numeric</span>(session.order)) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># dummy code</span></a>
-<a class="sourceLine" id="cb36-5" data-line-number="5"><span class="st">    </span><span class="kw">nest_legacy</span>(baseline, change.score, <span class="dt">.key =</span> <span class="st">&#39;value_col&#39;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># combine the two performance columns into a list</span></a>
-<a class="sourceLine" id="cb36-6" data-line-number="6"><span class="st">    </span><span class="co"># make 2 separate list-columns: AB.magnitude and T1. short</span></a>
-<a class="sourceLine" id="cb36-7" data-line-number="7"><span class="st">    </span><span class="kw">spread</span>(<span class="dt">key =</span> measure, <span class="dt">value =</span> value_col) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># each contains two vectors: baseline performance and change score</span></a>
-<a class="sourceLine" id="cb36-8" data-line-number="8"><span class="st">    </span><span class="kw">unnest_legacy</span>(AB.magnitude, T1.short, <span class="dt">.sep =</span> <span class="st">&#39;_&#39;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># make all 2x2 combinations into 4 columns</span></a>
-<a class="sourceLine" id="cb36-9" data-line-number="9"><span class="st">    </span><span class="kw">select</span>(<span class="op">-</span>T1.short_baseline) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># drop the baseline value for T1.short: not used in partial correlation</span></a>
-<a class="sourceLine" id="cb36-10" data-line-number="10"><span class="st">    </span><span class="kw">group_by</span>(stimulation,change) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># for anodal/cathodal during/after</span></a>
-<a class="sourceLine" id="cb36-11" data-line-number="11"><span class="st">    </span><span class="co"># make a data frame out of all 4 columns we need for the partial correlation</span></a>
-<a class="sourceLine" id="cb36-12" data-line-number="12"><span class="st">    </span><span class="kw">nest_legacy</span>(session.order, AB.magnitude_baseline, AB.magnitude_change.score, T1.short_change.score) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb36-13" data-line-number="13"><span class="st">    </span><span class="co"># partial correlation between baseline and T2|T1 change score, given session order and T1 change score</span></a>
-<a class="sourceLine" id="cb36-14" data-line-number="14"><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">r =</span> <span class="kw">map_dbl</span>(data, <span class="op">~</span><span class="kw">pcor</span>(<span class="kw">c</span>(<span class="st">&quot;AB.magnitude_baseline&quot;</span>,<span class="st">&quot;AB.magnitude_change.score&quot;</span>,</a>
-<a class="sourceLine" id="cb36-15" data-line-number="15">                                     <span class="st">&quot;session.order&quot;</span>, <span class="st">&quot;T1.short_change.score&quot;</span>), <span class="kw">var</span>(.)))) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb36-16" data-line-number="16"><span class="st">    </span><span class="kw">group_by</span>(stimulation,change) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb36-17" data-line-number="17"><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">stats =</span> <span class="kw">list</span>(<span class="kw">as.data.frame</span>(<span class="kw">pcor.test</span>(r, <span class="dv">2</span>, <span class="kw">n_distinct</span>(df<span class="op">$</span>subject))))) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># significance of partial correlations</span></a>
-<a class="sourceLine" id="cb36-18" data-line-number="18"><span class="st">    </span><span class="kw">unnest_legacy</span>(stats, <span class="dt">.drop =</span> <span class="ot">TRUE</span>) <span class="co"># combine all into one data frame</span></a>
-<a class="sourceLine" id="cb36-19" data-line-number="19">}</a></code></pre></div>
+<h3 class="tabset tabset-fade tabset-pills">Partial correlations</h3>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>pcorr_change_baseline <span class="ot">&lt;-</span> <span class="cf">function</span>(df) {</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>  df <span class="sc">%&gt;%</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">session.order =</span> <span class="fu">as.numeric</span>(session.order)) <span class="sc">%&gt;%</span> <span class="co"># dummy code</span></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">nest_legacy</span>(baseline, change.score, <span class="at">.key =</span> <span class="st">&#39;value_col&#39;</span>) <span class="sc">%&gt;%</span> <span class="co"># combine the two performance columns into a list</span></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># make 2 separate list-columns: AB.magnitude and T1. short</span></span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">spread</span>(<span class="at">key =</span> measure, <span class="at">value =</span> value_col) <span class="sc">%&gt;%</span> <span class="co"># each contains two vectors: baseline performance and change score</span></span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unnest_legacy</span>(AB.magnitude, T1.short, <span class="at">.sep =</span> <span class="st">&#39;_&#39;</span>) <span class="sc">%&gt;%</span> <span class="co"># make all 2x2 combinations into 4 columns</span></span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(<span class="sc">-</span>T1.short_baseline) <span class="sc">%&gt;%</span> <span class="co"># drop the baseline value for T1.short: not used in partial correlation</span></span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(stimulation,change) <span class="sc">%&gt;%</span> <span class="co"># for anodal/cathodal during/after</span></span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># make a data frame out of all 4 columns we need for the partial correlation</span></span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">nest_legacy</span>(session.order, AB.magnitude_baseline, AB.magnitude_change.score, T1.short_change.score) <span class="sc">%&gt;%</span> </span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># partial correlation between baseline and T2|T1 change score, given session order and T1 change score</span></span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">r =</span> <span class="fu">map_dbl</span>(data, <span class="sc">~</span><span class="fu">pcor</span>(<span class="fu">c</span>(<span class="st">&quot;AB.magnitude_baseline&quot;</span>,<span class="st">&quot;AB.magnitude_change.score&quot;</span>,</span>
+<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a>                                     <span class="st">&quot;session.order&quot;</span>, <span class="st">&quot;T1.short_change.score&quot;</span>), <span class="fu">var</span>(.)))) <span class="sc">%&gt;%</span> </span>
+<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(stimulation,change) <span class="sc">%&gt;%</span></span>
+<span id="cb36-17"><a href="#cb36-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">stats =</span> <span class="fu">list</span>(<span class="fu">as.data.frame</span>(<span class="fu">pcor.test</span>(r, <span class="dv">2</span>, <span class="fu">n_distinct</span>(df<span class="sc">$</span>subject))))) <span class="sc">%&gt;%</span> <span class="co"># significance of partial correlations</span></span>
+<span id="cb36-18"><a href="#cb36-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unnest_legacy</span>(stats, <span class="at">.drop =</span> <span class="cn">TRUE</span>) <span class="co"># combine all into one data frame</span></span>
+<span id="cb36-19"><a href="#cb36-19" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 <p>Partial correlation between:</p>
 <ul>
 <li>baseline AB magnitude</li>
@@ -1239,8 +1244,8 @@ Study 2: change from baseline as a function of baseline performance
 </ul>
 <div id="study-1-2" class="section level4">
 <h4>Study 1</h4>
-<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb37-1" data-line-number="1"><span class="kw">kable</span>(<span class="kw">pcorr_change_baseline</span>(ABmagChange_study1),</a>
-<a class="sourceLine" id="cb37-2" data-line-number="2">      <span class="dt">digits =</span> <span class="dv">3</span>, <span class="dt">caption =</span> <span class="st">&quot;Study 1: partial correlation change from baseline&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(<span class="fu">pcorr_change_baseline</span>(ABmagChange_study1),</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>      <span class="at">digits =</span> <span class="dv">3</span>, <span class="at">caption =</span> <span class="st">&quot;Study 1: partial correlation change from baseline&quot;</span>)</span></code></pre></div>
 <table>
 <caption>Study 1: partial correlation change from baseline</caption>
 <thead>
@@ -1292,8 +1297,8 @@ Study 2: change from baseline as a function of baseline performance
 </div>
 <div id="study-2-2" class="section level4">
 <h4>Study 2</h4>
-<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb38-1" data-line-number="1"><span class="kw">kable</span>(<span class="kw">pcorr_change_baseline</span>(ABmagChange_study2),</a>
-<a class="sourceLine" id="cb38-2" data-line-number="2">      <span class="dt">digits =</span> <span class="dv">3</span>, <span class="dt">caption =</span> <span class="st">&quot;Study 2: partial correlation change from baseline&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(<span class="fu">pcorr_change_baseline</span>(ABmagChange_study2),</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>      <span class="at">digits =</span> <span class="dv">3</span>, <span class="at">caption =</span> <span class="st">&quot;Study 2: partial correlation change from baseline&quot;</span>)</span></code></pre></div>
 <table>
 <caption>Study 2: partial correlation change from baseline</caption>
 <thead>
@@ -1345,26 +1350,26 @@ Study 2: change from baseline as a function of baseline performance
 </div>
 </div>
 <div id="variance-tests" class="section level3 tabset tabset-fade tabset-pills">
-<h3>Variance tests</h3>
-<p>There are two problems with assessing the correlation between <code>baseline</code> and change from baseline (<code>retest - baseline</code>, e.g. <code>tDCS - baseline</code>)<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a>.</p>
+<h3 class="tabset tabset-fade tabset-pills">Variance tests</h3>
+<p>There are two problems with assessing the correlation between <code>baseline</code> and change from baseline (<code>retest - baseline</code>, e.g. <code>tDCS - baseline</code>)<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a>.</p>
 <ol style="list-style-type: decimal">
 <li><strong>Mathematical coupling</strong>. The <code>baseline</code> term shows up in both variables, introducing a spurious covariance. This may result in a correlation (negative, because <code>baseline</code> is subtracted) of up to <em>r</em> = -0.71 (Tu and Gilthorpe, 2007)<a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a>, even when <code>baseline</code> and <code>retest</code> are randomly sampled from the same distribution.</li>
 <li><strong>Regression to the mean</strong>. Purely due to measurement error, extreme scores will tend to be less extreme upon another measurement, which also introduces a spurious relation between the two variables.</li>
 </ol>
 <p>One solution to regression to the mean is to compare the variances in the baseline and retest. Regression to the mean is a random process, so the variances are expected to be the same. However, if there is truly a relation between <code>baseline</code> and <code>retest - baseline</code>, the variance in the retest should be less than in the baseline: if high-performers become worse, and low-performers become better, so the scores in the retest should be closer together.</p>
 <p>Maloney and Rastogi (1970)<a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a> (equation in Tu &amp; Gilthorpe (2007)) and Myrtek and Foerster (1986)<a href="#fn5" class="footnote-ref" id="fnref5"><sup>5</sup></a> (equation in Jin (1992)<a href="#fn6" class="footnote-ref" id="fnref6"><sup>6</sup></a>) propose t-statistics for such tests (which are identical). Further (somewhat counterintuitively), Tu &amp; Gilthorpe (2007) show that testing the variance between <code>baseline</code> and <code>retest</code> is equivalent to testing the significance of the correlation between <code>baseline - retest</code> and <code>baseline + retest</code> (as in Maloney &amp; Rastogi (1970)). Because the sign is now opposite in both variables, the covariance is no longer biased towards either. This illustrates how variance tests also adress mathematical coupling.</p>
-<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb39-1" data-line-number="1">var_test &lt;-<span class="st"> </span><span class="cf">function</span>(df) {</a>
-<a class="sourceLine" id="cb39-2" data-line-number="2">df <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb39-3" data-line-number="3"><span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb39-4" data-line-number="4"><span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>T1.short, <span class="op">-</span>session.order) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># drop columns we don&#39;t need</span></a>
-<a class="sourceLine" id="cb39-5" data-line-number="5"><span class="st">  </span><span class="kw">spread</span>(block, AB.magnitude) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># create 3 columns of scores, one for each block</span></a>
-<a class="sourceLine" id="cb39-6" data-line-number="6"><span class="st">  </span><span class="kw">gather</span>(condition, retest, tDCS, post) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># gather the tdcs and post blocks into one &quot;retest score&quot; column</span></a>
-<a class="sourceLine" id="cb39-7" data-line-number="7"><span class="st">  </span><span class="kw">unite</span>(comparison, stimulation, condition) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># create all 2x2 combinations for the correlations</span></a>
-<a class="sourceLine" id="cb39-8" data-line-number="8"><span class="st">  </span><span class="kw">group_by</span>(comparison) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># for each of these</span></a>
-<a class="sourceLine" id="cb39-9" data-line-number="9"><span class="st">  </span><span class="kw">nest_legacy</span>() <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># make a data frame out of the test and retest columns</span></a>
-<a class="sourceLine" id="cb39-10" data-line-number="10"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">stats =</span> <span class="kw">map</span>(data, <span class="op">~</span><span class="kw">as.data.frame</span>(<span class="kw">corr_change_baseline</span>(.<span class="op">$</span>pre, .<span class="op">$</span>retest)))) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># apply the variance test</span></a>
-<a class="sourceLine" id="cb39-11" data-line-number="11"><span class="st">  </span><span class="kw">unnest_legacy</span>(stats, <span class="dt">.drop =</span> <span class="ot">TRUE</span>) <span class="co"># unpack list into data frame, drop the data</span></a>
-<a class="sourceLine" id="cb39-12" data-line-number="12">}</a></code></pre></div>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>var_test <span class="ot">&lt;-</span> <span class="cf">function</span>(df) {</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>df <span class="sc">%&gt;%</span></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>T1.short, <span class="sc">-</span>session.order) <span class="sc">%&gt;%</span> <span class="co"># drop columns we don&#39;t need</span></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">spread</span>(block, AB.magnitude) <span class="sc">%&gt;%</span> <span class="co"># create 3 columns of scores, one for each block</span></span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather</span>(condition, retest, tDCS, post) <span class="sc">%&gt;%</span> <span class="co"># gather the tdcs and post blocks into one &quot;retest score&quot; column</span></span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unite</span>(comparison, stimulation, condition) <span class="sc">%&gt;%</span> <span class="co"># create all 2x2 combinations for the correlations</span></span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(comparison) <span class="sc">%&gt;%</span> <span class="co"># for each of these</span></span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nest_legacy</span>() <span class="sc">%&gt;%</span> <span class="co"># make a data frame out of the test and retest columns</span></span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">stats =</span> <span class="fu">map</span>(data, <span class="sc">~</span><span class="fu">as.data.frame</span>(<span class="fu">corr_change_baseline</span>(.<span class="sc">$</span>pre, .<span class="sc">$</span>retest)))) <span class="sc">%&gt;%</span> <span class="co"># apply the variance test</span></span>
+<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest_legacy</span>(stats, <span class="at">.drop =</span> <span class="cn">TRUE</span>) <span class="co"># unpack list into data frame, drop the data</span></span>
+<span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 <p>Variance tests between:</p>
 <ul>
 <li>baseline AB magnitude (<code>pre</code> block)</li>
@@ -1372,7 +1377,7 @@ Study 2: change from baseline as a function of baseline performance
 </ul>
 <div id="study-1-3" class="section level4">
 <h4>Study 1</h4>
-<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb40-1" data-line-number="1"><span class="kw">kable</span>(<span class="kw">var_test</span>(ABmag_study1), <span class="dt">digits =</span> <span class="dv">3</span>, <span class="dt">caption =</span> <span class="st">&quot;Study 1: test of variance in baseline vs. retest&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(<span class="fu">var_test</span>(ABmag_study1), <span class="at">digits =</span> <span class="dv">3</span>, <span class="at">caption =</span> <span class="st">&quot;Study 1: test of variance in baseline vs. retest&quot;</span>)</span></code></pre></div>
 <table>
 <caption>Study 1: test of variance in baseline vs. retest</caption>
 <thead>
@@ -1419,7 +1424,7 @@ Study 2: change from baseline as a function of baseline performance
 </div>
 <div id="study-2-3" class="section level4">
 <h4>Study 2</h4>
-<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb41-1" data-line-number="1"><span class="kw">kable</span>(<span class="kw">var_test</span>(ABmag_study2), <span class="dt">digits =</span> <span class="dv">3</span>, <span class="dt">caption =</span> <span class="st">&quot;Study 2: test of variance in baseline vs. retest&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(<span class="fu">var_test</span>(ABmag_study2), <span class="at">digits =</span> <span class="dv">3</span>, <span class="at">caption =</span> <span class="st">&quot;Study 2: test of variance in baseline vs. retest&quot;</span>)</span></code></pre></div>
 <table>
 <caption>Study 2: test of variance in baseline vs. retest</caption>
 <thead>
@@ -1470,12 +1475,12 @@ Study 2: change from baseline as a function of baseline performance
 <div class="footnotes">
 <hr />
 <ol>
-<li id="fn1"><p>London, R. E., &amp; Slagter, H. A. (2021). No Effect of Transcranial Direct Current Stimulation over Left Dorsolateral Prefrontal Cortex on Temporal Attention. <em>Journal of Cognitive Neuroscience, 33(4)</em>, 756–768. doi: <a href="https://doi.org/10.1162/jocn_a_01679">10.1162/jocn_a_01679</a><a href="#fnref1" class="footnote-back">↩</a></p></li>
-<li id="fn2"><p>Taken from <a href="http://imaging.mrc-cbu.cam.ac.uk/statswiki/FAQ/rxxy_correction">this page</a>, which has more extensive introduction to the issue.<a href="#fnref2" class="footnote-back">↩</a></p></li>
-<li id="fn3"><p>Tu, Y. K., &amp; Gilthorpe, M. S. (2007). Revisiting the relation between change and initial value: a review and evaluation. <em>Statistics in medicine, 26(2)</em>, 443-457. doi: <a href="https://doi.org/10.1002/sim.2538">10.1002/sim.2538</a><a href="#fnref3" class="footnote-back">↩</a></p></li>
-<li id="fn4"><p>Maloney, C. J., &amp; Rastogi, S. C. (1970). Significance test for Grubbs’s estimators. <em>Biometrics, 26</em>, 671-676.<a href="#fnref4" class="footnote-back">↩</a></p></li>
-<li id="fn5"><p>Myrtek, M., &amp; Foerster, F. (1986). The law of initial value: A rare exception. <em>Biological Psychology, 22</em>, 227-239.<a href="#fnref5" class="footnote-back">↩</a></p></li>
-<li id="fn6"><p>Jin, P. (1992). Toward a reconceptualization of the law of initial value. <em>Psychological Bulletin, 111</em>, 176-184. doi: <a href="http://psycnet.apa.org/doi/10.1037/0033-2909.111.1.176">10.1037/0033-2909.111.1.176</a><a href="#fnref6" class="footnote-back">↩</a></p></li>
+<li id="fn1"><p>London, R. E., &amp; Slagter, H. A. (2021). No Effect of Transcranial Direct Current Stimulation over Left Dorsolateral Prefrontal Cortex on Temporal Attention. <em>Journal of Cognitive Neuroscience, 33(4)</em>, 756–768. doi: <a href="https://doi.org/10.1162/jocn_a_01679">10.1162/jocn_a_01679</a><a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn2"><p>Taken from <a href="http://imaging.mrc-cbu.cam.ac.uk/statswiki/FAQ/rxxy_correction">this page</a>, which has more extensive introduction to the issue.<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
+<li id="fn3"><p>Tu, Y. K., &amp; Gilthorpe, M. S. (2007). Revisiting the relation between change and initial value: a review and evaluation. <em>Statistics in medicine, 26(2)</em>, 443-457. doi: <a href="https://doi.org/10.1002/sim.2538">10.1002/sim.2538</a><a href="#fnref3" class="footnote-back">↩︎</a></p></li>
+<li id="fn4"><p>Maloney, C. J., &amp; Rastogi, S. C. (1970). Significance test for Grubbs’s estimators. <em>Biometrics, 26</em>, 671-676.<a href="#fnref4" class="footnote-back">↩︎</a></p></li>
+<li id="fn5"><p>Myrtek, M., &amp; Foerster, F. (1986). The law of initial value: A rare exception. <em>Biological Psychology, 22</em>, 227-239.<a href="#fnref5" class="footnote-back">↩︎</a></p></li>
+<li id="fn6"><p>Jin, P. (1992). Toward a reconceptualization of the law of initial value. <em>Psychological Bulletin, 111</em>, 176-184. doi: <a href="http://psycnet.apa.org/doi/10.1037/0033-2909.111.1.176">10.1037/0033-2909.111.1.176</a><a href="#fnref6" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
 </div>
@@ -1488,11 +1493,13 @@ Study 2: change from baseline as a function of baseline performance
        <button type="button" class="close">×</button>
        <ul>
        <li><a href="#setup-environment">Setup environment</a></li>
-       <li><a href="#load-task-data">Load task data</a><ul>
+       <li><a href="#load-task-data">Load task data</a>
+       <ul>
        <li><a href="#study-2">Study 2</a></li>
        <li><a href="#study-1">Study 1</a></li>
        </ul></li>
-       <li><a href="#change-from-baseline">Change from baseline</a><ul>
+       <li><a href="#change-from-baseline">Change from baseline</a>
+       <ul>
        <li><a href="#calculate-change-scores">Calculate change scores</a></li>
        <li><a href="#plots">Plots</a></li>
        <li><a href="#statistics">Statistics</a></li>

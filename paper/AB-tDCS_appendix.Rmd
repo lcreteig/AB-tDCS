@@ -27,6 +27,7 @@ int_conf <- full_join(intensity,confidence)  %>%
   mutate(measure = factor(measure, levels = c("intensity", "confidence")))
 ```
 
+
 ```{r tab-tDCS-AE, results='asis'}
 tbl_int_anodal <- intensity %>%
   filter(stimulation == "anodal") %>%
@@ -94,3 +95,19 @@ suppressWarnings(print(ae_plot))
 ```
 
 (ref:caption-tDCS-AE) __tDCS adverse events__. Number of reports out of 89 sessions (either anodal or cathodal tDCS). Top row shows intensity ratings [_little, moderate, strong, very strong_]; bottom row shows participant's confidence that event was related to tDCS [_unlikely, possibly, likely, very likely_]. Adverse events are sorted in descending order of number of reports (for very rare events (five reports or fewer for a given polarity), some text counts have been removed to prevent overlap).
+
+| Difference                         | Study 2                                                       | Study 1                                     | Motivation                                                                                            |
+|------------------------------------|---------------------------------------------------------------|---------------------------------------------|-------------------------------------------------------------------------------------------------------|
+| Sample: size                       | 40                                                            | 34                                          |                                                                                                       |
+| Sample: age                        | Mean: 20.94, SD: 4.25                                         | Mean: 22.4, SD: 2.8                         |                                                                                                       |
+| Sample: gender                     | 29 female (73%)                                               | 20 female (59%)                             |                                                                                                       |
+| Design: concurrent measurements    | EEG                                                           | None                                        |                                                                                                       |
+| Design: inter-session interval     | 1 week                                                        | min. 48 hours                               | Increase similarity between sessions; longer washout time                                             |
+| Design: trials per 20-minute block | Short-lag trials:   M=130, SD=17; Long-lag trials: M=65; SD=9 | Short-lag trials:40; Long-lag trials: 40    | Allow as many trials as possible in 20 minutes by making the task self-paced                          |
+| Task: RSVP stream                  | 15 letters                                                    | 17 letters                                  | Shorten the total length of a trial, to allow completion of more trials                               |
+| Task: inter-stimulus interval      | 1750 ms, + 1000 ms                                            | 480 ms                                      | Allow EEG responses to return to baseline                                                             |
+| Task: priming condition            | Absent                                                        | Present                                     | Remove priming condition as it is orthogonal to main contrast, and showed no effects in @London2021   |
+| Task: attentional blink conditions | lag 3, 8                                                      | lag 2, 4, 10                                | Increase proportion of trials where T2 was seen, for EEG analysis                                     |
+| tDCS: conductive medium            | Conductive paste                                              | Saline solution                             | Prevent bridging EEG electrodes with (spreading) saline solution                                      |
+
+Table: (\#tab:tab-diffs) Differences in the methodology and participant samples @London2021 (Study 1) and the present study (Study 2).
